@@ -7,6 +7,7 @@ import (
 	"path"
 	"time"
 
+	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/routes"
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 	"github.com/urfave/negroni/v3"
@@ -35,9 +36,9 @@ func Init() {
 
 	r := chi.NewRouter()
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("hello world\n"))
-	})
+	routes.Routes(r)
+	// curl http://localhost:8000
+	// curl http://localhost:8000/books
 
 	n := negroni.New()
 	n.Use(negroni.NewLogger())
