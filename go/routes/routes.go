@@ -11,6 +11,8 @@ func Routes(r *chi.Mux) {
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("hello world\n"))
 	})
-	r.Get("/books", controllers.GetBooks)
+	r.Get("/classes", controllers.GetClasses)
+	r.Get("/users", controllers.GetUsers)
+	r.Get("/user", controllers.GetUser)
 
 }
