@@ -7,12 +7,12 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func Routes(r *chi.Mux) {
+func Routes(r *chi.Mux, cfg *controllers.Config) {
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("hello world\n"))
 	})
-	r.Get("/classes", controllers.GetClasses)
-	r.Get("/users", controllers.GetUsers)
-	r.Get("/user", controllers.GetUser)
+	r.Get("/classes", cfg.GetClasses)
+	r.Get("/users", cfg.GetUsers)
+	r.Get("/user", cfg.GetUser)
 
 }

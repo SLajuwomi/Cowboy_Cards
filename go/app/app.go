@@ -7,11 +7,20 @@ import (
 	"path"
 	"time"
 
+	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/controllers"
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/routes"
 	"github.com/go-chi/chi/v5"
-	"github.com/joho/godotenv"
+	_ "github.com/joho/godotenv/autoload"
 	"github.com/urfave/negroni/v3"
 )
+
+func LoadConfig() (*controllers.Config, error) {
+	cfg := &controllers.Config{
+		DB: controllers.PostgresConfig(os.Getenv("DATABASE_URL")),
+	}
+
+	return cfg, nil
+}
 
 func setCacheControlHeader(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	str := ""
@@ -27,18 +36,16 @@ func setCacheControlHeader(w http.ResponseWriter, r *http.Request, next http.Han
 }
 
 func Init() {
-	// fs := http.FileServer(http.Dir("./dist"))
-	// http.Handle("/", fs)
-
-	if err := godotenv.Load(); err != nil {
-		log.Fatalf("could not load .env file... %v", err)
+	cfg, err := LoadConfig()
+	if err != nil {
+		log.Fatalf("error getting config: %v", err)
 	}
 
 	r := chi.NewRouter()
 
-	routes.Routes(r)
+	routes.Routes(r, cfg)
 	// curl http://localhost:8000
-	// curl http://localhost:8000/books
+	// curl http://localhost:8000/classes
 
 	n := negroni.New()
 	n.Use(negroni.NewLogger())

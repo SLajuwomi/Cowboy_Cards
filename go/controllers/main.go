@@ -4,21 +4,23 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 	"github.com/jackc/pgx/v5"
 )
 
-var (
-	// conn    *pgx.Conn
-	connStr = os.Getenv("DATABASE_URL")
-)
+type Config struct {
+	DB PostgresConfig
+}
 
-func GetClasses(w http.ResponseWriter, r *http.Request) {
+type PostgresConfig string
+
+func (cfg *Config) GetClasses(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 
-	conn, err := pgx.Connect(ctx, connStr)
+	log.Println("env", string(cfg.DB))
+
+	conn, err := pgx.Connect(ctx, string(cfg.DB))
 	if err != nil {
 		log.Fatalf("could not connect to db... %v", err)
 	}
@@ -35,10 +37,10 @@ func GetClasses(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func GetUsers(w http.ResponseWriter, r *http.Request) {
+func (cfg *Config) GetUsers(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 
-	conn, err := pgx.Connect(ctx, connStr)
+	conn, err := pgx.Connect(ctx, string(cfg.DB))
 	if err != nil {
 		log.Fatalf("could not connect to db... %v", err)
 	}
@@ -55,10 +57,10 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func GetUser(w http.ResponseWriter, r *http.Request) {
+func (cfg *Config) GetUser(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 
-	conn, err := pgx.Connect(ctx, connStr)
+	conn, err := pgx.Connect(ctx, string(cfg.DB))
 	if err != nil {
 		log.Fatalf("could not connect to db... %v", err)
 	}
