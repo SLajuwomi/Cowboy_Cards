@@ -36,3 +36,6 @@ cursorState/currentState.md
 .env.production.local
 .env.local
 
+
+# Local Netlify folder
+.netlify
