@@ -11,17 +11,15 @@ import (
 )
 
 type Config struct {
-	DB PostgresConfig
+	DB *pgx.ConnConfig
 }
-
-type PostgresConfig string
 
 func (cfg *Config) GetClasses(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 
-	// log.Println("env", string(cfg.DB))
+	// log.Println("env", cfg.DB)
 
-	conn, err := pgx.Connect(ctx, string(cfg.DB))
+	conn, err := pgx.ConnectConfig(ctx, cfg.DB)
 	if err != nil {
 		log.Fatalf("could not connect to db... %v", err)
 	}

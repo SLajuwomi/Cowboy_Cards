@@ -10,13 +10,21 @@ import (
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/controllers"
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/routes"
 	"github.com/go-chi/chi/v5"
+	"github.com/jackc/pgx/v5"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/urfave/negroni/v3"
 )
 
 func LoadConfig() (*controllers.Config, error) {
+	conn, err := pgx.ParseConfig(os.Getenv("DATABASE_URL"))
+	conn.User = os.Getenv("DBUSER")
+	conn.Host = os.Getenv("DBHOST")
+
+	if err != nil {
+		log.Fatalf("error parsing config: %v", err)
+	}
 	cfg := &controllers.Config{
-		DB: controllers.PostgresConfig(os.Getenv("DATABASE_URL")),
+		DB: conn,
 	}
 
 	return cfg, nil
