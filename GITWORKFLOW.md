@@ -10,11 +10,11 @@ This document outlines the process for contributing code to the Cowboy Cards pro
 
 On GitHub, navigate to the Cowboy Cards repository in the organization [HSU-Senior-Project-2025/Cowboy_Cards](https://github.com/HSU-Senior-Project-2025/Cowboy_Cards).
 
-Click the `Fork` button in the top right corner. This will create a copy of the repository in your GitHub account.
+Click the **Fork** button in the top right corner. This will create a copy of the repository in your GitHub account.
 
 #### 2. Cloning the fork
 
-On your fork, click the green `Code` button, then click the method you use to clone repos. Copy the appropriate URL.
+On your fork, click the green **Code** button, then click the method you use to clone repos. Copy the appropriate URL.
 
 On your local machine, open a terminal (Linux or MacOS) or Git Bash (Windows).
 
@@ -24,11 +24,15 @@ Run `git clone [URL you copied]` to clone your fork to your local.
 
 #### 3. Add the upstream repo as a remote
 
-To be able to sync with the sprint branch on the upstream repo, you need to add it as a remote with `git remote add upstream https://github.com/HSU-Senior-Project-2025/Cowboy_Cards`. This will add the project repo as a remote called `upstream`. Run `git remote -v` and you should see four lines of output, two for your fork (origin) and two for the project (upstream).
+To be able to sync with the sprint branch on the upstream repo, you need to add it as a remote with `git remote add upstream https://github.com/HSU-Senior-Project-2025/Cowboy_Cards`. This will add the project repo as a remote called **upstream**. Run `git remote -v` and you should see four lines of output, two for your fork (origin) and two for the project (upstream).
 
 #### 4. Pull the sprint branch to your local
 
-Now run `git pull upstream [name of sprint branch]`. This will update your fork's master branch with the latest commits to the sprint branch. Run `git branch` and there should be one line of output, `master`.
+Now run `git pull upstream [name of sprint branch]`. This will update your fork's master branch with the latest commits to the sprint branch.
+
+### Do this early and often, and BEFORE you make any commits.
+
+Run `git branch` and there should be one line of output, **master**.
 
 #### 5. Creating your branch
 
@@ -42,7 +46,7 @@ Make your code changes in the newly created branch. When you are ready to commit
 
 #### 7. Stay up-to-date
 
-Before creating a pull request, it is `essential` to integrate the latest changes from the sprint branch of the original repository. This minimizes the risk of merge conflicts. Run `git pull upstream [name of sprint branch]`.
+Before creating a pull request, it is **_essential_** to integrate the latest changes from the sprint branch of the original repository. This minimizes the risk of merge conflicts. If you have **uncommitted** changes, you can commit them with `git commit` or stash them with `git stash` first. Run `git pull upstream [name of sprint branch]`. To retrieve any stashed changes, run `git stash pop`.
 
 Review the updates and reconcile any differences between them and your code. Use your IDE or a text editor to carefully review the conflicting code and choose the correct changes.
 
@@ -54,13 +58,13 @@ On GitHub, navigate to your fork. It will know that you have pushed commits. Cli
 
 On the "Open a pull request" page:
 
-- Ensure the "base repository" is `HSU-Senior-Project-2025/Cowboy_Cards` and change the "base branch" to the current sprint branch.
+- Ensure the "base repository" is **HSU-Senior-Project-2025/Cowboy_Cards** and change the "base branch" to the current sprint branch.
 
 - Ensure the "head repository" is your fork and the "compare branch" is your feature branch.
 
 - Add a clear and descriptive title to your pull request.
 
-- In the description, explain the changes you've made and why. Reference any relevant issues with `#[issue number]`. Teams/teammates can be notified with an `@` followed by the team/member name.
+- In the description, explain the changes you've made and why. Reference any relevant issues with **#[issue number]**. Teams/teammates can be notified with an **@** followed by the team/member name.
 
 - Click "Create pull request".
 
@@ -76,9 +80,11 @@ Team leads will be responsible for merging approved pull requests. Squash mergin
 
 #### 11. Troubleshooting
 
-Merge Conflicts: If you encounter merge conflicts, carefully review the conflicting code and resolve them manually. Commit the resolved changes.
+**Git config**: Check your global git config with `git config --list`. See that you don't have any **pull** options (ff-only, rebase, ff or merge) set; this can make pulling and merging upstream changes difficult.
 
-Push Errors: If you have trouble pushing your branch, ensure you've updated your local branch with the latest changes from the sprint branch as described above.
+**Merge conflicts**: If you encounter merge conflicts, carefully review the conflicting code and resolve them manually. Commit the resolved changes.
+
+**Push errors**: If you have trouble pushing your branch, ensure you've updated your local branch with the latest changes from the sprint branch as described above.
 
 This workflow is designed to streamline our development process and minimize integration issues. Please follow these guidelines carefully. If you have any questions, don't hesitate to ask.
 
