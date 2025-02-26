@@ -10,6 +10,7 @@ import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import ClassDetail from "./pages/ClassDetail";
 import TeacherDashboard from "./pages/TeacherDashboard";
+import PublicCards from "./pages/PublicCards";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -58,6 +59,7 @@ const App = () => (
             <Route exact path="/class/:id" component={ClassDetail} />
             <Route exact path="/teacher" component={TeacherDashboard} />
             <Route exact path="/teacher/class/:id" component={ClassDetail} />
+            <Route exact path="/public-cards" component={PublicCards} />
             <Route component={NotFound} />
           </IonRouterOutlet>
         </IonReactRouter>
