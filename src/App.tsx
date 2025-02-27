@@ -31,7 +31,7 @@ import "@ionic/react/css/display.css";
 /* Theme variables */
 import "./theme/variables.css";
 
-// Proving PRs work -Stephen :)
+
 
 setupIonicReact();
 
@@ -52,7 +52,9 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <IonApp>
+        {/* @ts-ignore */}
         <IonReactRouter>
+          {/* @ts-ignore */}
           <IonRouterOutlet>
             <Route exact path="/" component={Index} />
             <Route exact path="/home" component={Home} />

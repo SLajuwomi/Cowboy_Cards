@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
+import { IonContent } from "@ionic/react";
+
 
 const PublicFlashcards = () => {
   const flashcardSets = [
@@ -11,6 +13,7 @@ const PublicFlashcards = () => {
   ];
 
   return (
+    <IonContent>
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Public Flashcards</h1>
@@ -33,6 +36,7 @@ const PublicFlashcards = () => {
         ))}
       </div>
     </div>
+    </IonContent>
   );
 };
 

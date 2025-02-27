@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { IonContent } from "@ionic/react";
 import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -11,6 +12,7 @@ const Home = () => {
   ];
 
   return (
+    <IonContent>
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">My Classes</h1>
@@ -35,6 +37,7 @@ const Home = () => {
         ))}
       </div>
     </div>
+    </IonContent>
   );
 };
 
