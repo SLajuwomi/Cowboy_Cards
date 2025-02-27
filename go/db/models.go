@@ -9,22 +9,21 @@ import (
 )
 
 type Class struct {
-	ID          int32
+	ID          pgtype.UUID
 	Name        string
 	Description string
-	StudentIds  []int32
 	JoinCode    string
-	TeacherID   int32
+	TeacherID   pgtype.UUID
 	CreatedAt   pgtype.Timestamp
 	UpdatedAt   pgtype.Timestamp
 }
 
-type User struct {
-	ID        int32
-	Username  string
-	FirstName string
-	LastName  string
-	Role      string
-	CreatedAt pgtype.Timestamp
-	UpdatedAt pgtype.Timestamp
+type FlashcardSet struct {
+	ID          pgtype.Numeric
+	Name        string
+	Description string
+	UserID      pgtype.UUID
+	ClassID     pgtype.UUID
+	CreatedAt   pgtype.Timestamp
+	UpdatedAt   pgtype.Timestamp
 }
