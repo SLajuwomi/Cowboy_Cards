@@ -7,10 +7,12 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const getClasses = `-- name: GetClasses :many
-SELECT id, name, description, student_ids, join_code, teacher_id, created_at, updated_at FROM classes
+SELECT id, name, description, join_code, teacher_id, created_at, updated_at FROM classes
 `
 
 func (q *Queries) GetClasses(ctx context.Context) ([]Class, error) {
@@ -26,7 +28,6 @@ func (q *Queries) GetClasses(ctx context.Context) ([]Class, error) {
 			&i.ID,
 			&i.Name,
 			&i.Description,
-			&i.StudentIds,
 			&i.JoinCode,
 			&i.TeacherID,
 			&i.CreatedAt,
@@ -42,44 +43,25 @@ func (q *Queries) GetClasses(ctx context.Context) ([]Class, error) {
 	return items, nil
 }
 
-const getUser = `-- name: GetUser :one
-SELECT id, username, first_name, last_name, role, created_at, updated_at FROM users WHERE id = $1
+const getFlashCardSet = `-- name: GetFlashCardSet :many
+SELECT id, name, description, user_id, class_id, created_at, updated_at FROM flashcard_sets WHERE user_id = $1
 `
 
-func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
-	row := q.db.QueryRow(ctx, getUser, id)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.Username,
-		&i.FirstName,
-		&i.LastName,
-		&i.Role,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
-const getUsers = `-- name: GetUsers :many
-SELECT id, username, first_name, last_name, role, created_at, updated_at FROM users
-`
-
-func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
-	rows, err := q.db.Query(ctx, getUsers)
+func (q *Queries) GetFlashCardSet(ctx context.Context, userID pgtype.UUID) ([]FlashcardSet, error) {
+	rows, err := q.db.Query(ctx, getFlashCardSet, userID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []User
+	var items []FlashcardSet
 	for rows.Next() {
-		var i User
+		var i FlashcardSet
 		if err := rows.Scan(
 			&i.ID,
-			&i.Username,
-			&i.FirstName,
-			&i.LastName,
-			&i.Role,
+			&i.Name,
+			&i.Description,
+			&i.UserID,
+			&i.ClassID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
