@@ -7,10 +7,28 @@ import (
 	"path"
 	"time"
 
+	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/controllers"
+	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/routes"
 	"github.com/go-chi/chi/v5"
-	"github.com/joho/godotenv"
+	"github.com/jackc/pgx/v5"
+	_ "github.com/joho/godotenv/autoload"
 	"github.com/urfave/negroni/v3"
 )
+
+func LoadConfig() (*controllers.Config, error) {
+	conn, err := pgx.ParseConfig(os.Getenv("DATABASE_URL"))
+	conn.User = os.Getenv("DBUSER")
+	conn.Host = os.Getenv("DBHOST")
+
+	if err != nil {
+		log.Fatalf("error parsing config: %v", err)
+	}
+	cfg := &controllers.Config{
+		DB: conn,
+	}
+
+	return cfg, nil
+}
 
 func setCacheControlHeader(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	str := ""
@@ -26,18 +44,16 @@ func setCacheControlHeader(w http.ResponseWriter, r *http.Request, next http.Han
 }
 
 func Init() {
-	// fs := http.FileServer(http.Dir("./dist"))
-	// http.Handle("/", fs)
-
-	if err := godotenv.Load(); err != nil {
-		log.Fatalf("could not load .env file... %v", err)
+	cfg, err := LoadConfig()
+	if err != nil {
+		log.Fatalf("error getting config: %v", err)
 	}
 
 	r := chi.NewRouter()
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("hello world\n"))
-	})
+	routes.Routes(r, cfg)
+	// curl http://localhost:8000
+	// curl http://localhost:8000/classes
 
 	n := negroni.New()
 	n.Use(negroni.NewLogger())

@@ -23,6 +23,12 @@ dist-ssr
 *.sln
 *.sw?
 
+# Cursor state tracking
+.cursorState/*
+.cursorState/currentState.md
+cursorState/
+cursorState/currentState.md
+
 # dotenv environment variable files
 .env
 .env.development.local
@@ -30,7 +36,6 @@ dist-ssr
 .env.production.local
 .env.local
 
-package-lock.json
-package.json
-package.json
-package-lock.json
+
+# Local Netlify folder
+.netlify
