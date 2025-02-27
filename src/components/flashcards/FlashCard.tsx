@@ -6,11 +6,9 @@ import { Check, X } from "lucide-react";
 interface FlashCardProps {
   front: string;
   back: string;
-  onMastered: () => void;
-  onStillLearning: () => void;
 }
 
-export const FlashCard = ({ front, back, onMastered, onStillLearning }: FlashCardProps) => {
+export const FlashCard = ({ front, back }: FlashCardProps) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
   return (
@@ -28,11 +26,11 @@ export const FlashCard = ({ front, back, onMastered, onStillLearning }: FlashCar
       </div>
       
       <div className="flex justify-center gap-4 mt-6">
-        <Button variant="outline" onClick={onStillLearning} className="w-32">
+        <Button variant="outline" className="w-32">
           <X className="mr-2 h-4 w-4" />
           Learning
         </Button>
-        <Button onClick={onMastered} className="w-32">
+        <Button className="w-32">
           <Check className="mr-2 h-4 w-4" />
           Mastered
         </Button>

@@ -25,6 +25,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { IonContent } from "@ionic/react";
 
 /**
  * ClassDetail Component
@@ -44,18 +45,8 @@ const ClassDetail = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [api, setApi] = useState<CarouselApi>();
   const [selectedSet, setSelectedSet] = useState<number | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // State for managing new student form
-  const [newStudentName, setNewStudentName] = useState("");
-  const [newStudentEmail, setNewStudentEmail] = useState("");
-  const [studentNameError, setStudentNameError] = useState("");
-  const [studentEmailError, setStudentEmailError] = useState("");
-
-  // State for managing new flashcard set form
-  const [newSetName, setNewSetName] = useState("");
-  const [newSetDescription, setNewSetDescription] = useState("");
-
-  // TODO: get the class data from the database based on the class ID
   // Mock data - in a real app this would come from an API based on the class ID
   const classData = {
     id: id,
@@ -118,131 +109,8 @@ const ClassDetail = () => {
     ],
   };
 
-  /**
-   * Validates if a string contains both first and last name
-   * @param name - The name string to validate
-   * @returns boolean - True if valid, false otherwise
-   */
-  const validateFullName = (name: string): boolean => {
-    // Check if name contains at least two words with alphabetic characters
-    const nameParts = name.trim().split(/\s+/);
-    return nameParts.length >= 2 && nameParts.every((part) => part.length > 0);
-  };
-
-  /**
-   * Validates if a string is a valid email address
-   * @param email - The email string to validate
-   * @returns boolean - True if valid, false otherwise
-   */
-  const validateEmail = (email: string): boolean => {
-    // Simple email validation regex
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  /**
-   * Handle adding a new student to the class
-   * In a real app, this would make an API call to add the student
-   */
-  const handleAddStudent = () => {
-    // Reset previous error messages
-    setStudentNameError("");
-    setStudentEmailError("");
-
-    let isValid = true;
-
-    // Validate student name (must have first and last name)
-    if (!newStudentName.trim()) {
-      setStudentNameError("Name is required");
-      isValid = false;
-    } else if (!validateFullName(newStudentName)) {
-      setStudentNameError("Please enter both first and last name");
-      isValid = false;
-    }
-
-    // Validate email (must be a valid email format)
-    if (!newStudentEmail.trim()) {
-      setStudentEmailError("Email is required");
-      isValid = false;
-    } else if (!validateEmail(newStudentEmail)) {
-      setStudentEmailError("Please enter a valid email address");
-      isValid = false;
-    }
-
-    // If validation fails, stop here
-    if (!isValid) return;
-
-    console.log("Adding new student:", {
-      name: newStudentName,
-      email: newStudentEmail,
-      classId: id,
-    });
-
-    // Reset form fields after successful submission
-    setNewStudentName("");
-    setNewStudentEmail("");
-
-    // In a real app, we would update the students list after API call
-    // For now, just show a success message
-    alert("Student added successfully!");
-  };
-
-  /**
-   * Handle input change for student name field
-   * Clears error message when user starts typing
-   */
-  const handleStudentNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewStudentName(e.target.value);
-    if (studentNameError) setStudentNameError("");
-  };
-
-  /**
-   * Handle input change for student email field
-   * Clears error message when user starts typing
-   */
-  const handleStudentEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewStudentEmail(e.target.value);
-    if (studentEmailError) setStudentEmailError("");
-  };
-
-  /**
-   * Handle adding a new flashcard set to the class
-   * In a real app, this would make an API call to add the set
-   */
-  const handleAddFlashcardSet = () => {
-    // Validation - ensure set name is provided
-    if (!newSetName.trim()) {
-      alert("Please provide a name for the new flashcard set");
-      return;
-    }
-
-    console.log("Adding new flashcard set:", {
-      name: newSetName,
-      description: newSetDescription,
-      classId: id,
-    });
-
-    // Reset form fields after submission
-    setNewSetName("");
-    setNewSetDescription("");
-
-    // TODO: add the new flashcard set to the database and update the flashcardSets list after API call
-    // In a real app, we would update the flashcard sets list after API call
-    // For now, just show a success message
-    alert("Flashcard set added successfully!");
-  };
-
-  // Handle marking a card as mastered
-  const handleMastered = () => {
-    console.log("Card marked as mastered");
-  };
-
-  // Handle marking a card as still learning
-  const handleStillLearning = () => {
-    console.log("Card marked as still learning");
-  };
-
   // Update current card index when the carousel changes
+  // TODO: get the current card index from the backend
   useEffect(() => {
     if (!api) {
       return;
@@ -254,15 +122,14 @@ const ClassDetail = () => {
   }, [api]);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Header section with class name and teacher */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">{classData.name}</h1>
+    <IonContent>
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2">{classData.name}</h1>
         <p className="text-gray-600">Teacher: {classData.teacher}</p>
         <p className="text-gray-600">Class ID: {id}</p>
       </div>
 
-      {/* Back button */}
       <Button
         onClick={() => window.history.back()}
         variant="outline"
@@ -271,9 +138,8 @@ const ClassDetail = () => {
         ← Back
       </Button>
 
-      {/* Management buttons for adding students and flashcard sets */}
       <div className="flex gap-4 mb-6">
-        <Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <UserPlus className="mr-2 h-4 w-4" />
@@ -295,16 +161,8 @@ const ClassDetail = () => {
                 <div className="col-span-3">
                   <Input
                     id="name"
-                    value={newStudentName}
-                    onChange={handleStudentNameChange}
-                    className={`${studentNameError ? "border-red-500" : ""}`}
                     placeholder="John Doe"
                   />
-                  {studentNameError && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {studentNameError}
-                    </p>
-                  )}
                 </div>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
@@ -314,26 +172,18 @@ const ClassDetail = () => {
                 <div className="col-span-3">
                   <Input
                     id="email"
-                    value={newStudentEmail}
-                    onChange={handleStudentEmailChange}
-                    className={`${studentEmailError ? "border-red-500" : ""}`}
                     placeholder="john.doe@example.com"
                   />
-                  {studentEmailError && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {studentEmailError}
-                    </p>
-                  )}
                 </div>
               </div>
             </div>
             <DialogFooter>
-              <Button onClick={handleAddStudent}>Add Student</Button>
+              <Button onClick={() => { console.log("backend call"); alert("backend call"); setIsDialogOpen(false); }}>Add Student</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
 
-        <Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="mr-2 h-4 w-4" />
@@ -354,8 +204,6 @@ const ClassDetail = () => {
                 </Label>
                 <Input
                   id="setName"
-                  value={newSetName}
-                  onChange={(e) => setNewSetName(e.target.value)}
                   className="col-span-3"
                   placeholder="Cell Biology"
                 />
@@ -366,21 +214,18 @@ const ClassDetail = () => {
                 </Label>
                 <Textarea
                   id="description"
-                  value={newSetDescription}
-                  onChange={(e) => setNewSetDescription(e.target.value)}
                   className="col-span-3"
                   placeholder="Basic concepts of cell biology"
                 />
               </div>
             </div>
             <DialogFooter>
-              <Button onClick={handleAddFlashcardSet}>Create Set</Button>
+              <Button onClick={() => { console.log("backend call"); alert("backend call"); setIsDialogOpen(false); }}>Create Set</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
 
-      {/* Main content tabs */}
       <Tabs defaultValue="leaderboard" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="leaderboard">
@@ -397,7 +242,6 @@ const ClassDetail = () => {
           </TabsTrigger>
         </TabsList>
 
-        {/* Leaderboard tab content */}
         <TabsContent value="leaderboard" className="mt-6">
           <Card className="p-6">
             <h2 className="text-xl font-semibold mb-4">Class Leaderboard</h2>
@@ -420,7 +264,6 @@ const ClassDetail = () => {
           </Card>
         </TabsContent>
 
-        {/* Flashcards tab content */}
         <TabsContent value="flashcards" className="mt-6">
           {selectedSet === null ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -463,8 +306,6 @@ const ClassDetail = () => {
                           <FlashCard
                             front={card.front}
                             back={card.back}
-                            onMastered={handleMastered}
-                            onStillLearning={handleStillLearning}
                           />
                         </CarouselItem>
                       ))}
@@ -492,7 +333,6 @@ const ClassDetail = () => {
           )}
         </TabsContent>
 
-        {/* Students tab content - always shown */}
         <TabsContent value="students" className="mt-6">
           <Card className="p-6">
             <h2 className="text-xl font-semibold mb-4">Class Students</h2>
@@ -511,6 +351,7 @@ const ClassDetail = () => {
         </TabsContent>
       </Tabs>
     </div>
+    </IonContent>
   );
 };
 

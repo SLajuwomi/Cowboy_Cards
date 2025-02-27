@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { IonContent } from "@ionic/react";
 import { Plus, BookOpen, List } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,6 +22,7 @@ const Home = () => {
   ];
 
   return (
+    <IonContent>
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-8">
         <h1 className="text-3xl font-bold">
@@ -80,6 +82,7 @@ const Home = () => {
       )}
 
     </div>
+    </IonContent>
   );
 };
 
