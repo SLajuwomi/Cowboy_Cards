@@ -45,11 +45,28 @@ func (cfg *Config) GetClasses(w http.ResponseWriter, r *http.Request) {
 }
 
 func (cfg *Config) GetUsersFlashCardSets(w http.ResponseWriter, r *http.Request) {
-	ctx := context.Background()
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
-	if err != nil {
-		log.Fatalf("could not parse query param as int... %v", err)
+	// curl -X GET localhost:8000/flashcard_sets -H "user_id: 11"
+
+	userIDStr := r.Header.Get("user_id")
+	if userIDStr == "" {
+		http.Error(w, "missing 'user_id' header", http.StatusBadRequest)
+		return
 	}
+
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		log.Println("error:", err)
+		http.Error(w, "Invalid 'user_id' header", http.StatusBadRequest)
+		return
+	}
+
+	id := int32(userID)
+	if id == 0 {
+		http.Error(w, "Invalid 'user_id' header", http.StatusBadRequest)
+		return
+	}
+
+	ctx := context.Background()
 
 	conn, err := pgx.ConnectConfig(ctx, cfg.DB)
 	if err != nil {
@@ -130,4 +147,54 @@ func (cfg *Config) GetUser(w http.ResponseWriter, r *http.Request) {
 
 	w.Write(append(b, 10)) //add newline
 
+}
+
+func (cfg *Config) CreateFlashCard(w http.ResponseWriter, r *http.Request) {
+	// curl -X POST localhost:8000/flashcard -H "front: front test" -H "back: back test" -H "set_id: 1" -H "user_id: 123"
+
+	front := r.Header.Get("front")
+	back := r.Header.Get("back")
+	setIDStr := r.Header.Get("set_id")
+	userIDStr := r.Header.Get("user_id")
+	if front == "" || back == "" || setIDStr == "" || userIDStr == "" {
+		http.Error(w, "missing required headers", http.StatusBadRequest)
+		return
+	}
+
+	setID, err := strconv.Atoi(setIDStr)
+	if err != nil {
+		http.Error(w, "Invalid 'set_id' header", http.StatusBadRequest)
+		return
+	}
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		http.Error(w, "Invalid 'user_id' header", http.StatusBadRequest)
+		return
+	}
+
+	setIDInt := int32(setID)
+	userIDInt := int32(userID)
+
+	ctx := context.Background()
+
+	conn, err := pgx.ConnectConfig(ctx, cfg.DB)
+	if err != nil {
+		log.Fatalf("could not connect to db... %v", err)
+	}
+	defer conn.Close(ctx)
+
+	query := db.New(conn)
+
+	error := query.CreateFlashCard(ctx, db.CreateFlashCardParams{
+		Front:  front,
+		Back:   back,
+		SetID:  setIDInt,
+		UserID: userIDInt,
+	})
+	if error != nil {
+		log.Printf("error creating flashcard in db: %v", err)
+		http.Error(w, "Failed to create flashcard", http.StatusInternalServerError)
+		return
+	}
+	log.Println("Flashcard created successfully")
 }
