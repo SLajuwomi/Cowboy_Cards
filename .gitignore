@@ -27,5 +27,9 @@ node_modules
 .env.production.local
 .env.local
 
+
+# Local Netlify folder
+.netlify
+
 #Cursor settings
 .cursor/rules/
