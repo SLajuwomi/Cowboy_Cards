@@ -12,6 +12,8 @@ CREATE TABLE classes (
 CREATE TABLE users (
     id          SERIAL                          PRIMARY KEY,
     username    TEXT                            NOT NULL,
+    email       TEXT                            NOT NULL UNIQUE,
+    password    TEXT                            NOT NULL,
     first_name  TEXT                            NOT NULL,
     last_name   TEXT                            NOT NULL,
     role        TEXT                            NOT NULL DEFAULT 'regular'::TEXT,

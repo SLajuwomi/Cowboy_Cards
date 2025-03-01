@@ -10,22 +10,24 @@ import (
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Config struct {
-	DB *pgx.ConnConfig
+	DB *pgxpool.Pool
 }
 
+/* GetClasses retrieves all classes from the database and returns them as a JSON response */
 func (cfg *Config) GetClasses(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 
 	// log.Println("env", cfg.DB)
 
-	conn, err := pgx.ConnectConfig(ctx, cfg.DB)
+	conn, err := cfg.DB.Acquire(ctx)
 	if err != nil {
 		log.Fatalf("could not connect to db... %v", err)
 	}
-	defer conn.Close(ctx)
+	defer conn.Release()
 
 	query := db.New(conn)
 
@@ -41,9 +43,11 @@ func (cfg *Config) GetClasses(w http.ResponseWriter, r *http.Request) {
 		log.Println("error:", err)
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.Write(append(b, 10)) //add newline
 }
 
+/* GetUsersFlashCardSets retrieves all flash card sets for a user from the database and returns them as a JSON response*/
 func (cfg *Config) GetUsersFlashCardSets(w http.ResponseWriter, r *http.Request) {
 	// curl -X GET localhost:8000/flashcard_sets -H "user_id: 11"
 
@@ -68,11 +72,11 @@ func (cfg *Config) GetUsersFlashCardSets(w http.ResponseWriter, r *http.Request)
 
 	ctx := context.Background()
 
-	conn, err := pgx.ConnectConfig(ctx, cfg.DB)
+	conn, err := cfg.DB.Acquire(ctx)
 	if err != nil {
 		log.Fatalf("could not connect to db... %v", err)
 	}
-	defer conn.Close(ctx)
+	defer conn.Release()
 
 	query := db.New(conn)
 
@@ -88,17 +92,19 @@ func (cfg *Config) GetUsersFlashCardSets(w http.ResponseWriter, r *http.Request)
 		log.Println("error:", err)
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.Write(append(b, 10)) //add newline
 }
 
+/* GetUsers retrieves all users from the database and returns them as a JSON response */
 func (cfg *Config) GetUsers(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 
-	conn, err := pgx.ConnectConfig(ctx, cfg.DB)
+	conn, err := cfg.DB.Acquire(ctx)
 	if err != nil {
 		log.Fatalf("could not connect to db... %v", err)
 	}
-	defer conn.Close(ctx)
+	defer conn.Release()
 
 	query := db.New(conn)
 
@@ -114,41 +120,51 @@ func (cfg *Config) GetUsers(w http.ResponseWriter, r *http.Request) {
 		log.Println("error:", err)
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.Write(append(b, 10)) //add newline
 
 }
 
+/* GetUser retrieves a single user from the database by ID and returns it as a JSON response */
 func (cfg *Config) GetUser(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		log.Fatalf("could not parse query param as int... %v", err)
+		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+		log.Printf("Invalid user ID: %v", err)
+		return
 	}
 
-	conn, err := pgx.ConnectConfig(ctx, cfg.DB)
+	conn, err := cfg.DB.Acquire(ctx)
 	if err != nil {
-		log.Fatalf("could not connect to db... %v", err)
+		http.Error(w, "Database connection error", http.StatusInternalServerError)
+		log.Printf("Database connection error: %v", err)
+		return
 	}
-	defer conn.Close(ctx)
+	defer conn.Release()
 
 	query := db.New(conn)
 
 	user, err := query.GetUser(ctx, int32(id))
 	if err != nil {
-		log.Fatalf("error getting user from db... %v", err)
+		if err == pgx.ErrNoRows {
+			http.Error(w, "User not found", http.StatusNotFound)
+			return
+		}
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		log.Printf("Database query error: %v", err)
+		return
 	}
-	log.Println("data: ", user)
-	log.Println()
 
-	b, err := json.Marshal(user)
-	if err != nil {
-		log.Println("error:", err)
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(user); err != nil {
+		http.Error(w, "Error encoding response", http.StatusInternalServerError)
+		log.Printf("JSON encoding error: %v", err)
+		return
 	}
-
-	w.Write(append(b, 10)) //add newline
-
 }
 
+/* CreateFlashCard creates a new flash card in the database */
 func (cfg *Config) CreateFlashCard(w http.ResponseWriter, r *http.Request) {
 	// curl -X POST localhost:8000/flashcard -H "front: front test" -H "back: back test" -H "set_id: 1" -H "user_id: 123"
 
@@ -177,11 +193,11 @@ func (cfg *Config) CreateFlashCard(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
 
-	conn, err := pgx.ConnectConfig(ctx, cfg.DB)
+	conn, err := cfg.DB.Acquire(ctx)
 	if err != nil {
 		log.Fatalf("could not connect to db... %v", err)
 	}
-	defer conn.Close(ctx)
+	defer conn.Release()
 
 	query := db.New(conn)
 
@@ -197,4 +213,5 @@ func (cfg *Config) CreateFlashCard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Println("Flashcard created successfully")
+	w.Header().Set("Content-Type", "application/json")
 }
