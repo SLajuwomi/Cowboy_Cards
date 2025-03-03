@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -9,8 +8,8 @@ import (
 	"time"
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/controllers"
-	// "github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/routes"
-	// "github.com/go-chi/chi/v5"
+	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/routes"
+	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/urfave/negroni/v3"
@@ -45,38 +44,21 @@ func setCacheControlHeader(w http.ResponseWriter, r *http.Request, next http.Han
 }
 
 func Init() {
-	// cfg, err := LoadConfig()
-	// if err != nil {
-	// 	log.Fatalf("error getting config: %v", err)
-	// }
+	cfg, err := LoadConfig()
+	if err != nil {
+		log.Fatalf("error getting config: %v", err)
+	}
 
 	n := negroni.New()
-	// n.Use(negroni.NewLogger())
-	// n.Use(negroni.NewRecovery())
-	// n.Use(negroni.HandlerFunc(setCacheControlHeader))
+	n.Use(negroni.NewLogger())
+	n.Use(negroni.NewRecovery())
+	n.Use(negroni.HandlerFunc(setCacheControlHeader))
 	n.Use(negroni.NewStatic(http.Dir("./dist")))
 
-	dir := http.Dir("./dist")
-	f, err := dir.Open(".")
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
+	r := chi.NewRouter()
+	routes.Routes(r, cfg)
 
-	files, err := f.Readdir(-1)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println("Files in ./dist:")
-	for _, fi := range files {
-		fmt.Printf("- %s (%dB)\n", fi.Name(), fi.Size())
-	}
-
-	// r := chi.NewRouter()
-	// routes.Routes(r, cfg)
-
-	// n.UseHandler(r)
+	n.UseHandler(r)
 
 	port, ok := os.LookupEnv("PORT")
 	if !ok {

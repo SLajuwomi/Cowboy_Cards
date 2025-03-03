@@ -15,7 +15,7 @@ func Routes(r *chi.Mux, cfg *controllers.Config) {
 	r.Get("/flashcard", cfg.GetFlashCard)
 	r.Put("/flashcard", cfg.UpdateFlashCard)
 	r.Delete("/flashcard", cfg.DeleteFlashCard)
-	// r.Get("/users", cfg.GetUsers)
-	// r.Get("/user", cfg.GetUser)
+	r.Get("/users", cfg.GetUsers)
+	r.Get("/user", cfg.GetUser)
 
 }
