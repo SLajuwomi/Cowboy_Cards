@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -54,6 +55,23 @@ func Init() {
 	// n.Use(negroni.NewRecovery())
 	// n.Use(negroni.HandlerFunc(setCacheControlHeader))
 	n.Use(negroni.NewStatic(http.Dir("./dist")))
+
+	dir := http.Dir("./dist")
+	f, err := dir.Open(".")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	files, err := f.Readdir(-1)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Files in ./dist:")
+	for _, fi := range files {
+		fmt.Printf("- %s (%dB)\n", fi.Name(), fi.Size())
+	}
 
 	// r := chi.NewRouter()
 	// routes.Routes(r, cfg)
