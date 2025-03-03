@@ -49,18 +49,15 @@ func Init() {
 		log.Fatalf("error getting config: %v", err)
 	}
 
-	r := chi.NewRouter()
-	routes.Routes(r, cfg)
-
 	n := negroni.New()
-	n.Use(negroni.NewStatic(http.Dir("./dist")))
-	n.Use(negroni.HandlerFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-		log.Printf("Request path: %s", r.URL.Path)
-		next(w, r)
-	}))
 	n.Use(negroni.NewLogger())
 	n.Use(negroni.NewRecovery())
 	n.Use(negroni.HandlerFunc(setCacheControlHeader))
+	n.Use(negroni.NewStatic(http.Dir("./dist")))
+
+	r := chi.NewRouter()
+	routes.Routes(r, cfg)
+
 	n.UseHandler(r)
 
 	port, ok := os.LookupEnv("PORT")
