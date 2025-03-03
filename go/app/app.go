@@ -69,8 +69,9 @@ func Init() {
 	log.Println("server running on port " + port)
 
 	srv := &http.Server{
-		Handler:      n,
-		Addr:         "127.0.0.1:" + port,
+		Handler: n,
+		// Addr:         "127.0.0.1:" + port,
+		Addr:         ":" + port,
 		WriteTimeout: 10 * time.Second,
 		ReadTimeout:  10 * time.Second,
 	}
