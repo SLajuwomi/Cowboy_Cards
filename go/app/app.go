@@ -54,6 +54,10 @@ func Init() {
 
 	n := negroni.New()
 	n.Use(negroni.NewStatic(http.Dir("./dist")))
+	n.Use(negroni.HandlerFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+		log.Printf("Request path: %s", r.URL.Path)
+		next(w, r)
+	}))
 	n.Use(negroni.NewLogger())
 	n.Use(negroni.NewRecovery())
 	n.Use(negroni.HandlerFunc(setCacheControlHeader))
