@@ -50,17 +50,14 @@ func Init() {
 	}
 
 	r := chi.NewRouter()
-
-	// curl http://localhost:8000
-	// curl http://localhost:8000/classes
+	routes.Routes(r, cfg)
 
 	n := negroni.New()
+	n.Use(negroni.NewStatic(http.Dir("./dist")))
 	n.Use(negroni.NewLogger())
 	n.Use(negroni.NewRecovery())
 	n.Use(negroni.HandlerFunc(setCacheControlHeader))
-	n.Use(negroni.NewStatic(http.Dir("./dist")))
 	n.UseHandler(r)
-	routes.Routes(r, cfg)
 
 	port, ok := os.LookupEnv("PORT")
 	if !ok {
