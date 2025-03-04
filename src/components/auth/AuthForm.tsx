@@ -14,6 +14,7 @@ import { useIonRouter } from '@ionic/react';
 import { Apple, LogIn } from 'lucide-react';
 import { useState } from 'react';
 
+
 export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
@@ -21,15 +22,28 @@ export const AuthForm = () => {
   const ionRouter = useIonRouter();
   const { toast } = useToast();
 
+  const generateToken = () => {
+    return Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // In a real app, you would validate credentials here
-    console.log('Auth submitted:', { email, password, isLogin });
-
+    console.log("Auth submitted:", { email, password, isLogin });
+  
+    // Generate a token (for demonstration purposes, using a simple string)
+    const token = generateToken();
+  //make a session time so the token expires
+    // Store the token in localStorage
+    localStorage.setItem("authToken", token);
+  
     // Show success message
     toast({
-      title: isLogin ? 'Welcome back!' : 'Account created',
-      description: 'You have been successfully logged in.',
+      title: isLogin ? "Welcome back!" : "Account created",
+      description: `You have been successfully logged in.`,
+      //print out the token in the toast message
+    
+
     });
 
     // Navigate to the home page using Ionic's router
