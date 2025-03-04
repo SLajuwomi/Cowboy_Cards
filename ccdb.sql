@@ -4,20 +4,23 @@ CREATE SCHEMA public;
 SET SEARCH_PATH TO public;
 
 CREATE TABLE users (
-        id SERIAL,
-        username TEXT NOT NULL,
-        first_name TEXT NOT NULL,
-        last_name TEXT NOT NULL,
-        created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_DATE,
-        updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_DATE,
+	id SERIAL,
+	username TEXT NOT NULL,
+	first_name TEXT NOT NULL,
+	last_name TEXT NOT NULL,
+	email TEXT NOT NULL,
+	password TEXT NOT NULL,
+	created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_DATE,
+	updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_DATE,
+	CHECK (LENGTH(password) >= 8),
 	PRIMARY KEY (id)
 ) TABLESPACE pg_default;
 
-INSERT INTO users VALUES (DEFAULT, 'abebell',  'Abe', 'Bell',    DEFAULT,DEFAULT);
-INSERT INTO users VALUES (DEFAULT, 'caldwyer', 'Cal', 'Dwyer',   DEFAULT,DEFAULT);
-INSERT INTO users VALUES (DEFAULT, 'edfritz',  'Ed',  'Fritz',   DEFAULT,DEFAULT);
-INSERT INTO users VALUES (DEFAULT, 'guyhyde',  'Guy', 'Hyde',    DEFAULT,DEFAULT);
-INSERT INTO users VALUES (DEFAULT, 'ikeknight','Ike', 'Knight',	 DEFAULT,DEFAULT);
+INSERT INTO users VALUES (DEFAULT, 'abebell',  'Abe', 'Bell', 'abell@mail', 'lleba123', DEFAULT,DEFAULT);
+INSERT INTO users VALUES (DEFAULT, 'caldwyer', 'Cal', 'Dwyer', 'cdwyer@mail', 'reywdc12', DEFAULT,DEFAULT);
+INSERT INTO users VALUES (DEFAULT, 'edfritz',  'Ed',  'Fritz', 'efritz@mail', 'ztirfe12', DEFAULT,DEFAULT);
+INSERT INTO users VALUES (DEFAULT, 'guyhyde',  'Guy', 'Hyde', 'ghyde@mail', 'edyhg123', DEFAULT,DEFAULT);
+INSERT INTO users VALUES (12, 'ikeknight','Ike', 'Knight',	'iknight@mail', 'thginki1', DEFAULT,DEFAULT);
 
 
 CREATE TABLE flashcard_sets (
@@ -31,7 +34,7 @@ CREATE TABLE flashcard_sets (
 
 
 INSERT INTO flashcard_sets VALUES (DEFAULT, 'arithmetic', 'simple addition', DEFAULT,DEFAULT);
-INSERT INTO flashcard_sets VALUES (DEFAULT, 'arithmetic', 'simple subtraction',,DEFAULT,DEFAULT);
+INSERT INTO flashcard_sets VALUES (DEFAULT, 'arithmetic', 'simple subtraction' ,DEFAULT,DEFAULT);
 INSERT INTO flashcard_sets VALUES (DEFAULT, 'arithmetic', 'simple multiplication',DEFAULT,DEFAULT);
 INSERT INTO flashcard_sets VALUES (DEFAULT, 'arithmetic', 'simple division', DEFAULT,DEFAULT);
 INSERT INTO flashcard_sets VALUES (DEFAULT, 'calculus', 'simple derivatives', DEFAULT,DEFAULT);
@@ -64,7 +67,7 @@ CREATE TABLE classes (
 	created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_DATE,
 	updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_DATE,
 	PRIMARY KEY (id),
-	FOREIGN KEY (teacher_id) REFERENCES users(id)
+	FOREIGN KEY (teacher_id) REFERENCES users(id),
 	UNIQUE (join_code)
 ) TABLESPACE pg_default;
 
@@ -91,15 +94,15 @@ CREATE TABLE class_user (
 	user_id INTEGER NOT NULL,
 	class_id INTEGER NOT NULL, 
 	role TEXT NOT NULL,
-	PRIMARY KEY(user_id, class_id)
+	PRIMARY KEY(user_id, class_id),
 	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE ON UPDATE CASCADE
-)
+) TABLESPACE pg_default;
 
 CREATE TABLE class_set (
-  class_id INTEGER,
-  set_id INTEGER,
-  PRIMARY KEY(class_id, set_id),
-  FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (set_id) REFERENCES flashcard_sets(id) ON DELETE CASCADE ON UPDATE CASCADE
-);
+	class_id INTEGER,
+	set_id INTEGER,
+	PRIMARY KEY(class_id, set_id),
+	FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (set_id) REFERENCES flashcard_sets(id) ON DELETE CASCADE ON UPDATE CASCADE
+) TABLESPACE pg_default;
