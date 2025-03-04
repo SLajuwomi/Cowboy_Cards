@@ -10,6 +10,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"golang.org/x/crypto/bcrypt"
+	"github.com/KingSharif1/Cowboy_Cards/go/db"
 
 	jwt "github.com/golang-jwt/jwt/v5"
 )
@@ -79,6 +80,12 @@ type Claims struct {
 // JWT secret key - should be stored in environment variables in production
 var jwtKey = []byte("your_secret_key")
 
+// Config struct to hold dependencies
+type Config struct {
+	DB     *pgxpool.Pool
+	Querier *db.Queries
+}
+
 // Signup handles user registration
 func (cfg *Config) Signup(w http.ResponseWriter, r *http.Request) {
 	// Parse request body
@@ -118,14 +125,14 @@ func (cfg *Config) Signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if email already exists
-	existingUserByEmail, err := getUserByEmail(r.Context(), cfg.DB, req.Email)
+	existingUserByEmail, err := getUserByEmail(r.Context(), cfg.DB, cfg.Querier, req.Email)
 	if err == nil && existingUserByEmail != nil && existingUserByEmail.ID > 0 {
 		sendErrorResponse(w, "Email already registered", "duplicate_email", http.StatusConflict)
 		return
 	}
 
 	// Check if username already exists
-	existingUserByUsername, err := getUserByUsername(r.Context(), cfg.DB, req.Username)
+	existingUserByUsername, err := getUserByUsername(r.Context(), cfg.DB, cfg.Querier, req.Username)
 	if err == nil && existingUserByUsername != nil && existingUserByUsername.ID > 0 {
 		sendErrorResponse(w, "Username already taken", "duplicate_username", http.StatusConflict)
 		return
@@ -151,7 +158,7 @@ func (cfg *Config) Signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save user to database
-	newUser, err := createUser(r.Context(), cfg.DB, user)
+	newUser, err := createUser(r.Context(), cfg.DB, cfg.Querier, user)
 	if err != nil {
 		sendErrorResponse(w, "Error creating user", "server_error", http.StatusInternalServerError)
 		return
@@ -190,7 +197,7 @@ func (cfg *Config) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get user by email
-	user, err := getUserByEmail(r.Context(), cfg.DB, req.Email)
+	user, err := getUserByEmail(r.Context(), cfg.DB, cfg.Querier, req.Email)
 	if err != nil || user == nil || user.ID == 0 {
 		sendErrorResponse(w, "Invalid email or password", "invalid_credentials", http.StatusUnauthorized)
 		return
@@ -245,23 +252,75 @@ func isValidRole(role string) bool {
 	return validRoles[role]
 }
 
-// Helper function to get user by username
-func getUserByUsername(ctx context.Context, conn *pgxpool.Pool, username string) (*User, error) {
-	// Query database for user with the given username
-	var user User
-	query := `SELECT id, username, email, password, first_name, last_name, role, created_at, updated_at FROM users WHERE username = $1 LIMIT 1`
-	
-	row := conn.QueryRow(ctx, query, username)
-	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.FirstName, &user.LastName, &user.Role, &user.CreatedAt, &user.UpdatedAt)
-	
+// Helper function to get user by email
+func getUserByEmail(ctx context.Context, conn *pgxpool.Pool, querier *db.Queries, email string) (*User, error) {
+	dbUser, err := querier.GetUserByEmail(ctx, email)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil // No user found
-		}
 		return nil, err
 	}
-	
-	return &user, nil
+
+	return &User{
+		ID:        dbUser.ID,
+		Username:  dbUser.Username,
+		Email:     dbUser.Email,
+		Password:  dbUser.Password,
+		FirstName: dbUser.FirstName,
+		LastName:  dbUser.LastName,
+		Role:      dbUser.Role,
+		CreatedAt: dbUser.CreatedAt.Time,
+		UpdatedAt: dbUser.UpdatedAt.Time,
+	}, nil
+}
+
+// Helper function to get user by username
+func getUserByUsername(ctx context.Context, conn *pgxpool.Pool, querier *db.Queries, username string) (*User, error) {
+	dbUser, err := querier.GetUserByUsername(ctx, username)
+	if err != nil {
+		return nil, err
+	}
+
+	return &User{
+		ID:        dbUser.ID,
+		Username:  dbUser.Username,
+		Email:     dbUser.Email,
+		Password:  dbUser.Password,
+		FirstName: dbUser.FirstName,
+		LastName:  dbUser.LastName,
+		Role:      dbUser.Role,
+		CreatedAt: dbUser.CreatedAt.Time,
+		UpdatedAt: dbUser.UpdatedAt.Time,
+	}, nil
+}
+
+// Helper function to create user
+func createUser(ctx context.Context, conn *pgxpool.Pool, querier *db.Queries, user User) (*User, error) {
+	params := db.CreateUserParams{
+		Username:  user.Username,
+		Email:     user.Email,
+		Password:  user.Password,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Role:      user.Role,
+		CreatedAt: pgtype.Timestamp{Time: user.CreatedAt, Valid: true},
+		UpdatedAt: pgtype.Timestamp{Time: user.UpdatedAt, Valid: true},
+	}
+
+	dbUser, err := querier.CreateUser(ctx, params)
+	if err != nil {
+		return nil, err
+	}
+
+	return &User{
+		ID:        dbUser.ID,
+		Username:  dbUser.Username,
+		Email:     dbUser.Email,
+		Password:  dbUser.Password,
+		FirstName: dbUser.FirstName,
+		LastName:  dbUser.LastName,
+		Role:      dbUser.Role,
+		CreatedAt: dbUser.CreatedAt.Time,
+		UpdatedAt: dbUser.UpdatedAt.Time,
+	}, nil
 }
 
 // Helper function to hash password
@@ -299,66 +358,4 @@ func generateToken(userID int32, email string, role string) (string, error) {
 	}
 
 	return tokenString, nil
-}
-
-// CreateUser creates a new user in the database
-func createUser(ctx context.Context, conn *pgxpool.Pool, user User) (*User, error) {
-	query := `
-		INSERT INTO users (username, email, password, first_name, last_name, role)
-		VALUES ($1, $2, $3, $4, $5, $6)
-		RETURNING id, username, email, password, first_name, last_name, role, created_at, updated_at
-	`
-	
-	var createdUser User
-	err := conn.QueryRow(ctx, query, 
-		user.Username, 
-		user.Email, 
-		user.Password, 
-		user.FirstName, 
-		user.LastName, 
-		user.Role).Scan(
-		&createdUser.ID,
-		&createdUser.Username,
-		&createdUser.Email,
-		&createdUser.Password,
-		&createdUser.FirstName,
-		&createdUser.LastName,
-		&createdUser.Role,
-		&createdUser.CreatedAt,
-		&createdUser.UpdatedAt,
-	)
-	
-	if err != nil {
-		return nil, fmt.Errorf("error creating user: %w", err)
-	}
-	
-	return &createdUser, nil
-}
-
-// GetUserByEmail retrieves a user by email
-func getUserByEmail(ctx context.Context, conn *pgxpool.Pool, email string) (*User, error) {
-	query := `
-		SELECT id, username, email, password, first_name, last_name, role, created_at, updated_at 
-		FROM users 
-		WHERE email = $1
-	`
-	
-	var user User
-	err := conn.QueryRow(ctx, query, email).Scan(
-		&user.ID,
-		&user.Username,
-		&user.Email,
-		&user.Password,
-		&user.FirstName,
-		&user.LastName,
-		&user.Role,
-		&user.CreatedAt,
-		&user.UpdatedAt,
-	)
-	
-	if err != nil {
-		return nil, fmt.Errorf("error getting user by email: %w", err)
-	}
-	
-	return &user, nil
 }
