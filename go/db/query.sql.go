@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createFlashCard = `-- name: CreateFlashCard :exec
@@ -28,6 +30,55 @@ func (q *Queries) CreateFlashCard(ctx context.Context, arg CreateFlashCardParams
 		arg.UserID,
 	)
 	return err
+}
+
+const createUser = `-- name: CreateUser :one
+INSERT INTO users (username, email, password, first_name, last_name, role)
+VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING id, username, email, first_name, last_name, role, created_at, updated_at
+`
+
+type CreateUserParams struct {
+	Username  string
+	Email     string
+	Password  string
+	FirstName string
+	LastName  string
+	Role      string
+}
+
+type CreateUserRow struct {
+	ID        int32
+	Username  string
+	Email     string
+	FirstName string
+	LastName  string
+	Role      string
+	CreatedAt pgtype.Timestamp
+	UpdatedAt pgtype.Timestamp
+}
+
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error) {
+	row := q.db.QueryRow(ctx, createUser,
+		arg.Username,
+		arg.Email,
+		arg.Password,
+		arg.FirstName,
+		arg.LastName,
+		arg.Role,
+	)
+	var i CreateUserRow
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.FirstName,
+		&i.LastName,
+		&i.Role,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const deleteFlashCard = `-- name: DeleteFlashCard :exec
@@ -92,7 +143,7 @@ func (q *Queries) GetFlashCard(ctx context.Context, id int32) (Flashcard, error)
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, username, first_name, last_name, role, created_at, updated_at FROM users WHERE id = $1
+SELECT id, username, email, password, first_name, last_name, role, created_at, updated_at FROM users WHERE id = $1
 `
 
 func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
@@ -101,6 +152,50 @@ func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
+		&i.Email,
+		&i.Password,
+		&i.FirstName,
+		&i.LastName,
+		&i.Role,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT id, username, email, password, first_name, last_name, role, created_at, updated_at FROM users WHERE email = $1 LIMIT 1
+`
+
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByEmail, email)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.Password,
+		&i.FirstName,
+		&i.LastName,
+		&i.Role,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getUserByUsername = `-- name: GetUserByUsername :one
+SELECT id, username, email, password, first_name, last_name, role, created_at, updated_at FROM users WHERE username = $1 LIMIT 1
+`
+
+func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByUsername, username)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.Password,
 		&i.FirstName,
 		&i.LastName,
 		&i.Role,
@@ -111,7 +206,7 @@ func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
 }
 
 const getUsers = `-- name: GetUsers :many
-SELECT id, username, first_name, last_name, role, created_at, updated_at FROM users
+SELECT id, username, email, password, first_name, last_name, role, created_at, updated_at FROM users
 `
 
 func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
@@ -126,6 +221,8 @@ func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.Username,
+			&i.Email,
+			&i.Password,
 			&i.FirstName,
 			&i.LastName,
 			&i.Role,
@@ -186,5 +283,19 @@ type UpdateFlashCardParams struct {
 
 func (q *Queries) UpdateFlashCard(ctx context.Context, arg UpdateFlashCardParams) error {
 	_, err := q.db.Exec(ctx, updateFlashCard, arg.Front, arg.Back, arg.ID)
+	return err
+}
+
+const updateUserPassword = `-- name: UpdateUserPassword :exec
+UPDATE users SET password = $1, updated_at = NOW() WHERE id = $2
+`
+
+type UpdateUserPasswordParams struct {
+	Password string
+	ID       int32
+}
+
+func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) error {
+	_, err := q.db.Exec(ctx, updateUserPassword, arg.Password, arg.ID)
 	return err
 }

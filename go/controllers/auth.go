@@ -10,7 +10,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"golang.org/x/crypto/bcrypt"
-	"github.com/KingSharif1/Cowboy_Cards/go/db"
+	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 
 	jwt "github.com/golang-jwt/jwt/v5"
 )
