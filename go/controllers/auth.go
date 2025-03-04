@@ -3,7 +3,6 @@ package controllers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/mail"
 	"time"
@@ -22,7 +21,6 @@ type UserResponse struct {
 	Email     string    `json:"email"`
 	FirstName string    `json:"first_name"`
 	LastName  string    `json:"last_name"`
-	Role      string    `json:"role"`
 	Token     string    `json:"token,omitempty"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -35,7 +33,6 @@ type SignupRequest struct {
 	Password  string `json:"password"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
-	Role      string `json:"role"`
 }
 
 // LoginRequest represents the data needed for user login
@@ -64,7 +61,6 @@ type User struct {
 	Password  string
 	FirstName string
 	LastName  string
-	Role      string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -73,7 +69,6 @@ type User struct {
 type Claims struct {
 	UserID int32  `json:"user_id"`
 	Email  string `json:"email"`
-	Role   string `json:"role"`
 	jwt.RegisteredClaims
 }
 
@@ -113,17 +108,6 @@ func (cfg *Config) Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Set default role if not provided
-	if req.Role == "" {
-		req.Role = "regular"
-	}
-
-	// Validate role is one of the allowed values
-	if !isValidRole(req.Role) {
-		sendErrorResponse(w, "Invalid role. Must be 'regular', 'student', or 'teacher'", "invalid_role", http.StatusBadRequest)
-		return
-	}
-
 	// Check if email already exists
 	existingUserByEmail, err := getUserByEmail(r.Context(), cfg.DB, cfg.Querier, req.Email)
 	if err == nil && existingUserByEmail != nil && existingUserByEmail.ID > 0 {
@@ -152,7 +136,6 @@ func (cfg *Config) Signup(w http.ResponseWriter, r *http.Request) {
 		Password:  hashedPassword,
 		FirstName: req.FirstName,
 		LastName:  req.LastName,
-		Role:      req.Role,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -165,7 +148,7 @@ func (cfg *Config) Signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Generate JWT token
-	token, err := generateToken(newUser.ID, newUser.Email, newUser.Role)
+	token, err := generateToken(newUser.ID, newUser.Email)
 	if err != nil {
 		sendErrorResponse(w, "Error generating token", "server_error", http.StatusInternalServerError)
 		return
@@ -210,7 +193,7 @@ func (cfg *Config) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Generate JWT token
-	token, err := generateToken(user.ID, user.Email, user.Role)
+	token, err := generateToken(user.ID, user.Email)
 	if err != nil {
 		sendErrorResponse(w, "Error generating token", "server_error", http.StatusInternalServerError)
 		return
@@ -242,16 +225,6 @@ func isValidEmail(email string) bool {
 	return err == nil
 }
 
-// Helper function to validate role
-func isValidRole(role string) bool {
-	validRoles := map[string]bool{
-		"regular": true,
-		"student": true,
-		"teacher": true,
-	}
-	return validRoles[role]
-}
-
 // Helper function to get user by email
 func getUserByEmail(ctx context.Context, conn *pgxpool.Pool, querier *db.Queries, email string) (*User, error) {
 	dbUser, err := querier.GetUserByEmail(ctx, email)
@@ -266,7 +239,6 @@ func getUserByEmail(ctx context.Context, conn *pgxpool.Pool, querier *db.Queries
 		Password:  dbUser.Password,
 		FirstName: dbUser.FirstName,
 		LastName:  dbUser.LastName,
-		Role:      dbUser.Role,
 		CreatedAt: dbUser.CreatedAt.Time,
 		UpdatedAt: dbUser.UpdatedAt.Time,
 	}, nil
@@ -286,7 +258,6 @@ func getUserByUsername(ctx context.Context, conn *pgxpool.Pool, querier *db.Quer
 		Password:  dbUser.Password,
 		FirstName: dbUser.FirstName,
 		LastName:  dbUser.LastName,
-		Role:      dbUser.Role,
 		CreatedAt: dbUser.CreatedAt.Time,
 		UpdatedAt: dbUser.UpdatedAt.Time,
 	}, nil
@@ -300,7 +271,6 @@ func createUser(ctx context.Context, conn *pgxpool.Pool, querier *db.Queries, us
 		Password:  user.Password,
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
-		Role:      user.Role,
 		CreatedAt: pgtype.Timestamp{Time: user.CreatedAt, Valid: true},
 		UpdatedAt: pgtype.Timestamp{Time: user.UpdatedAt, Valid: true},
 	}
@@ -317,7 +287,6 @@ func createUser(ctx context.Context, conn *pgxpool.Pool, querier *db.Queries, us
 		Password:  dbUser.Password,
 		FirstName: dbUser.FirstName,
 		LastName:  dbUser.LastName,
-		Role:      dbUser.Role,
 		CreatedAt: dbUser.CreatedAt.Time,
 		UpdatedAt: dbUser.UpdatedAt.Time,
 	}, nil
@@ -339,12 +308,11 @@ func checkPasswordHash(password string, hash string) bool {
 }
 
 // Helper function to generate JWT token
-func generateToken(userID int32, email string, role string) (string, error) {
+func generateToken(userID int32, email string) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &Claims{
 		UserID: userID,
 		Email:  email,
-		Role:   role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
