@@ -10,6 +10,7 @@ import (
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Config struct {
@@ -520,120 +521,70 @@ func (cfg *Config) DeleteFlashCardSets(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Flashcard set deleted successfully\n"))
 }
-// func (cfg *Config) CreateClass(w http.ResponseWriter, r *http.Request) {
-// 	// curl -X POST localhost:8000/class -H "name: class name" -H "description: class description" -H "joincode: join code" -H "teacherid: teacher id"
 
-// 	name := r.Header.Get("name");
-// 	if name == "" {
-// 		http.Error(w, "No class name given", http.StatusBadRequest);
-// 		return
-// 	}
+func (cfg *Config) CreateClass(w http.ResponseWriter, r *http.Request) {
+	// curl -X POST localhost:8000/class -H "name: class name" -H "description: class description" -H "joincode: join code" -H "teacherid: teacher id"
 
-// 	description := r.Header.Get("description");
-// 	if description == "" {
-// 		http.Error(w, "No class description given", http.StatusBadRequest);
-// 		return
-// 	}
+	name := r.Header.Get("name");
+	if name == "" {
+		http.Error(w, "No class name given", http.StatusBadRequest);
+		return
+	}
 
-// 	joincode := r.Header.Get("joincode");
-// 	if joincode == "" {
-// 		http.Error(w, "No class join code given", http.StatusBadRequest);
-// 		return
-// 	}
+	description := r.Header.Get("description");
+	if description == "" {
+		http.Error(w, "No class description given", http.StatusBadRequest);
+		return
+	}
 
-// 	idStr := r.Header.Get("teacherid");
-// 	if idStr == "" {
-// 		http.Error(w, "No teacher id given", http.StatusBadRequest);
-// 		return
-// 	}
+	joincode := r.Header.Get("joincode");
+	if joincode == "" {
+		http.Error(w, "No class join code given", http.StatusBadRequest);
+		return
+	}
 
-// 	teacherId, err := strconv.Atoi(idStr)
-// 	if err != nil {
-// 		log.Println("error:", err)
-// 		http.Error(w, "invalid teacher id", http.StatusBadRequest)
-// 		return
-// 	}
+	idStr := r.Header.Get("teacherid");
+	if idStr == "" {
+		http.Error(w, "No teacher id given", http.StatusBadRequest);
+		return
+	}
 
-// 	id := int32(teacherId)
-// 	if id == 0 {
-// 		http.Error(w, "invalid teacher id", http.StatusBadRequest)
-// 		return
-// 	}
+	teacherId, err := strconv.Atoi(idStr)
+	if err != nil {
+		log.Println("error:", err)
+		http.Error(w, "invalid teacher id", http.StatusBadRequest)
+		return
+	}
 
-// 	ctx := context.Background()
+	id := pgtype.Int4{Int32: int32(teacherId), Valid: true}
+	if id.Int32 == 0 {
+		http.Error(w, "invalid teacher id", http.StatusBadRequest)
+		return
+	}
 
-// 	conn, err := pgx.ConnectConfig(ctx, cfg.DB)
-// 	if err != nil {
-// 		log.Fatalf("could not connect to db... %v", err)
-// 	}
-// 	defer conn.Close(ctx)
+	ctx := context.Background()
 
-// 	query := db.New(conn)
+	conn, err := pgx.ConnectConfig(ctx, cfg.DB)
+	if err != nil {
+		log.Fatalf("could not connect to db... %v", err)
+	}
+	defer conn.Close(ctx)
 
-// 	//TODO -- call create class query once sqlc has made it
-// 	if error != nil {
-// 		log.Printf("Error creating class in db: %v", err)
-// 		http.Error(w, "Failed to create class", http.StatusInternalServerError)
-// 		return
-// 	}
-// 	log.Println("Flashcard deleted successfully")
-// }
+	query := db.New(conn)
 
-// func (cfg *Config) CreateClass(w http.ResponseWriter, r *http.Request) {
-// 	// curl -X POST localhost:8000/class -H "name: class name" -H "description: class description" -H "joincode: join code" -H "teacherid: teacher id"
+	//TODO -- call create class query once sqlc has made it
+	error := query.CreateClass(ctx, db.CreateClassParams{
+		Name: name,
+		Description: description,
+		JoinCode: joincode,
+		TeacherID: id,
+	})
 
-// 	name := r.Header.Get("name");
-// 	if name == "" {
-// 		http.Error(w, "No class name given", http.StatusBadRequest);
-// 		return
-// 	}
+	if error != nil {
+		log.Printf("Error creating class in db: %v", err)
+		http.Error(w, "Failed to create class", http.StatusInternalServerError)
+		return
+	}
+	log.Println("Class created successfully")
+}
 
-// 	description := r.Header.Get("description");
-// 	if description == "" {
-// 		http.Error(w, "No class description given", http.StatusBadRequest);
-// 		return
-// 	}
-
-// 	joincode := r.Header.Get("joincode");
-// 	if joincode == "" {
-// 		http.Error(w, "No class join code given", http.StatusBadRequest);
-// 		return
-// 	}
-
-// 	idStr := r.Header.Get("teacherid");
-// 	if idStr == "" {
-// 		http.Error(w, "No teacher id given", http.StatusBadRequest);
-// 		return
-// 	}
-
-// 	teacherId, err := strconv.Atoi(idStr)
-// 	if err != nil {
-// 		log.Println("error:", err)
-// 		http.Error(w, "invalid teacher id", http.StatusBadRequest)
-// 		return
-// 	}
-
-// 	id := int32(teacherId)
-// 	if id == 0 {
-// 		http.Error(w, "invalid teacher id", http.StatusBadRequest)
-// 		return
-// 	}
-
-// 	ctx := context.Background()
-
-// 	conn, err := pgx.ConnectConfig(ctx, cfg.DB)
-// 	if err != nil {
-// 		log.Fatalf("could not connect to db... %v", err)
-// 	}
-// 	defer conn.Close(ctx)
-
-// 	query := db.New(conn)
-
-// 	//TODO -- call create class query once sqlc has made it
-// 	if error != nil {
-// 		log.Printf("Error creating class in db: %v", err)
-// 		http.Error(w, "Failed to create class", http.StatusInternalServerError)
-// 		return
-// 	}
-// 	log.Println("Flashcard deleted successfully")
-// }

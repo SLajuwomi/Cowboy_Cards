@@ -7,7 +7,30 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
+
+const createClass = `-- name: CreateClass :exec
+INSERT INTO classes (name, description, join_code, teacher_id) VALUES ($1, $2, $3, $4)
+`
+
+type CreateClassParams struct {
+	Name        string
+	Description string
+	JoinCode    string
+	TeacherID   pgtype.Int4
+}
+
+func (q *Queries) CreateClass(ctx context.Context, arg CreateClassParams) error {
+	_, err := q.db.Exec(ctx, createClass,
+		arg.Name,
+		arg.Description,
+		arg.JoinCode,
+		arg.TeacherID,
+	)
+	return err
+}
 
 const createFlashCard = `-- name: CreateFlashCard :exec
 INSERT INTO flashcards (front, back, set_id) VALUES ($1, $2, $3)

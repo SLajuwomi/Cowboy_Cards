@@ -25,7 +25,6 @@ UPDATE flashcards SET front = $1, back = $2 WHERE id = $3;
 -- name: DeleteFlashCard :exec
 DELETE FROM flashcards WHERE id = $1;
 
-
 -- name: GetUsers :many
 SELECT * FROM users;
 
@@ -34,3 +33,6 @@ SELECT * FROM users WHERE id = $1;
 
 -- name: GetClass :one
 SELECT * FROM classes WHERE id = $1;
+
+-- name: CreateClass :exec
+INSERT INTO classes (name, description, join_code, teacher_id) VALUES ($1, $2, $3, $4);
