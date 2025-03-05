@@ -8,14 +8,20 @@ import (
 
 func Routes(r *chi.Mux, cfg *controllers.Config) {
 
+
 	// Auth routes
 	r.Post("/signup", cfg.Signup)
 	r.Post("/login", cfg.Login)
 
-	r.Get("/classes", cfg.GetClasses)
-	r.Get("/flashcard_sets", cfg.GetUsersFlashCardSets)
-	r.Post("/flashcard", cfg.CreateFlashCard)
-	r.Get("/flashcard", cfg.GetFlashCard)
-	r.Put("/flashcard", cfg.UpdateFlashCard)
-	r.Delete("/flashcard", cfg.DeleteFlashCard)
+	// Protected routes
+	r.Group(func(r chi.Router) {
+		r.Use(cfg.AuthMiddleware)
+		
+		r.Get("/classes", cfg.GetClasses)
+		r.Get("/flashcard_sets", cfg.GetUsersFlashCardSets)
+		r.Post("/flashcard", cfg.CreateFlashCard)
+		r.Get("/flashcard", cfg.GetFlashCard)
+		r.Put("/flashcard", cfg.UpdateFlashCard)
+		r.Delete("/flashcard", cfg.DeleteFlashCard)
+	})
 }
