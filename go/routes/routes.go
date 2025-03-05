@@ -11,7 +11,7 @@ func Routes(r *chi.Mux, cfg *controllers.Config) {
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000", "http://localhost:5173", "http://localhost:8080"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: true,
 		MaxAge:           300,
@@ -29,6 +29,7 @@ func Routes(r *chi.Mux, cfg *controllers.Config) {
 		r.Route("/user", func(r chi.Router) {
 			r.Use(cfg.AuthMiddleware)
 			r.Get("/", cfg.GetUser)      // Get current user's info
+			r.Put("/", cfg.UpdateUser)   // Update current user's info
 			r.Delete("/", cfg.DeleteUser) // Delete current user's account
 		})
 

@@ -41,6 +41,14 @@ type SignupRequest struct {
 	LastName  string `json:"last_name"`
 }
 
+// UpdateUserRequest represents the update user request body
+type UpdateUserRequest struct {
+	Username  string `json:"username"`
+	Email     string `json:"email"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+}
+
 // AuthResponse represents the response sent after successful authentication
 type AuthResponse struct {
 	Token     string `json:"token"`
@@ -231,6 +239,89 @@ func (cfg *Config) GetUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Convert to response type to avoid sending sensitive information
+	response := User{
+		ID:        user.ID,
+		Username:  user.Username,
+		Email:     user.Email,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		CreatedAt: user.CreatedAt.Time,
+		UpdatedAt: user.UpdatedAt.Time,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+// UpdateUser handles updating user information
+func (cfg *Config) UpdateUser(w http.ResponseWriter, r *http.Request) {
+	// Get user_id from context (set by AuthMiddleware)
+	userID, ok := r.Context().Value("user_id").(int32)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	var req UpdateUserRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// Validate request
+	if req.Username == "" || req.Email == "" {
+		http.Error(w, "Username and email are required", http.StatusBadRequest)
+		return
+	}
+
+	ctx := context.Background()
+	conn, err := cfg.DB.Acquire(ctx)
+	if err != nil {
+		log.Printf("could not connect to db... %v", err)
+		http.Error(w, "Database connection error", http.StatusInternalServerError)
+		return
+	}
+	defer conn.Release()
+
+	querier := db.New(conn)
+
+	// Check if username is taken (by another user)
+	existingUser, err := querier.GetUserByUsername(ctx, req.Username)
+	if err == nil && existingUser.ID != userID {
+		http.Error(w, "Username already taken", http.StatusConflict)
+		return
+	}
+
+	// Check if email is taken (by another user)
+	existingUser, err = querier.GetUserByEmail(ctx, req.Email)
+	if err == nil && existingUser.ID != userID {
+		http.Error(w, "Email already taken", http.StatusConflict)
+		return
+	}
+
+	// Update user
+	err = querier.UpdateUser(ctx, db.UpdateUserParams{
+		Username:  req.Username,
+		Email:     req.Email,
+		FirstName: req.FirstName,
+		LastName:  req.LastName,
+		ID:        userID,
+	})
+	if err != nil {
+		log.Printf("error updating user: %v", err)
+		http.Error(w, "Failed to update user", http.StatusInternalServerError)
+		return
+	}
+
+	// Get updated user info
+	user, err := querier.GetUserByID(ctx, userID)
+	if err != nil {
+		log.Printf("error getting updated user: %v", err)
+		http.Error(w, "Failed to get updated user info", http.StatusInternalServerError)
+		return
+	}
+
+	// Convert to response type
 	response := User{
 		ID:        user.ID,
 		Username:  user.Username,

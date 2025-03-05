@@ -51,5 +51,14 @@ RETURNING id, username, email, password, first_name, last_name, created_at, upda
 -- name: UpdateUserPassword :exec
 UPDATE users SET password = $1, updated_at = NOW() WHERE id = $2;
 
+-- name: UpdateUser :exec
+UPDATE users 
+SET username = $1, 
+    email = $2, 
+    first_name = $3, 
+    last_name = $4, 
+    updated_at = NOW() 
+WHERE id = $5;
+
 -- name: DeleteUser :exec
 DELETE FROM users WHERE id = $1;

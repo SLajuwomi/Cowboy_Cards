@@ -316,6 +316,35 @@ func (q *Queries) UpdateFlashCardSet(ctx context.Context, arg UpdateFlashCardSet
 	return err
 }
 
+const updateUser = `-- name: UpdateUser :exec
+UPDATE users 
+SET username = $1, 
+    email = $2, 
+    first_name = $3, 
+    last_name = $4, 
+    updated_at = NOW() 
+WHERE id = $5
+`
+
+type UpdateUserParams struct {
+	Username  string
+	Email     string
+	FirstName string
+	LastName  string
+	ID        int32
+}
+
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
+	_, err := q.db.Exec(ctx, updateUser,
+		arg.Username,
+		arg.Email,
+		arg.FirstName,
+		arg.LastName,
+		arg.ID,
+	)
+	return err
+}
+
 const updateUserPassword = `-- name: UpdateUserPassword :exec
 UPDATE users SET password = $1, updated_at = NOW() WHERE id = $2
 `
