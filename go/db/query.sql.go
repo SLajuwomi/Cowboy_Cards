@@ -90,6 +90,7 @@ DELETE FROM flashcard_sets WHERE id = $1
 
 func (q *Queries) DeleteFlashCardSet(ctx context.Context, id int32) error {
 	_, err := q.db.Exec(ctx, deleteFlashCardSet, id)
+
 	return err
 }
 

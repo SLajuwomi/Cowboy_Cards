@@ -25,6 +25,9 @@ UPDATE flashcards SET front = $1, back = $2 WHERE id = $3;
 -- name: DeleteFlashCard :exec
 DELETE FROM flashcards WHERE id = $1;
 
+-- name: DeleteFlashCardSet :exec
+DELETE FROM flashcard_sets WHERE id = $1 AND user_id = $2;
+
 -- name: GetUsers :many
 SELECT id, username, email, password, first_name, last_name, created_at, updated_at FROM users;
 

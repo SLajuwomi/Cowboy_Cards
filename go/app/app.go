@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"fmt"
+	"crypto/tls"
 	"log"
 	"net/http"
 	"os"
@@ -36,6 +37,12 @@ func LoadConfig() (*controllers.Config, error) {
 	}
 
 	log.Printf("Successfully connected to database")
+
+
+	// Enable SSL for Supabase
+	conn.TLSConfig = &tls.Config{
+		MinVersion: tls.VersionTLS12,
+	}
 
 	cfg := &controllers.Config{
 		DB: pool,
