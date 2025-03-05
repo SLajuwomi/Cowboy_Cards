@@ -256,59 +256,17 @@ func (cfg *Config) GetUsers(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Release()
 
-	querier := db.New(conn)
+	query := db.New(conn)
 
-	users, err := querier.GetUsers(ctx)
+	users, err := query.GetUsers(ctx)
 	if err != nil {
-		log.Printf("error getting users from db: %v", err)
+		log.Printf("error getting users from db... %v", err)
 		http.Error(w, "Failed to get users", http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(users); err != nil {
-		log.Printf("error encoding response: %v", err)
-		http.Error(w, "Error encoding response", http.StatusInternalServerError)
-	}
-}
-
-/* GetUser retrieves a single user from the database by ID and returns it as a JSON response */
-func (cfg *Config) GetUser(w http.ResponseWriter, r *http.Request) {
-	ctx := context.Background()
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
-	if err != nil {
-		http.Error(w, "Invalid user ID", http.StatusBadRequest)
-		log.Printf("Invalid user ID: %v", err)
-		return
-	}
-
-	conn, err := cfg.DB.Acquire(ctx)
-	if err != nil {
-		http.Error(w, "Database connection error", http.StatusInternalServerError)
-		log.Printf("Database connection error: %v", err)
-		return
-	}
-	defer conn.Release()
-
-	querier := db.New(conn)
-
-	user, err := querier.GetUser(ctx, int32(id))
-	if err != nil {
-		if err == pgx.ErrNoRows {
-			http.Error(w, "User not found", http.StatusNotFound)
-			return
-		}
-		http.Error(w, "Database error", http.StatusInternalServerError)
-		log.Printf("Database query error: %v", err)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(user); err != nil {
-		http.Error(w, "Error encoding response", http.StatusInternalServerError)
-		log.Printf("JSON encoding error: %v", err)
-		return
-	}
+	json.NewEncoder(w).Encode(users)
 }
 
 /* CreateFlashCard creates a new flash card in the database */

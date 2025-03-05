@@ -42,6 +42,7 @@ type FlashcardSet struct {
 	ID          int32
 	Name        string
 	Description string
+	UserID      int32
 	CreatedAt   pgtype.Timestamp
 	UpdatedAt   pgtype.Timestamp
 }

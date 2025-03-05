@@ -211,14 +211,81 @@ func (cfg *Config) Signup(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+// GetUser handles retrieving user information
+func (cfg *Config) GetUser(w http.ResponseWriter, r *http.Request) {
+	// Get user_id from context (set by AuthMiddleware)
+	userID, ok := r.Context().Value("user_id").(int32)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	ctx := context.Background()
+	querier := db.New(cfg.DB)
+
+	user, err := querier.GetUserByID(ctx, userID)
+	if err != nil {
+		log.Printf("Error getting user: %v", err)
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+
+	// Convert to response type to avoid sending sensitive information
+	response := User{
+		ID:        user.ID,
+		Username:  user.Username,
+		Email:     user.Email,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		CreatedAt: user.CreatedAt.Time,
+		UpdatedAt: user.UpdatedAt.Time,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+// DeleteUser handles user account deletion
+func (cfg *Config) DeleteUser(w http.ResponseWriter, r *http.Request) {
+	// Get user_id from context (set by AuthMiddleware)
+	userID, ok := r.Context().Value("user_id").(int32)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	ctx := context.Background()
+	querier := db.New(cfg.DB)
+
+	err := querier.DeleteUser(ctx, userID)
+	if err != nil {
+		log.Printf("Error deleting user: %v", err)
+		http.Error(w, "Error deleting user", http.StatusInternalServerError)
+		return
+	}
+
+	// Return success with no content
+	w.WriteHeader(http.StatusNoContent)
+}
+
 // AuthMiddleware handles authentication for incoming requests
 func (cfg *Config) AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		tokenString := r.Header.Get("Authorization")
-		if tokenString == "" {
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
 			http.Error(w, "Missing authorization header", http.StatusUnauthorized)
 			return
 		}
+
+		// Check for Bearer prefix
+		const bearerPrefix = "Bearer "
+		if !strings.HasPrefix(authHeader, bearerPrefix) {
+			http.Error(w, "Invalid authorization header format", http.StatusUnauthorized)
+			return
+		}
+
+		// Extract the token
+		tokenString := strings.TrimPrefix(authHeader, bearerPrefix)
 
 		claims := &Claims{}
 		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {

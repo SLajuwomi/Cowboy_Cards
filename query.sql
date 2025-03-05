@@ -40,6 +40,9 @@ FROM users WHERE email = $1 LIMIT 1;
 SELECT id, username, email, password, first_name, last_name, created_at, updated_at 
 FROM users WHERE username = $1 LIMIT 1;
 
+-- name: GetUserByID :one
+SELECT * FROM users WHERE id = $1;
+
 -- name: CreateUser :one
 INSERT INTO users (username, email, password, first_name, last_name)
 VALUES ($1, $2, $3, $4, $5)
@@ -47,3 +50,6 @@ RETURNING id, username, email, password, first_name, last_name, created_at, upda
 
 -- name: UpdateUserPassword :exec
 UPDATE users SET password = $1, updated_at = NOW() WHERE id = $2;
+
+-- name: DeleteUser :exec
+DELETE FROM users WHERE id = $1;

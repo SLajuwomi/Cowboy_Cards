@@ -25,17 +25,17 @@ func (q *Queries) CreateFlashCard(ctx context.Context, arg CreateFlashCardParams
 }
 
 const createFlashCardSet = `-- name: CreateFlashCardSet :exec
-INSERT INTO flashcard_sets (id, name, description) VALUES ($1, $2, $3)
+INSERT INTO flashcard_sets (name, description, user_id) VALUES ($1, $2, $3)
 `
 
 type CreateFlashCardSetParams struct {
-	ID          int32
 	Name        string
 	Description string
+	UserID      int32
 }
 
 func (q *Queries) CreateFlashCardSet(ctx context.Context, arg CreateFlashCardSetParams) error {
-	_, err := q.db.Exec(ctx, createFlashCardSet, arg.ID, arg.Name, arg.Description)
+	_, err := q.db.Exec(ctx, createFlashCardSet, arg.Name, arg.Description, arg.UserID)
 	return err
 }
 
@@ -93,6 +93,15 @@ func (q *Queries) DeleteFlashCardSet(ctx context.Context, id int32) error {
 	return err
 }
 
+const deleteUser = `-- name: DeleteUser :exec
+DELETE FROM users WHERE id = $1
+`
+
+func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
+	_, err := q.db.Exec(ctx, deleteUser, id)
+	return err
+}
+
 const getClasses = `-- name: GetClasses :many
 SELECT id, name, description, join_code, teacher_id, created_at, updated_at FROM classes
 `
@@ -144,7 +153,7 @@ func (q *Queries) GetFlashCard(ctx context.Context, id int32) (Flashcard, error)
 }
 
 const getFlashCardSet = `-- name: GetFlashCardSet :one
-SELECT id, name, description, created_at, updated_at FROM flashcard_sets WHERE id = $1
+SELECT id, name, description, user_id, created_at, updated_at FROM flashcard_sets WHERE id = $1
 `
 
 func (q *Queries) GetFlashCardSet(ctx context.Context, id int32) (FlashcardSet, error) {
@@ -154,6 +163,7 @@ func (q *Queries) GetFlashCardSet(ctx context.Context, id int32) (FlashcardSet, 
 		&i.ID,
 		&i.Name,
 		&i.Description,
+		&i.UserID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -188,6 +198,26 @@ FROM users WHERE email = $1 LIMIT 1
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
 	row := q.db.QueryRow(ctx, getUserByEmail, email)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.Password,
+		&i.FirstName,
+		&i.LastName,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getUserByID = `-- name: GetUserByID :one
+SELECT id, username, email, password, first_name, last_name, created_at, updated_at FROM users WHERE id = $1
+`
+
+func (q *Queries) GetUserByID(ctx context.Context, id int32) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByID, id)
 	var i User
 	err := row.Scan(
 		&i.ID,
