@@ -3,7 +3,7 @@ package routes
 import (
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/controllers"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/cors"
+
 )
 
 func Routes(r *chi.Mux, cfg *controllers.Config) {

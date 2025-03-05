@@ -53,8 +53,6 @@ type User struct {
 	Password  string
 	FirstName string
 	LastName  string
-	Email     string
-	Password  string
 	CreatedAt pgtype.Timestamp
 	UpdatedAt pgtype.Timestamp
 }

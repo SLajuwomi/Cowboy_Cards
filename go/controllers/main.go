@@ -28,17 +28,16 @@ func (cfg *Config) GetClasses(w http.ResponseWriter, r *http.Request) {
 
 	classes, err := querier.GetClasses(ctx)
 	if err != nil {
-		log.Fatalf("error getting classes from db... %v", err)
-	}
-	log.Println("data: ", classes[0])
-	log.Println()
-
-	b, err := json.Marshal(classes)
-	if err != nil {
-		log.Println("error:", err)
+		log.Printf("error getting classes from db... %v", err)
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
 	}
 
-	w.Write(append(b, 10)) //add newline
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(classes); err != nil {
+		log.Printf("error encoding response: %v", err)
+		http.Error(w, "Error encoding response", http.StatusInternalServerError)
+	}
 }
 
 // func (cfg *Config) GetUsersFlashCardSets(w http.ResponseWriter, r *http.Request) {
@@ -100,24 +99,26 @@ func (cfg *Config) CreateFlashCardSet(w http.ResponseWriter, r *http.Request) {
 
 	ctx := context.Background()
 
-	conn, err := pgx.ConnectConfig(ctx, cfg.DB)
+	conn, err := cfg.DB.Acquire(ctx)
 	if err != nil {
-		log.Fatalf("could not connect to db... %v", err)
+		log.Printf("could not connect to db... %v", err)
+		http.Error(w, "Database connection error", http.StatusInternalServerError)
+		return
 	}
-	defer conn.Close(ctx)
+	defer conn.Release()
 
-	query := db.New(conn)
+	querier := db.New(conn)
 
-	error := query.CreateFlashCardSet(ctx, db.CreateFlashCardSetParams{
+	err = querier.CreateFlashCardSet(ctx, db.CreateFlashCardSetParams{
 		Name:        name,
 		Description: description,
 	})
-	if error != nil {
+	if err != nil {
 		log.Printf("error creating flashcard set in db: %v", err)
 		http.Error(w, "Failed to create flashcard set", http.StatusInternalServerError)
 		return
 	}
-	log.Println("Flashcard set created successfully")
+	w.WriteHeader(http.StatusCreated)
 }
 
 func (cfg *Config) GetFlashCardSet(w http.ResponseWriter, r *http.Request) {
@@ -130,21 +131,25 @@ func (cfg *Config) GetFlashCardSet(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		log.Println("error:", err)
+		log.Printf("error parsing id: %v", err)
 		http.Error(w, "Invalid 'id' header", http.StatusBadRequest)
 		return
 	}
 
 	ctx := context.Background()
-	conn, err := pgx.ConnectConfig(ctx, cfg.DB)
+	conn, err := cfg.DB.Acquire(ctx)
 	if err != nil {
-		log.Fatalf("could not connect to db... %v", err)
+		log.Printf("could not connect to db... %v", err)
+		http.Error(w, "Database connection error", http.StatusInternalServerError)
+		return
 	}
-	defer conn.Close(ctx)
+	defer conn.Release()
 	query := db.New(conn)
 	flashcard_set, err := query.GetFlashCardSet(ctx, int32(id))
 	if err != nil {
-		log.Fatalf("error getting flash card sets from db... %v", err)
+		log.Printf("error getting flash card set from db: %v", err)
+		http.Error(w, "Failed to get flashcard set", http.StatusInternalServerError)
+		return
 	}
 	log.Println("data: ", flashcard_set)
 	log.Println()
@@ -173,7 +178,7 @@ func (cfg *Config) UpdateFlashCardSet(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		log.Println("error:", err)
+		log.Printf("error parsing id: %v", err)
 		http.Error(w, "Invalid 'id' header", http.StatusBadRequest)
 		return
 	}
@@ -190,17 +195,17 @@ func (cfg *Config) UpdateFlashCardSet(w http.ResponseWriter, r *http.Request) {
 
 	querier := db.New(conn)
 
-	error := query.UpdateFlashCardSet(ctx, db.UpdateFlashCardSetParams{
+	err = querier.UpdateFlashCardSet(ctx, db.UpdateFlashCardSetParams{
 		ID:          int32(id),
 		Name:        name,
 		Description: description,
 	})
-	if error != nil {
+	if err != nil {
 		log.Printf("error updating flashcard set in db: %v", err)
 		http.Error(w, "Failed to update flashcard set", http.StatusInternalServerError)
 		return
 	}
-	log.Println("Flashcard set updated successfully")
+	w.WriteHeader(http.StatusOK)
 }
 
 func (cfg *Config) DeleteFlashCardSet(w http.ResponseWriter, r *http.Request) {
@@ -214,28 +219,30 @@ func (cfg *Config) DeleteFlashCardSet(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		log.Println("error:", err)
+		log.Printf("error parsing id: %v", err)
 		http.Error(w, "Invalid 'id' header", http.StatusBadRequest)
 		return
 	}
 
 	ctx := context.Background()
 
-	conn, err := pgx.ConnectConfig(ctx, cfg.DB)
+	conn, err := cfg.DB.Acquire(ctx)
 	if err != nil {
-		log.Fatalf("could not connect to db... %v", err)
+		log.Printf("could not connect to db... %v", err)
+		http.Error(w, "Database connection error", http.StatusInternalServerError)
+		return
 	}
-	defer conn.Close(ctx)
+	defer conn.Release()
 
-	query := db.New(conn)
+	querier := db.New(conn)
 
-	error := query.DeleteFlashCardSet(ctx, int32(id))
-	if error != nil {
-		log.Printf("error deleting flashcard set in db: %v", err)
+	err = querier.DeleteFlashCardSet(ctx, int32(id))
+	if err != nil {
+		log.Printf("error deleting flashcard set from db: %v", err)
 		http.Error(w, "Failed to delete flashcard set", http.StatusInternalServerError)
 		return
 	}
-	log.Println("Flashcard set deleted successfully")
+	w.WriteHeader(http.StatusOK)
 }
 
 func (cfg *Config) GetUsers(w http.ResponseWriter, r *http.Request) {
@@ -253,8 +260,8 @@ func (cfg *Config) GetUsers(w http.ResponseWriter, r *http.Request) {
 
 	users, err := querier.GetUsers(ctx)
 	if err != nil {
-		log.Printf("error getting users from db... %v", err)
-		http.Error(w, "Database error", http.StatusInternalServerError)
+		log.Printf("error getting users from db: %v", err)
+		http.Error(w, "Failed to get users", http.StatusInternalServerError)
 		return
 	}
 
@@ -262,7 +269,6 @@ func (cfg *Config) GetUsers(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(users); err != nil {
 		log.Printf("error encoding response: %v", err)
 		http.Error(w, "Error encoding response", http.StatusInternalServerError)
-		return
 	}
 }
 
@@ -319,12 +325,8 @@ func (cfg *Config) CreateFlashCard(w http.ResponseWriter, r *http.Request) {
 
 	setID, err := strconv.Atoi(setIDStr)
 	if err != nil {
+		log.Printf("error parsing set_id: %v", err)
 		http.Error(w, "Invalid 'set_id' header", http.StatusBadRequest)
-		return
-	}
-	userID, err := strconv.Atoi(userIDStr)
-	if err != nil {
-		http.Error(w, "Invalid 'user_id' header", http.StatusBadRequest)
 		return
 	}
 
@@ -340,18 +342,16 @@ func (cfg *Config) CreateFlashCard(w http.ResponseWriter, r *http.Request) {
 
 	querier := db.New(conn)
 
-	error := query.CreateFlashCard(ctx, db.CreateFlashCardParams{
-		Front:  front,
-		Back:   back,
-		SetID:  setIDInt,
-		UserID: userIDInt,
+	err = querier.CreateFlashCard(ctx, db.CreateFlashCardParams{
+		Front: front,
+		Back:  back,
+		SetID: int32(setID),
 	})
 	if err != nil {
 		log.Printf("error creating flash card: %v", err)
-		http.Error(w, "Error creating flash card", http.StatusInternalServerError)
+		http.Error(w, "Failed to create flash card", http.StatusInternalServerError)
 		return
 	}
-
 	w.WriteHeader(http.StatusCreated)
 }
 

@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
@@ -16,6 +17,7 @@ import (
 // User represents the user data that will be sent to the client
 type User struct {
 	ID        int32     `json:"id"`
+	Username  string    `json:"username"`
 	Email     string    `json:"email"`
 	Password  string    `json:"-"`
 	FirstName string    `json:"first_name"`
@@ -32,6 +34,7 @@ type LoginRequest struct {
 
 // SignupRequest represents the signup request body
 type SignupRequest struct {
+	Username  string `json:"username"`
 	Email     string `json:"email"`
 	Password  string `json:"password"`
 	FirstName string `json:"first_name"`
@@ -42,6 +45,7 @@ type SignupRequest struct {
 type AuthResponse struct {
 	Token     string `json:"token"`
 	UserID    int32  `json:"user_id"`
+	Username  string `json:"username"`
 	Email     string `json:"email"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
@@ -105,6 +109,7 @@ func (cfg *Config) Login(w http.ResponseWriter, r *http.Request) {
 	response := AuthResponse{
 		Token:     tokenString,
 		UserID:    user.ID,
+		Username:  user.Username,
 		Email:     user.Email,
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
@@ -122,6 +127,12 @@ func (cfg *Config) Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Validate required fields
+	if req.Username == "" || req.Email == "" || req.Password == "" || req.FirstName == "" || req.LastName == "" {
+		http.Error(w, "All fields are required", http.StatusBadRequest)
+		return
+	}
+
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		log.Printf("Error hashing password: %v", err)
@@ -132,7 +143,30 @@ func (cfg *Config) Signup(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	querier := db.New(cfg.DB)
 
+	// Check if username already exists
+	_, err = querier.GetUserByUsername(ctx, req.Username)
+	if err == nil {
+		http.Error(w, "Username already exists", http.StatusConflict)
+		return
+	} else if !strings.Contains(err.Error(), "no rows") {
+		log.Printf("Error checking username: %v", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	// Check if email already exists
+	_, err = querier.GetUserByEmail(ctx, req.Email)
+	if err == nil {
+		http.Error(w, "Email already exists", http.StatusConflict)
+		return
+	} else if !strings.Contains(err.Error(), "no rows") {
+		log.Printf("Error checking email: %v", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
 	params := db.CreateUserParams{
+		Username:  req.Username,
 		Email:     req.Email,
 		Password:  string(hashedPassword),
 		FirstName: req.FirstName,
@@ -166,6 +200,7 @@ func (cfg *Config) Signup(w http.ResponseWriter, r *http.Request) {
 	response := AuthResponse{
 		Token:     tokenString,
 		UserID:    user.ID,
+		Username:  user.Username,
 		Email:     user.Email,
 		FirstName: user.FirstName,
 		LastName:  user.LastName,

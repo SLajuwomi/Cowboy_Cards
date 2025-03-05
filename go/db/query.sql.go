@@ -7,8 +7,6 @@ package db
 
 import (
 	"context"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createFlashCard = `-- name: CreateFlashCard :exec
@@ -55,18 +53,7 @@ type CreateUserParams struct {
 	LastName  string
 }
 
-type CreateUserRow struct {
-	ID        int32
-	Username  string
-	Email     string
-	Password  string
-	FirstName string
-	LastName  string
-	CreatedAt pgtype.Timestamp
-	UpdatedAt pgtype.Timestamp
-}
-
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error) {
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
 	row := q.db.QueryRow(ctx, createUser,
 		arg.Username,
 		arg.Email,
@@ -74,7 +61,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateU
 		arg.FirstName,
 		arg.LastName,
 	)
-	var i CreateUserRow
+	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
@@ -178,31 +165,9 @@ SELECT id, username, email, password, first_name, last_name, created_at, updated
 FROM users WHERE id = $1
 `
 
-type GetUserRow struct {
-	ID        int32
-	Username  string
-	Email     string
-	Password  string
-	FirstName string
-	LastName  string
-	CreatedAt pgtype.Timestamp
-	UpdatedAt pgtype.Timestamp
-}
-
-type GetUserRow struct {
-	ID        int32
-	Username  string
-	Email     string
-	Password  string
-	FirstName string
-	LastName  string
-	CreatedAt pgtype.Timestamp
-	UpdatedAt pgtype.Timestamp
-}
-
-func (q *Queries) GetUser(ctx context.Context, id int32) (GetUserRow, error) {
+func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
 	row := q.db.QueryRow(ctx, getUser, id)
-	var i GetUserRow
+	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
@@ -221,20 +186,9 @@ SELECT id, username, email, password, first_name, last_name, created_at, updated
 FROM users WHERE email = $1 LIMIT 1
 `
 
-type GetUserByEmailRow struct {
-	ID        int32
-	Username  string
-	Email     string
-	Password  string
-	FirstName string
-	LastName  string
-	CreatedAt pgtype.Timestamp
-	UpdatedAt pgtype.Timestamp
-}
-
-func (q *Queries) GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error) {
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
 	row := q.db.QueryRow(ctx, getUserByEmail, email)
-	var i GetUserByEmailRow
+	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
@@ -253,20 +207,9 @@ SELECT id, username, email, password, first_name, last_name, created_at, updated
 FROM users WHERE username = $1 LIMIT 1
 `
 
-type GetUserByUsernameRow struct {
-	ID        int32
-	Username  string
-	Email     string
-	Password  string
-	FirstName string
-	LastName  string
-	CreatedAt pgtype.Timestamp
-	UpdatedAt pgtype.Timestamp
-}
-
-func (q *Queries) GetUserByUsername(ctx context.Context, username string) (GetUserByUsernameRow, error) {
+func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User, error) {
 	row := q.db.QueryRow(ctx, getUserByUsername, username)
-	var i GetUserByUsernameRow
+	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
@@ -274,8 +217,6 @@ func (q *Queries) GetUserByUsername(ctx context.Context, username string) (GetUs
 		&i.Password,
 		&i.FirstName,
 		&i.LastName,
-		&i.Email,
-		&i.Password,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -286,37 +227,15 @@ const getUsers = `-- name: GetUsers :many
 SELECT id, username, email, password, first_name, last_name, created_at, updated_at FROM users
 `
 
-type GetUsersRow struct {
-	ID        int32
-	Username  string
-	Email     string
-	Password  string
-	FirstName string
-	LastName  string
-	CreatedAt pgtype.Timestamp
-	UpdatedAt pgtype.Timestamp
-}
-
-type GetUsersRow struct {
-	ID        int32
-	Username  string
-	Email     string
-	Password  string
-	FirstName string
-	LastName  string
-	CreatedAt pgtype.Timestamp
-	UpdatedAt pgtype.Timestamp
-}
-
-func (q *Queries) GetUsers(ctx context.Context) ([]GetUsersRow, error) {
+func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
 	rows, err := q.db.Query(ctx, getUsers)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetUsersRow
+	var items []User
 	for rows.Next() {
-		var i GetUsersRow
+		var i User
 		if err := rows.Scan(
 			&i.ID,
 			&i.Username,
@@ -324,38 +243,6 @@ func (q *Queries) GetUsers(ctx context.Context) ([]GetUsersRow, error) {
 			&i.Password,
 			&i.FirstName,
 			&i.LastName,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getUsersFlashCardSets = `-- name: GetUsersFlashCardSets :many
-SELECT id, name, description, user_id, class_id, created_at, updated_at FROM flashcard_sets WHERE user_id = $1
-`
-
-func (q *Queries) GetUsersFlashCardSets(ctx context.Context, userID int32) ([]FlashcardSet, error) {
-	rows, err := q.db.Query(ctx, getUsersFlashCardSets, userID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []FlashcardSet
-	for rows.Next() {
-		var i FlashcardSet
-		if err := rows.Scan(
-			&i.ID,
-			&i.Name,
-			&i.Description,
-			&i.UserID,
-			&i.ClassID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
