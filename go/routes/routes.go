@@ -18,10 +18,17 @@ func Routes(r *chi.Mux, cfg *controllers.Config) {
 		r.Use(cfg.AuthMiddleware)
 		
 		r.Get("/classes", cfg.GetClasses)
-		r.Get("/flashcard_sets", cfg.GetUsersFlashCardSets)
-		r.Post("/flashcard", cfg.CreateFlashCard)
-		r.Get("/flashcard", cfg.GetFlashCard)
-		r.Put("/flashcard", cfg.UpdateFlashCard)
+	
+	// r.Get("/flashcard_sets", cfg.GetUsersFlashCardSets)
+		r.Get("/flashcard_set", cfg.GetFlashCardSet)
+	r.Post("/flashcard_set", cfg.CreateFlashCardSet)
+	r.Put("/flashcard_set", cfg.UpdateFlashCardSet)
+	r.Delete("/flashcard_set", cfg.DeleteFlashCardSet)
+
+	r.Get("/flashcard", cfg.GetFlashCard)
+	r.Post("/flashcard", cfg.CreateFlashCard)
+			r.Put("/flashcard", cfg.UpdateFlashCard)
 		r.Delete("/flashcard", cfg.DeleteFlashCard)
+
 	})
 }
