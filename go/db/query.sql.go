@@ -219,6 +219,29 @@ func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
 	return items, nil
 }
 
+const updateClass = `-- name: UpdateClass :exec
+UPDATE classes SET name = $1, description = $2, join_code = $3, teacher_id = $4 WHERE id = $5
+`
+
+type UpdateClassParams struct {
+	Name        string
+	Description string
+	JoinCode    string
+	TeacherID   pgtype.Int4
+	ID          int32
+}
+
+func (q *Queries) UpdateClass(ctx context.Context, arg UpdateClassParams) error {
+	_, err := q.db.Exec(ctx, updateClass,
+		arg.Name,
+		arg.Description,
+		arg.JoinCode,
+		arg.TeacherID,
+		arg.ID,
+	)
+	return err
+}
+
 const updateFlashCard = `-- name: UpdateFlashCard :exec
 UPDATE flashcards SET front = $1, back = $2 WHERE id = $3
 `
