@@ -237,6 +237,7 @@ func (cfg *Config) DeleteFlashCardSet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Println("Flashcard set deleted successfully")
+
 }
 
 func (cfg *Config) GetUsers(w http.ResponseWriter, r *http.Request) {
@@ -477,4 +478,60 @@ func (cfg *Config) DeleteFlashCard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Println("Flashcard deleted successfully")
+}
+
+func (cfg *Config) DeleteFlashCardSets(w http.ResponseWriter, r *http.Request) {
+	// curl -X DELETE localhost:8000/flashcard_sets/1 -H "user_id: 11"
+
+	// Get set ID from URL parameter
+	setIDStr := chi.URLParam(r, "id")
+	if setIDStr == "" {
+		http.Error(w, "missing set ID in URL", http.StatusBadRequest)
+		return
+	}
+
+	setID, err := strconv.Atoi(setIDStr)
+	if err != nil {
+		http.Error(w, "Invalid set ID", http.StatusBadRequest)
+		return
+	}
+
+	// Get user ID from header
+	userIDStr := r.Header.Get("user_id")
+	if userIDStr == "" {
+		http.Error(w, "missing 'user_id' header", http.StatusBadRequest)
+		return
+	}
+
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		http.Error(w, "Invalid 'user_id' header", http.StatusBadRequest)
+		return
+	}
+
+	ctx := context.Background()
+
+	conn, err := pgx.ConnectConfig(ctx, cfg.DB)
+	if err != nil {
+		log.Printf("could not connect to db: %v", err)
+		http.Error(w, "Database connection error", http.StatusInternalServerError)
+		return
+	}
+	defer conn.Close(ctx)
+
+	query := db.New(conn)
+
+	// Delete the flashcard set
+	err = query.DeleteFlashCardSet(ctx, db.DeleteFlashCardSetParams{
+		ID:     int32(setID),
+		UserID: int32(userID),
+	})
+	if err != nil {
+		log.Printf("error deleting flashcard set: %v", err)
+		http.Error(w, "Failed to delete flashcard set", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Flashcard set deleted successfully\n"))
 }

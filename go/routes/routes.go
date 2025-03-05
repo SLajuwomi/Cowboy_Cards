@@ -6,16 +6,15 @@ import (
 )
 
 func Routes(r *chi.Mux, cfg *controllers.Config) {
-	// r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-	// 	w.Write([]byte("hello world\n"))
-	// })
+
 	r.Get("/classes", cfg.GetClasses)
 
-	// r.Get("/flashcard_sets", cfg.GetUsersFlashCardSets)
-	r.Get("/flashcard_set", cfg.GetFlashCardSet)
-	r.Post("/flashcard_set", cfg.CreateFlashCardSet)
-	r.Put("/flashcard_set", cfg.UpdateFlashCardSet)
-	r.Delete("/flashcard_set", cfg.DeleteFlashCardSet)
+	r.Route("/flashcard_set", func(r chi.Router) {
+		r.Get("/", cfg.GetUsersFlashCardSet)
+    r.Post("/", cfg.CreateFlashCardSet)
+	  r.Put("/", cfg.UpdateFlashCardSet)
+		r.Delete("/", cfg.DeleteFlashCardSet)
+	})
 
 	r.Get("/flashcard", cfg.GetFlashCard)
 	r.Post("/flashcard", cfg.CreateFlashCard)
