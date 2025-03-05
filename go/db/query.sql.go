@@ -54,8 +54,26 @@ DELETE FROM flashcard_sets WHERE id = $1
 
 func (q *Queries) DeleteFlashCardSet(ctx context.Context, id int32) error {
 	_, err := q.db.Exec(ctx, deleteFlashCardSet, id)
-
 	return err
+}
+
+const getClass = `-- name: GetClass :one
+SELECT id, name, description, join_code, teacher_id, created_at, updated_at FROM classes WHERE id = $1
+`
+
+func (q *Queries) GetClass(ctx context.Context, id int32) (Class, error) {
+	row := q.db.QueryRow(ctx, getClass, id)
+	var i Class
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.JoinCode,
+		&i.TeacherID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const getClasses = `-- name: GetClasses :many

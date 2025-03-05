@@ -481,7 +481,7 @@ func (cfg *Config) DeleteFlashCard(w http.ResponseWriter, r *http.Request) {
 }
 
 func (cfg *Config) DeleteFlashCardSets(w http.ResponseWriter, r *http.Request) {
-	// curl -X DELETE localhost:8000/flashcard_sets/1 -H "user_id: 11"
+	// curl -X DELETE localhost:8000/flashcard_sets/1 -H "id: 1"
 
 	// Get set ID from URL parameter
 	setIDStr := chi.URLParam(r, "id")
@@ -493,19 +493,6 @@ func (cfg *Config) DeleteFlashCardSets(w http.ResponseWriter, r *http.Request) {
 	setID, err := strconv.Atoi(setIDStr)
 	if err != nil {
 		http.Error(w, "Invalid set ID", http.StatusBadRequest)
-		return
-	}
-
-	// Get user ID from header
-	userIDStr := r.Header.Get("user_id")
-	if userIDStr == "" {
-		http.Error(w, "missing 'user_id' header", http.StatusBadRequest)
-		return
-	}
-
-	userID, err := strconv.Atoi(userIDStr)
-	if err != nil {
-		http.Error(w, "Invalid 'user_id' header", http.StatusBadRequest)
 		return
 	}
 
@@ -522,10 +509,8 @@ func (cfg *Config) DeleteFlashCardSets(w http.ResponseWriter, r *http.Request) {
 	query := db.New(conn)
 
 	// Delete the flashcard set
-	err = query.DeleteFlashCardSet(ctx, db.DeleteFlashCardSetParams{
-		ID:     int32(setID),
-		UserID: int32(userID),
-	})
+	err = query.DeleteFlashCardSet(ctx, int32(setID))
+	
 	if err != nil {
 		log.Printf("error deleting flashcard set: %v", err)
 		http.Error(w, "Failed to delete flashcard set", http.StatusInternalServerError)
@@ -535,3 +520,120 @@ func (cfg *Config) DeleteFlashCardSets(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Flashcard set deleted successfully\n"))
 }
+// func (cfg *Config) CreateClass(w http.ResponseWriter, r *http.Request) {
+// 	// curl -X POST localhost:8000/class -H "name: class name" -H "description: class description" -H "joincode: join code" -H "teacherid: teacher id"
+
+// 	name := r.Header.Get("name");
+// 	if name == "" {
+// 		http.Error(w, "No class name given", http.StatusBadRequest);
+// 		return
+// 	}
+
+// 	description := r.Header.Get("description");
+// 	if description == "" {
+// 		http.Error(w, "No class description given", http.StatusBadRequest);
+// 		return
+// 	}
+
+// 	joincode := r.Header.Get("joincode");
+// 	if joincode == "" {
+// 		http.Error(w, "No class join code given", http.StatusBadRequest);
+// 		return
+// 	}
+
+// 	idStr := r.Header.Get("teacherid");
+// 	if idStr == "" {
+// 		http.Error(w, "No teacher id given", http.StatusBadRequest);
+// 		return
+// 	}
+
+// 	teacherId, err := strconv.Atoi(idStr)
+// 	if err != nil {
+// 		log.Println("error:", err)
+// 		http.Error(w, "invalid teacher id", http.StatusBadRequest)
+// 		return
+// 	}
+
+// 	id := int32(teacherId)
+// 	if id == 0 {
+// 		http.Error(w, "invalid teacher id", http.StatusBadRequest)
+// 		return
+// 	}
+
+// 	ctx := context.Background()
+
+// 	conn, err := pgx.ConnectConfig(ctx, cfg.DB)
+// 	if err != nil {
+// 		log.Fatalf("could not connect to db... %v", err)
+// 	}
+// 	defer conn.Close(ctx)
+
+// 	query := db.New(conn)
+
+// 	//TODO -- call create class query once sqlc has made it
+// 	if error != nil {
+// 		log.Printf("Error creating class in db: %v", err)
+// 		http.Error(w, "Failed to create class", http.StatusInternalServerError)
+// 		return
+// 	}
+// 	log.Println("Flashcard deleted successfully")
+// }
+
+// func (cfg *Config) CreateClass(w http.ResponseWriter, r *http.Request) {
+// 	// curl -X POST localhost:8000/class -H "name: class name" -H "description: class description" -H "joincode: join code" -H "teacherid: teacher id"
+
+// 	name := r.Header.Get("name");
+// 	if name == "" {
+// 		http.Error(w, "No class name given", http.StatusBadRequest);
+// 		return
+// 	}
+
+// 	description := r.Header.Get("description");
+// 	if description == "" {
+// 		http.Error(w, "No class description given", http.StatusBadRequest);
+// 		return
+// 	}
+
+// 	joincode := r.Header.Get("joincode");
+// 	if joincode == "" {
+// 		http.Error(w, "No class join code given", http.StatusBadRequest);
+// 		return
+// 	}
+
+// 	idStr := r.Header.Get("teacherid");
+// 	if idStr == "" {
+// 		http.Error(w, "No teacher id given", http.StatusBadRequest);
+// 		return
+// 	}
+
+// 	teacherId, err := strconv.Atoi(idStr)
+// 	if err != nil {
+// 		log.Println("error:", err)
+// 		http.Error(w, "invalid teacher id", http.StatusBadRequest)
+// 		return
+// 	}
+
+// 	id := int32(teacherId)
+// 	if id == 0 {
+// 		http.Error(w, "invalid teacher id", http.StatusBadRequest)
+// 		return
+// 	}
+
+// 	ctx := context.Background()
+
+// 	conn, err := pgx.ConnectConfig(ctx, cfg.DB)
+// 	if err != nil {
+// 		log.Fatalf("could not connect to db... %v", err)
+// 	}
+// 	defer conn.Close(ctx)
+
+// 	query := db.New(conn)
+
+// 	//TODO -- call create class query once sqlc has made it
+// 	if error != nil {
+// 		log.Printf("Error creating class in db: %v", err)
+// 		http.Error(w, "Failed to create class", http.StatusInternalServerError)
+// 		return
+// 	}
+// 	log.Println("Flashcard deleted successfully")
+// }
