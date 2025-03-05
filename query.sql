@@ -39,3 +39,6 @@ INSERT INTO classes (name, description, join_code, teacher_id) VALUES ($1, $2, $
 
 -- name: UpdateClass :exec
 UPDATE classes SET name = $1, description = $2, join_code = $3, teacher_id = $4 WHERE id = $5;
+
+-- name: DeleteClass :exec
+DELETE FROM classes WHERE id = $1;

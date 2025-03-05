@@ -62,6 +62,15 @@ func (q *Queries) CreateFlashCardSet(ctx context.Context, arg CreateFlashCardSet
 	return err
 }
 
+const deleteClass = `-- name: DeleteClass :exec
+DELETE FROM classes WHERE id = $1
+`
+
+func (q *Queries) DeleteClass(ctx context.Context, id int32) error {
+	_, err := q.db.Exec(ctx, deleteClass, id)
+	return err
+}
+
 const deleteFlashCard = `-- name: DeleteFlashCard :exec
 DELETE FROM flashcards WHERE id = $1
 `

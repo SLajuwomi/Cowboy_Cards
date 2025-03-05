@@ -639,7 +639,7 @@ func (cfg *Config) GetClass(w http.ResponseWriter, r *http.Request) {
 }
 
 func (cfg *Config) UpdateClass(w http.ResponseWriter, r *http.Request) {
-	// curl -X POST localhost:8000/class -H "id: 1" -H "name: class name" -H "description: class description" -H "joincode: join code" -H "teacherid: 1"
+	// curl -X PUT localhost:8000/class -H "id: 1" -H "name: class name" -H "description: class description" -H "joincode: join code" -H "teacherid: 1"
 
 	cIdStr := r.Header.Get("id")
 	if cIdStr == "" {
@@ -720,4 +720,42 @@ func (cfg *Config) UpdateClass(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Println("Class updated successfully")
+}
+
+func (cfg *Config) DeleteClass(w http.ResponseWriter, r *http.Request) {
+	// curl -X DELETE localhost:8000/class -H "id: 1"
+
+	idStr := r.Header.Get("id")
+
+	if idStr == "" {
+		http.Error(w, "No class id given", http.StatusBadRequest)
+		return;
+	}
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid class id given", http.StatusBadRequest)
+		return;
+	}
+
+	classId := int32(id);
+
+	ctx := context.Background()
+
+	conn, err := pgx.ConnectConfig(ctx, cfg.DB)
+	if err != nil {
+		log.Fatalf("Could not connect to db... %v", err)
+	}
+	defer conn.Close(ctx)
+
+	query := db.New(conn)
+
+	error := query.DeleteClass(ctx, classId)
+
+	if error != nil {
+		log.Printf("Error deleting class in db: %v", error)
+		http.Error(w, "Failed to delete class", http.StatusInternalServerError)
+		return;
+	}
+	log.Println("Class deleted successfully")
 }
