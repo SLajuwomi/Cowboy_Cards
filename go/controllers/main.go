@@ -572,7 +572,6 @@ func (cfg *Config) CreateClass(w http.ResponseWriter, r *http.Request) {
 
 	query := db.New(conn)
 
-	//TODO -- call create class query once sqlc has made it
 	error := query.CreateClass(ctx, db.CreateClassParams{
 		Name: name,
 		Description: description,
@@ -588,3 +587,53 @@ func (cfg *Config) CreateClass(w http.ResponseWriter, r *http.Request) {
 	log.Println("Class created successfully")
 }
 
+func (cfg *Config) GetClass(w http.ResponseWriter, r *http.Request) {
+	// curl -X GET localhost:8000/class -H "id: 1"
+
+	idStr := r.Header.Get("id");
+	if idStr == "" {
+		http.Error(w, "No class id given", http.StatusBadRequest);
+		return
+	}
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		log.Println("error:", err)
+		http.Error(w, "invalid class id", http.StatusBadRequest)
+		return
+	}
+
+	classId := int32(id)
+	if classId == 0 {
+		http.Error(w, "invalid class id", http.StatusBadRequest)
+		return
+	}
+
+	ctx := context.Background()
+
+	conn, err := pgx.ConnectConfig(ctx, cfg.DB)
+	if err != nil {
+		log.Fatalf("could not connect to db... %v", err)
+	}
+	defer conn.Close(ctx)
+
+	query := db.New(conn)
+	
+	class, error := query.GetClass(ctx, classId)
+
+	if error != nil {
+		log.Printf("Error getting class in db: %v", err)
+		http.Error(w, "Failed to get class", http.StatusInternalServerError)
+		return
+	}
+	log.Println("Class retrieved successfully")
+	log.Println("data: ", class)
+	log.Println()
+
+	b, err := json.Marshal(class)
+	if err != nil {
+		log.Println("error:", err)
+	}
+
+	w.Write(append(b, 10)) //add newline
+}
