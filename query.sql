@@ -5,7 +5,9 @@ SELECT * FROM classes;
 SELECT * FROM flashcard_sets WHERE id = $1;
 
 -- name: CreateFlashCardSet :exec
-INSERT INTO flashcard_sets (name, description, user_id) VALUES ($1, $2, $3);
+
+INSERT INTO flashcard_sets (id, name, description) VALUES ($1, $2, $3);
+--INSERT INTO flashcard_sets (name, description, user_id) VALUES ($1, $2, $3);
 
 -- name: UpdateFlashCardSet :exec
 UPDATE flashcard_sets SET name = $1, description = $2 WHERE id = $3;
