@@ -7,7 +7,30 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
+
+const createClass = `-- name: CreateClass :exec
+INSERT INTO classes (name, description, join_code, teacher_id) VALUES ($1, $2, $3, $4)
+`
+
+type CreateClassParams struct {
+	Name        string
+	Description string
+	JoinCode    string
+	TeacherID   pgtype.Int4
+}
+
+func (q *Queries) CreateClass(ctx context.Context, arg CreateClassParams) error {
+	_, err := q.db.Exec(ctx, createClass,
+		arg.Name,
+		arg.Description,
+		arg.JoinCode,
+		arg.TeacherID,
+	)
+	return err
+}
 
 const createFlashCard = `-- name: CreateFlashCard :exec
 INSERT INTO flashcards (front, back, set_id) VALUES ($1, $2, $3)
@@ -38,6 +61,17 @@ func (q *Queries) CreateFlashCardSet(ctx context.Context, arg CreateFlashCardSet
 	_, err := q.db.Exec(ctx, createFlashCardSet, arg.ID, arg.Name, arg.Description)
 	return err
 }
+
+
+//const deleteClass = `-- name: DeleteClass :exec
+//DELETE FROM classes WHERE id = $1
+//`
+
+//func (q *Queries) DeleteClass(ctx context.Context, id int32) error {
+//	_, err := q.db.Exec(ctx, deleteClass, id)
+//	return err
+//}
+
 
 const createFlashCardSet = `-- name: CreateFlashCardSet :exec
 INSERT INTO flashcard_sets (name, description, user_id) VALUES ($1, $2, $3)
@@ -90,6 +124,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	return i, err
 }
 
+
 const deleteFlashCard = `-- name: DeleteFlashCard :exec
 DELETE FROM flashcards WHERE id = $1
 `
@@ -107,6 +142,7 @@ func (q *Queries) DeleteFlashCardSet(ctx context.Context, id int32) error {
 	_, err := q.db.Exec(ctx, deleteFlashCardSet, id)
 
 
+
 //	return err
 //}
 
@@ -117,7 +153,27 @@ func (q *Queries) DeleteFlashCardSet(ctx context.Context, id int32) error {
 //func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 //	_, err := q.db.Exec(ctx, deleteUser, id)
 
+
 	return err
+}
+
+const getClass = `-- name: GetClass :one
+SELECT id, name, description, join_code, teacher_id, created_at, updated_at FROM classes WHERE id = $1
+`
+
+func (q *Queries) GetClass(ctx context.Context, id int32) (Class, error) {
+	row := q.db.QueryRow(ctx, getClass, id)
+	var i Class
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.JoinCode,
+		&i.TeacherID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const getClasses = `-- name: GetClasses :many
@@ -304,6 +360,29 @@ func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateClass = `-- name: UpdateClass :exec
+UPDATE classes SET name = $1, description = $2, join_code = $3, teacher_id = $4 WHERE id = $5
+`
+
+type UpdateClassParams struct {
+	Name        string
+	Description string
+	JoinCode    string
+	TeacherID   pgtype.Int4
+	ID          int32
+}
+
+func (q *Queries) UpdateClass(ctx context.Context, arg UpdateClassParams) error {
+	_, err := q.db.Exec(ctx, updateClass,
+		arg.Name,
+		arg.Description,
+		arg.JoinCode,
+		arg.TeacherID,
+		arg.ID,
+	)
+	return err
 }
 
 const updateFlashCard = `-- name: UpdateFlashCard :exec
