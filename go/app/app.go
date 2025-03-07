@@ -1,9 +1,6 @@
 package app
 
 import (
-	"context"
-	"fmt"
-	"crypto/tls"
 	"log"
 	"net/http"
 	"os"
@@ -19,36 +16,33 @@ import (
 )
 
 func LoadConfig() (*controllers.Config, error) {
-	dbURL := os.Getenv("DATABASE_URL")
-	if dbURL == "" {
-		return nil, fmt.Errorf("DATABASE_URL environment variable is not set")
-	}
-
-	// Create a connection pool
-	ctx := context.Background()
-	pool, err := pgxpool.New(ctx, dbURL)
+	config, err := pgxpool.ParseConfig(os.Getenv("DATABASE_URL"))
 	if err != nil {
-		return nil, fmt.Errorf("error creating connection pool: %v", err)
+		log.Fatalf("error parsing config: %v", err)
 	}
+	config.ConnConfig.User = os.Getenv("DBUSER")
+	config.ConnConfig.Host = os.Getenv("DBHOST")
 
-	// Test the connection
-	if err := pool.Ping(ctx); err != nil {
-		return nil, fmt.Errorf("error connecting to database: %v", err)
-	}
-
-	log.Printf("Successfully connected to database")
-
+	// pool, err := pgxpool.NewWithConfig(context.Background(), config)
+	// if err != nil {
+	// 	log.Fatalf("error creating connection pool: %v", err)
+	// }
+	// if err := pool.Ping(ctx); err != nil {
+	// 	log.Fatalf("error connecting to database: %v", err)
+	// }
+	// log.Println("Successfully connected to database")
 
 	// Enable SSL for Supabase
-	conn.TLSConfig = &tls.Config{
-		MinVersion: tls.VersionTLS12,
-	}
+	// conn.TLSConfig = &tls.Config{
+	// 	MinVersion: tls.VersionTLS12,
+	// }
 
 	cfg := &controllers.Config{
-		DB: pool,
+		DB: config,
 	}
 
 	return cfg, nil
+
 }
 
 func setCacheControlHeader(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
