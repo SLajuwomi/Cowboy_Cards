@@ -4,7 +4,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Route } from 'react-router-dom';
+import { Route, useLocation } from 'react-router-dom';
 import ClassDetail from './pages/ClassDetail';
 import Home from './pages/Home';
 import Index from './pages/Index';
@@ -18,7 +18,7 @@ import '@ionic/react/css/core.css';
 /* Basic CSS for apps built with Ionic */
 import '@ionic/react/css/normalize.css';
 import '@ionic/react/css/structure.css';
-import '@ionic/react/css/typography.css';
+// import '@ionic/react/css/typography.css';
 
 /* Optional CSS utils that can be commented out */
 import '@ionic/react/css/display.css';
@@ -46,28 +46,35 @@ const queryClient = new QueryClient();
  * - /teacher : Teacher dashboard
  * - /teacher/class/:id : Class management page for teachers
  */
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <IonApp>
-        {/* @ts-expect-error --types bug on this element*/}
-        <IonReactRouter>
+
+// console.log(Route);
+
+const App = () => {
+  // console.log(useLocation());
+  // console.log(useLocation().pathname);
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <IonApp>
           {/* @ts-expect-error --types bug on this element*/}
-          <IonRouterOutlet>
-            <Route exact path="/" component={Index} />
-            <Route exact path="/home" component={Home} />
-            <Route exact path="/class/:id" component={ClassDetail} />
-            <Route exact path="/teacher" component={TeacherDashboard} />
-            <Route exact path="/teacher/class/:id" component={ClassDetail} />
-            <Route exact path="/public-cards" component={PublicCards} />
-            <Route component={NotFound} />
-          </IonRouterOutlet>
-        </IonReactRouter>
-      </IonApp>
-      <Toaster />
-      <Sonner />
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+          <IonReactRouter basename="/cowboycards">
+            {/* @ts-expect-error --types bug on this element*/}
+            <IonRouterOutlet>
+              <Route exact path="/" component={Index} />
+              <Route exact path="/home" component={Home} />
+              <Route exact path="/class/:id" component={ClassDetail} />
+              <Route exact path="/teacher" component={TeacherDashboard} />
+              <Route exact path="/teacher/class/:id" component={ClassDetail} />
+              <Route exact path="/public-cards" component={PublicCards} />
+              <Route component={NotFound} />
+            </IonRouterOutlet>
+          </IonReactRouter>
+        </IonApp>
+        <Toaster />
+        <Sonner />
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
