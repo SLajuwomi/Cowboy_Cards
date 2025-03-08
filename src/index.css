@@ -1,59 +1,59 @@
-/* src/index.css */
+/* Core CSS required for Ionic components to work properly */
+@import '@ionic/react/css/core.css';
+
+/* Basic CSS for apps built with Ionic */
+@import '@ionic/react/css/normalize.css';
+@import '@ionic/react/css/structure.css';
+@import '@ionic/react/css/typography.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  html {
-    --ion-dynamic-font: var(--ion-default-dynamic-font);
-    --ion-font-family: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
-      'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  }
   :root {
-    --background: 0 0% 100%; /* #ffffff */
-    --foreground: 222.2 84% 4.9%; /* #1f2937 */
-    --card: 0 0% 100%; /* #ffffff */
-    --card-foreground: 222.2 84% 4.9%; /* #1f2937 */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 263 70% 50%; /* #6a40bf */
-    --primary-foreground: 210 40% 98%; /* #f5f5f5 */
-    --secondary: 217 91% 60%; /* #60a5fa */
-    --secondary-foreground: 222.2 47.4% 11.2%; /* #1f2937 */
-    --muted: 210 40% 96.1%; /* #f3f4f6 */
-    --muted-foreground: 215.4 16.3% 46.9%; /* #6b7280 */
+    --primary: 263 70% 50%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 217 91% 60%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%; /* #f87171 */
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%; /* #e5e7eb */
+    --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 263 70% 50%;
     --radius: 0.75rem;
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --background: 0 0% 7.1%; /* #121212 */
-      --foreground: 0 0% 100%; /* #ffffff */
-      --card: 0 0% 11.8%; /* #1e1e1e */
-      --card-foreground: 0 0% 100%; /* #ffffff */
-      --popover: 0 0% 11.8%;
-      --popover-foreground: 0 0% 100%;
-      --primary: 263 70% 50%;
-      --primary-foreground: 210 40% 98%;
-      --secondary: 217 91% 60%;
-      --secondary-foreground: 222.2 47.4% 11.2%;
-      --muted: 215 20% 21.2%; /* #374151 */
-      --muted-foreground: 217.9 10.6% 64.9%; /* #9ca3af */
-      --accent: 215 20% 21.2%;
-      --accent-foreground: 0 0% 100%;
-      --destructive: 0 84.2% 60.2%;
-      --destructive-foreground: 210 40% 98%;
-      --border: 215 20% 21.2%;
-      --input: 215 20% 21.2%;
-      --ring: 263 70% 50%;
-    }
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 263 70% 50%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 263 70% 50%;
   }
 }
 
@@ -66,7 +66,6 @@
   }
 }
 
-/* Flip card styles remain unchanged */
 .flip-card {
   perspective: 1000px;
   transform-style: preserve-3d;
