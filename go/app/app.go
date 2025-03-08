@@ -1,6 +1,8 @@
 package app
 
 import (
+	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -15,13 +17,23 @@ import (
 	"github.com/urfave/negroni/v3"
 )
 
-func LoadConfig() (*controllers.Config, error) {
-	config, err := pgxpool.ParseConfig(os.Getenv("DATABASE_URL"))
-	if err != nil {
-		log.Fatalf("error parsing config: %v", err)
+func LoadPoolConfig() (*controllers.Config, error) {
+	var (
+		dburl  = os.Getenv("DATABASE_URL")
+		dbuser = os.Getenv("DBUSER")
+		dbhost = os.Getenv("DBHOST")
+	)
+
+	if dburl == "" || dbuser == "" || dbhost == "" {
+		return nil, errors.New("env vars not available")
 	}
-	config.ConnConfig.User = os.Getenv("DBUSER")
-	config.ConnConfig.Host = os.Getenv("DBHOST")
+
+	config, err := pgxpool.ParseConfig(dburl)
+	if err != nil {
+		return nil, fmt.Errorf("error parsing config: %v", err)
+	}
+	config.ConnConfig.User = dbuser
+	config.ConnConfig.Host = dbhost
 
 	// pool, err := pgxpool.NewWithConfig(context.Background(), config)
 	// if err != nil {
@@ -42,7 +54,6 @@ func LoadConfig() (*controllers.Config, error) {
 	}
 
 	return cfg, nil
-
 }
 
 func setCacheControlHeader(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
@@ -59,7 +70,7 @@ func setCacheControlHeader(w http.ResponseWriter, r *http.Request, next http.Han
 }
 
 func Init() {
-	cfg, err := LoadConfig()
+	cfg, err := LoadPoolConfig()
 	if err != nil {
 		log.Fatalf("error getting config: %v", err)
 	}
