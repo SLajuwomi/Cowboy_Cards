@@ -10,6 +10,8 @@ import Home from './pages/Home';
 import NotFound from './pages/NotFound';
 import ClassDetail from './pages/ClassDetail';
 import TeacherDashboard from './pages/TeacherDashboard';
+import { AuthForm } from '@/components/auth/AuthForm';
+import ResetPass from '@/components/auth/ResetPass';
 import PublicCards from './pages/PublicCards';
 import UserAccount from './pages/UserAccount';
 
@@ -36,17 +38,6 @@ setupIonicReact();
 
 const queryClient = new QueryClient();
 
-/**
- * Main App component
- *
- * Defines the routing structure for the application.
- * Routes include:
- * - / : Index page
- * - /home : Home page
- * - /class/:id : Class detail page for students
- * - /teacher : Teacher dashboard
- * - /teacher/class/:id : Class management page for teachers
- */
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -59,6 +50,8 @@ const App = () => (
             <Route exact path="/teacher" component={TeacherDashboard} />
             <Route exact path="/teacher/class/:id" component={ClassDetail} />
             <Route exact path="/public-cards" component={PublicCards} />
+            <Route exact path="/login" component={AuthForm} />
+            <Route exact path="/reset-password" component={ResetPass} />
             <Route exact path="/userAccount" component={UserAccount} />
             <Route component={NotFound} />
           </IonRouterOutlet>
