@@ -1,6 +1,4 @@
 import { FlashCard } from '@/components/flashcards/FlashCard';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import {
   Carousel,
   CarouselContent,
@@ -10,19 +8,6 @@ import {
   type CarouselApi,
 } from '@/components/ui/carousel';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Textarea } from '@/components/ui/textarea';
-import {
   IonContent,
   IonButton,
   IonIcon,
@@ -30,15 +15,8 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonCardContent,
-  IonModal,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonButtons,
   IonItem,
   IonLabel,
-  IonInput,
-  IonTextarea,
   IonList,
   IonSegment,
   IonSegmentButton,
@@ -48,16 +26,13 @@ import {
   IonChip,
 } from '@ionic/react';
 import {
-  personAdd,
-  add,
   trophy,
   book,
   people,
-  arrowBack,
   chevronBack,
   chevronForward,
+  createOutline,
 } from 'ionicons/icons';
-import { BookOpen, Plus, Trophy, UserPlus, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -156,24 +131,33 @@ const ClassDetail = () => {
   }, [api]);
 
   return (
-    <IonContent>
-      <div className="ion-padding">
+    <IonContent className="ion-padding">
+      <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">{classData.name}</h1>
           <p className="text-gray-600">Teacher: {classData.teacher}</p>
           <p className="text-gray-600">Class ID: {id}</p>
         </div>
 
-        <div className="mb-4">
+        <div className="flex flex-row mb-4">
           <IonButton onClick={() => window.history.back()} fill="outline">
             ← Back
           </IonButton>
+          {/* Icon button to link to edit class page */}
+          <IonIcon
+            icon={createOutline}
+            size="large"
+            color="primary"
+            className="ml-auto hover:cursor-pointer hover:transform hover:scale-110 hover:opacity-75"
+          />
         </div>
 
-        {/* Tab Navigation */}
         <IonSegment
           value={selectedTab}
           onIonChange={(e) => setSelectedTab(e.detail.value as string)}
+          style={{
+            '--background': 'var(--ion-color-light)',
+          }}
         >
           <IonSegmentButton value="leaderboard">
             <IonIcon icon={trophy} />
