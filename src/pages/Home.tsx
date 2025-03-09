@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button';
 import {
   IonContent,
   IonCard,
@@ -8,10 +7,6 @@ import {
   IonCardContent,
   IonIcon,
   IonButton,
-  IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
   IonSegment,
   IonSegmentButton,
   IonLabel,
@@ -23,10 +18,10 @@ import {
   listOutline,
   bookOutline,
 } from 'ionicons/icons';
-import { BookOpen, List, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { add } from 'date-fns';
+import { Navbar, NavbarTitle, NavbarButton } from '@/components/navbar';
 
 const Home = () => {
   const [tab, setTab] = useState('classes');
@@ -67,6 +62,19 @@ const Home = () => {
 
   return (
     <IonContent className="ion-padding">
+      <Navbar>
+        <NavbarTitle>
+          <div className="text-xl md:text-2xl lg:text-3xl font-bold">
+            Dashboard
+          </div>
+        </NavbarTitle>
+        <NavbarButton onClick={() => {}}>
+          <div className="flex items-center">
+            <Plus className="h-4 w-4" />
+            <div className="ml-2">Join Class</div>
+          </div>
+        </NavbarButton>
+      </Navbar>
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-8">
           <h1 className="text-3xl font-bold">
@@ -111,7 +119,7 @@ const Home = () => {
             {classes.map((cls) => (
               <Link key={cls.id} to={`/class/${cls.id}`}>
                 <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-200 rounded-lg border shadow-sm">
-                  <IonCardHeader>
+                  <IonCardHeader className="flex flex-col space-y-1.5 p-6">
                     <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
                       {cls.name}
                     </IonCardTitle>
@@ -133,7 +141,7 @@ const Home = () => {
             {personalFlashcardSets.map((set) => (
               <Link key={set.id} to={`/class/${set.id}`}>
                 <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-200 rounded-lg border shadow-sm">
-                  <IonCardHeader>
+                  <IonCardHeader className="flex flex-col space-y-1.5 p-6">
                     <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
                       {set.name}
                     </IonCardTitle>
