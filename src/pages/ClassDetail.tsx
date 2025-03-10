@@ -9,32 +9,30 @@ import {
 } from '@/components/ui/carousel';
 import {
   IonContent,
-  IonButton,
   IonIcon,
+  IonButton,
+  IonSegment,
+  IonSegmentButton,
+  IonLabel,
   IonCard,
   IonCardHeader,
   IonCardTitle,
   IonCardContent,
   IonItem,
-  IonLabel,
   IonList,
-  IonSegment,
-  IonSegmentButton,
   IonGrid,
   IonRow,
   IonCol,
-  IonChip,
 } from '@ionic/react';
-import {
-  trophy,
-  book,
-  people,
-  chevronBack,
-  chevronForward,
-  createOutline,
-} from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import {
+  createOutline,
+  trophyOutline,
+  bookOutline,
+  peopleOutline,
+  arrowBackOutline,
+} from 'ionicons/icons';
 
 /**
  * ClassDetail Component
@@ -54,7 +52,7 @@ const ClassDetail = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [api, setApi] = useState<CarouselApi>();
   const [selectedSet, setSelectedSet] = useState<number | null>(null);
-  const [selectedTab, setSelectedTab] = useState('leaderboard');
+  const [tab, setTab] = useState('leaderboard');
 
   // Mock data - in a real app this would come from an API based on the class ID
   const classData = {
@@ -131,7 +129,7 @@ const ClassDetail = () => {
   }, [api]);
 
   return (
-    <IonContent className="ion-padding">
+    <IonContent>
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">{classData.name}</h1>
@@ -139,160 +137,162 @@ const ClassDetail = () => {
           <p className="text-gray-600">Class ID: {id}</p>
         </div>
 
-        <div className="flex flex-row mb-4">
+        <div className="flex flex-row justify-between mb-6">
           <IonButton onClick={() => window.history.back()} fill="outline">
-            ← Back
+            <IonIcon slot="start" icon={arrowBackOutline} />
+            Back
           </IonButton>
-          {/* Icon button to link to edit class page */}
           <IonIcon
             icon={createOutline}
             size="large"
             color="primary"
-            className="ml-auto hover:cursor-pointer hover:transform hover:scale-110 hover:opacity-75"
-          />
+            className="hover:transform hover:scale-110 cursor-pointer"
+          ></IonIcon>
         </div>
 
         <IonSegment
-          value={selectedTab}
-          onIonChange={(e) => setSelectedTab(e.detail.value as string)}
-          style={{
-            '--background': 'var(--ion-color-light)',
-          }}
+          value={tab}
+          onIonChange={(e) => setTab(e.detail.value as string)}
+          className="w-full mb-6"
         >
           <IonSegmentButton value="leaderboard">
-            <IonIcon icon={trophy} />
+            <IonIcon icon={trophyOutline} className="mr-2" />
             <IonLabel>Leaderboard</IonLabel>
           </IonSegmentButton>
           <IonSegmentButton value="flashcards">
-            <IonIcon icon={book} />
+            <IonIcon icon={bookOutline} className="mr-2" />
             <IonLabel>Flashcard Sets</IonLabel>
           </IonSegmentButton>
           <IonSegmentButton value="students">
-            <IonIcon icon={people} />
+            <IonIcon icon={peopleOutline} className="mr-2" />
             <IonLabel>Students</IonLabel>
           </IonSegmentButton>
         </IonSegment>
 
-        {/* Tab Content */}
-        <div className="ion-margin-top">
-          {selectedTab === 'leaderboard' && (
-            <IonCard>
-              <IonCardHeader>
-                <IonCardTitle>Class Leaderboard</IonCardTitle>
-              </IonCardHeader>
-              <IonCardContent>
-                <IonList>
-                  {classData.leaderboard.map((entry, index) => (
-                    <IonItem key={index}>
-                      <IonLabel>
-                        <h2>
-                          {index + 1}. {entry.name}
-                        </h2>
-                      </IonLabel>
-                      <IonChip color="primary" slot="end">
-                        {entry.cardsMastered} cards
-                      </IonChip>
-                    </IonItem>
-                  ))}
-                </IonList>
-              </IonCardContent>
-            </IonCard>
-          )}
+        {tab === 'leaderboard' && (
+          <IonCard className="rounded-lg border shadow-sm">
+            <IonCardHeader>
+              <IonCardTitle className="text-xl font-semibold">
+                Class Leaderboard
+              </IonCardTitle>
+            </IonCardHeader>
+            <IonCardContent>
+              <IonList className="space-y-3" lines="none">
+                {classData.leaderboard.map((entry, index) => (
+                  <IonItem key={index} className="muted-item p-3">
+                    <div className="flex items-center gap-3">
+                      <span className="font-medium text-lg">{index + 1}</span>
+                      <span className="font-medium">{entry.name}</span>
+                    </div>
+                    <span slot="end" className="text-primary font-semibold">
+                      {entry.cardsMastered} cards
+                    </span>
+                  </IonItem>
+                ))}
+              </IonList>
+            </IonCardContent>
+          </IonCard>
+        )}
 
-          {selectedTab === 'flashcards' && (
-            <>
-              {selectedSet === null ? (
-                <IonGrid>
-                  <IonRow>
-                    {classData.flashcardSets.map((set) => (
-                      <IonCol size="12" sizeMd="6" sizeLg="4" key={set.id}>
-                        <IonCard button onClick={() => setSelectedSet(set.id)}>
-                          <IonCardHeader>
-                            <IonCardTitle>{set.name}</IonCardTitle>
-                          </IonCardHeader>
-                          <IonCardContent>
-                            <p>{set.description}</p>
-                            <p>{set.cards.length} cards</p>
-                          </IonCardContent>
-                        </IonCard>
-                      </IonCol>
-                    ))}
-                  </IonRow>
-                </IonGrid>
-              ) : (
-                <>
-                  <IonButton
-                    fill="outline"
-                    onClick={() => setSelectedSet(null)}
+        {tab === 'flashcards' && (
+          <div className="mt-6">
+            {selectedSet === null ? (
+              <IonGrid>
+                <IonRow>
+                  {classData.flashcardSets.map((set) => (
+                    <IonCol size="12" sizeMd="6" sizeLg="4" key={set.id}>
+                      <IonCard
+                        className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-200 rounded-lg border shadow-sm"
+                        onClick={() => setSelectedSet(set.id)}
+                      >
+                        <IonCardHeader>
+                          <IonCardTitle className="text-lg font-semibold">
+                            {set.name}
+                          </IonCardTitle>
+                        </IonCardHeader>
+                        <IonCardContent>
+                          <p className="text-muted-foreground mb-2">
+                            {set.description}
+                          </p>
+                          <p className="text-muted-foreground">
+                            {set.cards.length} cards
+                          </p>
+                        </IonCardContent>
+                      </IonCard>
+                    </IonCol>
+                  ))}
+                </IonRow>
+              </IonGrid>
+            ) : (
+              <>
+                <IonButton
+                  fill="outline"
+                  onClick={() => setSelectedSet(null)}
+                  className="mb-6"
+                >
+                  <IonIcon slot="start" icon={arrowBackOutline} />
+                  Back to Sets
+                </IonButton>
+                <div className="w-full max-w-2xl mx-auto relative">
+                  <Carousel
+                    orientation="vertical"
+                    className="w-full"
+                    setApi={setApi}
                   >
-                    <IonIcon slot="start" icon={chevronBack} />
-                    Back to Sets
-                  </IonButton>
-                  <div className="flashcard-container">
-                    {/* Implement custom carousel with Ionic gestures */}
-                    <IonCard className="ion-margin">
-                      <FlashCard
-                        front={
-                          classData.flashcardSets.find(
-                            (set) => set.id === selectedSet
-                          )?.cards[currentCardIndex].front
-                        }
-                        back={
-                          classData.flashcardSets.find(
-                            (set) => set.id === selectedSet
-                          )?.cards[currentCardIndex].back
-                        }
-                      />
-                    </IonCard>
-                    <IonButton
-                      fill="clear"
-                      onClick={() =>
-                        setCurrentCardIndex((prev) => Math.max(0, prev - 1))
-                      }
-                    >
-                      <IonIcon icon={chevronBack} />
-                    </IonButton>
-                    <IonButton
-                      fill="clear"
-                      onClick={() =>
-                        setCurrentCardIndex((prev) =>
-                          Math.min(
-                            (classData.flashcardSets.find(
-                              (set) => set.id === selectedSet
-                            )?.cards.length || 1) - 1,
-                            prev + 1
-                          )
-                        )
-                      }
-                    >
-                      <IonIcon icon={chevronForward} />
-                    </IonButton>
+                    <CarouselContent className="-mt-1 h-[400px]">
+                      {classData.flashcardSets
+                        .find((set) => set.id === selectedSet)
+                        ?.cards.map((card) => (
+                          <CarouselItem key={card.id}>
+                            <FlashCard front={card.front} back={card.back} />
+                          </CarouselItem>
+                        ))}
+                    </CarouselContent>
+                    <CarouselPrevious />
+                    <CarouselNext />
+                  </Carousel>
+                  {/* Pagination dots */}
+                  <div className="absolute right-[-50px] top-1/2 transform -translate-y-1/2 flex flex-col gap-2">
+                    {classData.flashcardSets
+                      .find((set) => set.id === selectedSet)
+                      ?.cards.map((_, index) => (
+                        <div
+                          key={index}
+                          className={`w-2 h-2 rounded-full transition-colors ${
+                            index === currentCardIndex
+                              ? 'bg-primary'
+                              : 'bg-gray-300'
+                          }`}
+                        />
+                      ))}
                   </div>
-                </>
-              )}
-            </>
-          )}
+                </div>
+              </>
+            )}
+          </div>
+        )}
 
-          {selectedTab === 'students' && (
-            <IonCard>
-              <IonCardHeader>
-                <IonCardTitle>Class Students</IonCardTitle>
-              </IonCardHeader>
-              <IonCardContent>
-                <IonList>
-                  {classData.students.map((student) => (
-                    <IonItem key={student.id}>
-                      <IonLabel>
-                        <h2>{student.name}</h2>
-                        <p>{student.email}</p>
-                      </IonLabel>
-                    </IonItem>
-                  ))}
-                </IonList>
-              </IonCardContent>
-            </IonCard>
-          )}
-        </div>
+        {tab === 'students' && (
+          <IonCard className="mt-6">
+            <IonCardHeader>
+              <IonCardTitle className="text-xl font-semibold">
+                Class Students
+              </IonCardTitle>
+            </IonCardHeader>
+            <IonCardContent>
+              <IonList className="space-y-3" lines="none">
+                {classData.students.map((student) => (
+                  <IonItem key={student.id} className="muted-item p-3">
+                    <span className="font-medium">{student.name}</span>
+                    <span slot="end" className="text-muted-foreground">
+                      {student.email}
+                    </span>
+                  </IonItem>
+                ))}
+              </IonList>
+            </IonCardContent>
+          </IonCard>
+        )}
       </div>
     </IonContent>
   );

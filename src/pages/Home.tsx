@@ -22,7 +22,6 @@ import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Navbar, NavbarTitle, NavbarButton } from '@/components/navbar';
-import CustomIonCard from '@/components/ui/CustomIonCard';
 
 const Home = () => {
   const [tab, setTab] = useState('classes');
@@ -119,13 +118,19 @@ const Home = () => {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {classes.map((cls) => (
               <Link key={cls.id} to={`/class/${cls.id}`}>
-                <CustomIonCard
-                  title={cls.name}
-                  subtitle={cls.teacher}
-                  content={
+                <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-200 rounded-lg border shadow-sm">
+                  <IonCardHeader className="flex flex-col space-y-1.5 p-6">
+                    <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
+                      {cls.name}
+                    </IonCardTitle>
+                    <IonCardSubtitle className="text-sm text-muted-foreground">
+                      {cls.teacher}
+                    </IonCardSubtitle>
+                  </IonCardHeader>
+                  <IonCardContent>
                     <p className="text-sm text-gray-600">{cls.sets} sets</p>
-                  }
-                />
+                  </IonCardContent>
+                </IonCard>
               </Link>
             ))}
           </div>
@@ -135,13 +140,16 @@ const Home = () => {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {personalFlashcardSets.map((set) => (
               <Link key={set.id} to={`/class/${set.id}`}>
-                <CustomIonCard
-                  title={set.name}
-                  subtitle={null}
-                  content={
+                <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-200 rounded-lg border shadow-sm">
+                  <IonCardHeader className="flex flex-col space-y-1.5 p-6">
+                    <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
+                      {set.name}
+                    </IonCardTitle>
+                  </IonCardHeader>
+                  <IonCardContent>
                     <p className="text-sm text-gray-600">{set.cards} cards</p>
-                  }
-                />
+                  </IonCardContent>
+                </IonCard>
               </Link>
             ))}
           </div>

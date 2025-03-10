@@ -85,3 +85,10 @@
 .flip-card-back {
   transform: rotateY(180deg);
 }
+
+.muted-item {
+  --background: var(--ion-color-light-shade, #d7d8da);
+  --background-hover: var(--ion-color-light-shade, #d7d8da);
+  margin-bottom: 0.75rem;
+  --border-radius: 0.5rem;
+}
