@@ -95,24 +95,24 @@ const Home = () => {
           </div>
         </div>
 
-        <IonSegment
-          value={tab}
-          onIonChange={(e) => setTab((e.detail.value as string) || 'classes')}
-          className="w-full mb-6 rounded-md"
-          style={{
-            '--background': 'var(--ion-color-light)',
-            '--border-radius': '0.5rem',
-          }}
-        >
-          <IonSegmentButton value="classes">
-            <IonIcon icon={listOutline} className="mr-2" />
-            <IonLabel>My Classes</IonLabel>
-          </IonSegmentButton>
-          <IonSegmentButton value="flashcards">
-            <IonIcon icon={bookOutline} className="mr-2" />
-            <IonLabel>My Cards</IonLabel>
-          </IonSegmentButton>
-        </IonSegment>
+        <div className="mb-8">
+          <IonSegment
+            value={tab}
+            onIonChange={(e) => setTab((e.detail.value as string) || 'classes')}
+            style={{
+              '--background': 'var(--ion-color-light)',
+            }}
+          >
+            <IonSegmentButton value="classes">
+              <IonIcon icon={listOutline} className="mr-2" />
+              <IonLabel>My Classes</IonLabel>
+            </IonSegmentButton>
+            <IonSegmentButton value="flashcards">
+              <IonIcon icon={bookOutline} className="mr-2" />
+              <IonLabel>My Cards</IonLabel>
+            </IonSegmentButton>
+          </IonSegment>
+        </div>
 
         {tab === 'classes' && (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
