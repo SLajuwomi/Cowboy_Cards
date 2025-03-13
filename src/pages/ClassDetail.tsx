@@ -19,6 +19,7 @@ import {
 import Leaderboard from '@/components/ui/Leaderboard';
 import FlashcardCarousel from '@/components/flashcards/FlashcardCarousel';
 import StudentList from '@/components/ui/StudentList';
+import { Navbar, NavbarTitle, NavbarButton } from '@/components/navbar';
 
 const ClassDetail = () => {
   const { id } = useParams();
@@ -102,8 +103,18 @@ const ClassDetail = () => {
   }, [api]);
 
   return (
-    <IonContent>
-      <div className="container mx-auto px-4 py-8">
+    <IonContent className="ion-padding">
+      <Navbar>
+        <NavbarTitle>
+          <div className="text-xl md:text-2xl lg:text-3xl font-bold">
+            {selectedSet
+              ? classData.flashcardSets[selectedSet - 1].name
+              : classData.name}
+          </div>
+        </NavbarTitle>
+      </Navbar>
+
+      <div id="main-content" className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">{classData.name}</h1>
           <p className="text-gray-600">Teacher: {classData.teacher}</p>

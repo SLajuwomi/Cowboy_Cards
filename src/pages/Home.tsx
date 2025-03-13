@@ -11,36 +11,16 @@ import {
   IonSegmentButton,
   IonLabel,
 } from '@ionic/react';
-import {
-  addOutline,
-  moon,
-  sunny,
-  listOutline,
-  bookOutline,
-} from 'ionicons/icons';
+import { addOutline, listOutline, bookOutline } from 'ionicons/icons';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Navbar, NavbarTitle, NavbarButton } from '@/components/navbar';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const Home = () => {
+  const { theme, setTheme } = useTheme();
   const [tab, setTab] = useState('classes');
-  const [isDark, setIsDark] = useState(() => {
-    const prefersDark = window.matchMedia(
-      '(prefers-color-scheme: dark)'
-    ).matches;
-    if (prefersDark) {
-      document.body.classList.add('dark');
-      document.documentElement.classList.add('dark');
-    }
-    return prefersDark;
-  });
-
-  const toggleDarkMode = () => {
-    setIsDark(!isDark);
-    document.body.classList.toggle('dark');
-    document.documentElement.classList.toggle('dark');
-  };
 
   const classes = [
     { id: 1, name: 'Biology 101', teacher: 'Dr. Smith', sets: 5 },
@@ -87,10 +67,6 @@ const Home = () => {
               style={{ '--border-radius': '0.5rem' }}
             >
               <IonIcon slot="start" icon={addOutline} /> Add Class
-            </IonButton>
-
-            <IonButton fill="clear" onClick={toggleDarkMode}>
-              <IonIcon slot="icon-only" icon={isDark ? sunny : moon} />
             </IonButton>
           </div>
         </div>
