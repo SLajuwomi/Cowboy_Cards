@@ -10,6 +10,7 @@ import {
   IonSegment,
   IonSegmentButton,
   IonLabel,
+  IonText,
 } from '@ionic/react';
 import { addOutline, listOutline, bookOutline } from 'ionicons/icons';
 import { Plus } from 'lucide-react';
@@ -104,7 +105,9 @@ const Home = () => {
                     </IonCardSubtitle>
                   </IonCardHeader>
                   <IonCardContent>
-                    <p className="text-sm text-gray-600">{cls.sets} sets</p>
+                    <IonText className="text-sm text-gray-600">
+                      {cls.sets} sets
+                    </IonText>
                   </IonCardContent>
                 </IonCard>
               </Link>
@@ -123,7 +126,9 @@ const Home = () => {
                     </IonCardTitle>
                   </IonCardHeader>
                   <IonCardContent>
-                    <p className="text-sm text-gray-600">{set.cards} cards</p>
+                    <IonText className="text-sm text-gray-600">
+                      {set.cards} cards
+                    </IonText>
                   </IonCardContent>
                 </IonCard>
               </Link>
