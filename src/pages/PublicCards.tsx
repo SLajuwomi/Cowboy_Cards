@@ -1,14 +1,14 @@
-import { Button } from '@/components/ui/button';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { IonContent } from '@ionic/react';
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardSubtitle,
+  IonCardTitle,
+  IonContent,
+  IonText,
+} from '@ionic/react';
 import { Link } from 'react-router-dom';
-import { Navbar, NavbarTitle, NavbarButton } from "@/components/navbar";
+import { Navbar, NavbarTitle, NavbarButton } from '@/components/navbar';
 
 const PublicFlashcards = () => {
   const flashcardSets = [
@@ -34,18 +34,23 @@ const PublicFlashcards = () => {
       <div id="main-content" className="container mx-auto px-4 py-8">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {flashcardSets.map((set) => (
-            <Card key={set.id}>
-              <CardHeader>
-                <CardTitle>{set.title}</CardTitle>
-                <CardDescription>Created by {set.creator}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-600">{set.cards} cards</p>
-                <Button variant="link" asChild className="mt-2 p-0">
-                  <Link to={`/flashcards/${set.id}`}>View Set →</Link>
-                </Button>
-              </CardContent>
-            </Card>
+            <Link key={set.id} to={`/flashcards/${set.id}`}>
+              <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-200 rounded-lg border shadow-sm">
+                <IonCardHeader className="flex flex-col space-y-1.5 p-6">
+                  <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
+                    {set.title}
+                  </IonCardTitle>
+                  <IonCardSubtitle className="text-sm text-gray-600">
+                    Created by {set.creator}
+                  </IonCardSubtitle>
+                </IonCardHeader>
+                <IonCardContent>
+                  <IonText className="text-sm text-gray-600">
+                    {set.cards} cards
+                  </IonText>
+                </IonCardContent>
+              </IonCard>
+            </Link>
           ))}
         </div>
       </div>
