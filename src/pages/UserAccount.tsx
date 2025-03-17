@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Edit2, ChevronDown, ChevronUp } from 'lucide-react';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const UserAccount = () => {
+  const { theme, setTheme } = useTheme();
   const [userInfo, setUserInfo] = useState({
     username: 'john_doe',
     email: 'john.doe@example.com',
@@ -258,7 +260,11 @@ const UserAccount = () => {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium">Theme</label>
-                <select className="mt-1 p-2 border rounded-lg w-full">
+                <select
+                  className="mt-1 p-2 border rounded-lg w-full bg-background text-foreground border-input focus:ring-2 focus:ring-ring focus:outline-none"
+                  value={theme}
+                  onChange={(e) => setTheme(e.target.value as 'light' | 'dark')}
+                >
                   <option value="light">Light</option>
                   <option value="dark">Dark</option>
                 </select>

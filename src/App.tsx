@@ -14,6 +14,7 @@ import { AuthForm } from '@/components/auth/AuthForm';
 import ResetPass from '@/components/auth/ResetPass';
 import PublicCards from './pages/PublicCards';
 import UserAccount from './pages/UserAccount';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -38,29 +39,32 @@ setupIonicReact();
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <IonApp>
-        <IonReactRouter>
-          <IonRouterOutlet>
-            <Route exact path="/" component={Index} />
-            <Route exact path="/home" component={Home} />
-            <Route exact path="/class/:id" component={ClassDetail} />
-            <Route exact path="/teacher" component={TeacherDashboard} />
-            <Route exact path="/teacher/class/:id" component={ClassDetail} />
-            <Route exact path="/public-cards" component={PublicCards} />
-            <Route exact path="/login" component={AuthForm} />
-            <Route exact path="/reset-password" component={ResetPass} />
-            <Route exact path="/userAccount" component={UserAccount} />
-            <Route component={NotFound} />
-          </IonRouterOutlet>
-        </IonReactRouter>
-      </IonApp>
-      <Toaster />
-      <Sonner />
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <TooltipProvider>
+          <IonApp>
+            <IonReactRouter>
+              <IonRouterOutlet>
+                <Route exact path="/" component={Index} />
+                <Route exact path="/home" component={Home} />
+                <Route exact path="/class/:id" component={ClassDetail} />
+                <Route exact path="/teacher" component={TeacherDashboard} />
+                <Route exact path="/auth" component={AuthForm} />
+                <Route exact path="/reset-password" component={ResetPass} />
+                <Route exact path="/public-cards" component={PublicCards} />
+                <Route exact path="/userAccount" component={UserAccount} />
+                <Route component={NotFound} />
+              </IonRouterOutlet>
+            </IonReactRouter>
+          </IonApp>
+          <Toaster />
+          <Sonner />
+        </TooltipProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
+}
 
 export default App;
