@@ -6,50 +6,49 @@ import (
 	"github.com/go-chi/cors"
 )
 
-func Routes(r *chi.Mux, cfg *controllers.Config) {
-	// Setup CORS
-	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000", "http://localhost:5173", "http://localhost:8080"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
-		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: true,
-		MaxAge:           300,
-	}))
+// every protected route is preceded by /api
+func Protected(r *chi.Mux, h *controllers.Handler) {
+	r.Route("/classes", func(r chi.Router) {
+		r.Get("/list", h.ListClasses)
+		r.Get("/", h.GetClassById)
+		r.Post("/", h.CreateClass)
+		r.Put("/name", h.UpdateClass)
+		r.Put("/description", h.UpdateClass)
+		r.Put("/teacherid", h.UpdateClass)
+		r.Delete("/", h.DeleteClass)
+	})
 
-	// Mount all routes under /api
-	r.Route("/api", func(r chi.Router) {
-		// Auth routes
-		r.Route("/auth", func(r chi.Router) {
-			r.Post("/signup", cfg.Signup)
-			r.Post("/login", cfg.Login)
-		})
+	r.Route("/flashcards", func(r chi.Router) {
+		// r.Get("/", h.GetFlashcardById)
+		// r.Post("/", h.CreateFlashCard)
+		// r.Put("/front", h.UpdateFlashcardFront)
+		// r.Put("/back", h.UpdateFlashcardBack)
+		// r.Put("/sid", h.UpdateFlashcardSetId)
+		// r.Delete("/", h.DeleteFlashCard)
 
-		// User routes (protected)
-		r.Route("/user", func(r chi.Router) {
-			r.Use(cfg.AuthMiddleware)
-			r.Get("/", cfg.GetUser)      // Get current user's info
-			r.Put("/", cfg.UpdateUser)   // Update current user's info
-			r.Delete("/", cfg.DeleteUser) // Delete current user's account
-		})
-
-		// Protected routes
-		r.Group(func(r chi.Router) {
-			r.Use(cfg.AuthMiddleware)
-			
-			r.Get("/classes", cfg.GetClasses)
-		
-			r.Route("/flashcard", func(r chi.Router) {
-				r.Get("/set", cfg.GetFlashCardSet)
-				r.Post("/set", cfg.CreateFlashCardSet)
-				r.Put("/set", cfg.UpdateFlashCardSet)
-				r.Delete("/set", cfg.DeleteFlashCardSet)
-
-				r.Get("/", cfg.GetFlashCard)
-				r.Post("/", cfg.CreateFlashCard)
-				r.Put("/", cfg.UpdateFlashCard)
-				r.Delete("/", cfg.DeleteFlashCard)
-			})
+		r.Route("/sets", func(r chi.Router) {
+			// r.Get("/", h.GetFlashcardSetById)
+			// r.Post("/", h.CreateFlashCardSet)
+			// r.Put("/name", h.UpdateFlashcardSetName)
+			// r.Put("/desc", h.UpdateFlashcardSetDescription)
+			// r.Delete("/", h.DeleteFlashCardSet)
 		})
 	})
+
+	// CreateUser and GetUserBy{Email,Username} are called from the unprotected routes
+	r.Route("/users", func(r chi.Router) {
+		r.Get("/list", h.ListUsers)
+		r.Get("/", h.GetUserById)
+		r.Put("/username", h.UpdateUser)
+		r.Put("/email", h.UpdateUser)
+		r.Put("/firstname", h.UpdateUser)
+		r.Put("/lastname", h.UpdateUser)
+		r.Put("/password", h.UpdateUser)
+		r.Delete("/", h.DeleteUser)
+	})
+}
+
+func Unprotected(r *chi.Mux, h *controllers.Handler) {
+	r.Post("/login", h.Login)
+	r.Post("/signup", h.Signup)
 }
