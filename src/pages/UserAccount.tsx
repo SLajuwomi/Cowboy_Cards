@@ -91,7 +91,7 @@ const UserAccount = () => {
         <Button
           onClick={() => window.history.back()}
           variant="outline"
-          className="mb-6"
+          className="mb-6 transition-transform-shadow duration-200"
         >
           ← Back
         </Button>
@@ -183,7 +183,11 @@ const UserAccount = () => {
                   <span className="font-medium">Phone Number: </span>
                   {userInfo.phoneNumber}
                 </div>
-                <Button variant="outline" onClick={handleEdit} className="mt-4">
+                <Button
+                  variant="outline"
+                  onClick={handleEdit}
+                  className="mt-4 transition-transform-shadow duration-200"
+                >
                   <Edit2 className="mr-2 h-4 w-4" /> Edit Info
                 </Button>
               </div>
@@ -279,7 +283,10 @@ const UserAccount = () => {
                     Reset your account password.
                   </p>
                 </div>
-                <Button onClick={() => setShowPasswordModal(true)}>
+                <Button
+                  onClick={() => setShowPasswordModal(true)}
+                  className="transition-transform-shadow duration-200"
+                >
                   Change Password
                 </Button>
               </div>
@@ -293,6 +300,7 @@ const UserAccount = () => {
                 <Button
                   variant="destructive"
                   onClick={() => setShowDeleteModal(true)}
+                  className="transition-transform-shadow duration-200"
                 >
                   Delete Account
                 </Button>

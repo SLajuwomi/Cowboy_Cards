@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button';
 import {
   IonContent,
   IonCard,
@@ -7,10 +6,9 @@ import {
   IonCardContent,
   IonText,
 } from '@ionic/react';
-import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Navbar, NavbarTitle, NavbarButton } from '@/components/navbar';
+import { Navbar, NavbarTitle } from '@/components/navbar';
 
 const TeacherDashboard = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -121,8 +119,8 @@ const TeacherDashboard = () => {
         <h2 className="text-xl font-bold mb-4">Classes</h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {teacherClasses.map((cls) => (
-            <Link key={cls.id} to={`/teacher/class/${cls.id}`}>
-              <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-200 rounded-lg border shadow-sm">
+            <Link key={cls.id} to={`/class/${cls.id}`}>
+              <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-transform-shadow duration-200 rounded-lg border shadow-sm">
                 <IonCardHeader className="flex flex-col space-y-1.5 p-6">
                   <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
                     {cls.name}
