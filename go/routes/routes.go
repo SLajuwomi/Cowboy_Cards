@@ -5,23 +5,49 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func Routes(r *chi.Mux, cfg *controllers.Config) {
-
-	r.Get("/classes", cfg.GetClasses)
-
-	r.Route("/flashcard_set", func(r chi.Router) {
-		// r.Get("/", cfg.GetUsersFlashCardSet)
-    r.Post("/", cfg.CreateFlashCardSet)
-	  r.Put("/", cfg.UpdateFlashCardSet)
-		r.Delete("/", cfg.DeleteFlashCardSet)
+// every protected route is preceded by /api
+func Protected(r *chi.Mux, h *controllers.Handler) {
+	r.Route("/classes", func(r chi.Router) {
+		r.Get("/list", h.ListClasses)
+		r.Get("/", h.GetClassById)
+		r.Post("/", h.CreateClass)
+		r.Put("/name", h.UpdateClass)
+		r.Put("/description", h.UpdateClass)
+		r.Put("/teacherid", h.UpdateClass)
+		r.Delete("/", h.DeleteClass)
 	})
 
-	r.Get("/flashcard", cfg.GetFlashCard)
-	r.Post("/flashcard", cfg.CreateFlashCard)
-	r.Put("/flashcard", cfg.UpdateFlashCard)
-	r.Delete("/flashcard", cfg.DeleteFlashCard)
+	r.Route("/flashcards", func(r chi.Router) {
+		// r.Get("/", h.GetFlashcardById)
+		// r.Post("/", h.CreateFlashCard)
+		// r.Put("/front", h.UpdateFlashcardFront)
+		// r.Put("/back", h.UpdateFlashcardBack)
+		// r.Put("/sid", h.UpdateFlashcardSetId)
+		// r.Delete("/", h.DeleteFlashCard)
 
-	r.Get("/users", cfg.GetUsers)
-	r.Get("/user", cfg.GetUser)
+		r.Route("/sets", func(r chi.Router) {
+			// r.Get("/", h.GetFlashcardSetById)
+			// r.Post("/", h.CreateFlashCardSet)
+			// r.Put("/name", h.UpdateFlashcardSetName)
+			// r.Put("/desc", h.UpdateFlashcardSetDescription)
+			// r.Delete("/", h.DeleteFlashCardSet)
+		})
+	})
 
+	// CreateUser and GetUserBy{Email,Username} are called from the unprotected routes
+	r.Route("/users", func(r chi.Router) {
+		r.Get("/list", h.ListUsers)
+		r.Get("/", h.GetUserById)
+		r.Put("/username", h.UpdateUser)
+		r.Put("/email", h.UpdateUser)
+		r.Put("/firstname", h.UpdateUser)
+		r.Put("/lastname", h.UpdateUser)
+		r.Put("/password", h.UpdateUser)
+		r.Delete("/", h.DeleteUser)
+	})
+}
+
+func Unprotected(r *chi.Mux, h *controllers.Handler) {
+	r.Post("/login", h.Login)
+	r.Post("/signup", h.Signup)
 }
