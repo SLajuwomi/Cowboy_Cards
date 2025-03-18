@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Edit2, ChevronDown, ChevronUp } from 'lucide-react';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const UserAccount = () => {
+  const { theme, setTheme } = useTheme();
   const [userInfo, setUserInfo] = useState({
     username: 'john_doe',
     email: 'john.doe@example.com',
@@ -89,7 +91,7 @@ const UserAccount = () => {
         <Button
           onClick={() => window.history.back()}
           variant="outline"
-          className="mb-6"
+          className="mb-6 transition-transform-shadow duration-200"
         >
           ← Back
         </Button>
@@ -181,7 +183,11 @@ const UserAccount = () => {
                   <span className="font-medium">Phone Number: </span>
                   {userInfo.phoneNumber}
                 </div>
-                <Button variant="outline" onClick={handleEdit} className="mt-4">
+                <Button
+                  variant="outline"
+                  onClick={handleEdit}
+                  className="mt-4 transition-transform-shadow duration-200"
+                >
                   <Edit2 className="mr-2 h-4 w-4" /> Edit Info
                 </Button>
               </div>
@@ -258,7 +264,11 @@ const UserAccount = () => {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium">Theme</label>
-                <select className="mt-1 p-2 border rounded-lg w-full">
+                <select
+                  className="mt-1 p-2 border rounded-lg w-full bg-background text-foreground border-input focus:ring-2 focus:ring-ring focus:outline-none"
+                  value={theme}
+                  onChange={(e) => setTheme(e.target.value as 'light' | 'dark')}
+                >
                   <option value="light">Light</option>
                   <option value="dark">Dark</option>
                 </select>
@@ -273,7 +283,10 @@ const UserAccount = () => {
                     Reset your account password.
                   </p>
                 </div>
-                <Button onClick={() => setShowPasswordModal(true)}>
+                <Button
+                  onClick={() => setShowPasswordModal(true)}
+                  className="transition-transform-shadow duration-200"
+                >
                   Change Password
                 </Button>
               </div>
@@ -287,6 +300,7 @@ const UserAccount = () => {
                 <Button
                   variant="destructive"
                   onClick={() => setShowDeleteModal(true)}
+                  className="transition-transform-shadow duration-200"
                 >
                   Delete Account
                 </Button>
