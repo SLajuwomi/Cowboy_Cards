@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"slices"
@@ -13,6 +12,7 @@ import (
 	"time"
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
+	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/middleware"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -94,8 +94,7 @@ func getHeaderVals(r *http.Request, headers ...string) (map[string]string, error
 }
 
 func logAndSendError(w http.ResponseWriter, err error, msg string, statusCode int) {
-	log.Printf(msg+": %v", err)
-	http.Error(w, msg, statusCode)
+	middleware.LogAndSendError(w, err, msg, statusCode)
 }
 
 func getQueryConnAndContext(r *http.Request, h *Handler) (query *db.Queries, ctx context.Context, conn *pgxpool.Conn, err error) {
@@ -120,7 +119,7 @@ func getTokenAndResponse(user db.User) (response AuthResponse, err error) {
 
 	registeredClaims := jwt.RegisteredClaims{
 		Issuer:    jwtIss,
-		Subject:   strconv.Itoa(int(user.ID)),
+		Subject:   strconv.Itoa(int(user.ID)), //recommended, may use later
 		Audience:  jwt.ClaimStrings{jwtAud},
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(2 * time.Hour)),     //should be as short as possible
 		NotBefore: jwt.NewNumericDate(time.Now().Add(-30 * time.Second)), //recommended 30 seconds for clock skew
@@ -145,3 +144,10 @@ func getTokenAndResponse(user db.User) (response AuthResponse, err error) {
 
 	return
 }
+
+// keygen:
+// key := make([]byte, num)
+// rand.Read(key)
+// dst := make([]byte, base64.StdEncoding.EncodedLen(len(key)))
+// base64.StdEncoding.Encode(dst, key)
+// fmt.Println(string(dst))

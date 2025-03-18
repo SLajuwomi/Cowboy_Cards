@@ -70,13 +70,14 @@ func Init() {
 	protectedRoutes := chi.NewRouter()
 	routes.Protected(protectedRoutes, h)
 	protectedRouteHandler := negroni.New()
-	// protectedRouteHandler.Use(negroni.HandlerFunc(middleware.Auth))
+	protectedRouteHandler.Use(negroni.HandlerFunc(middleware.Auth))
 	protectedRouteHandler.UseHandler(protectedRoutes)
 
 	//mw for every route
 	unprotectedRoutes := chi.NewRouter()
 	routes.Unprotected(unprotectedRoutes, h)
 	n := negroni.Classic() // serves "./public"
+	n.Use(middleware.Cors)
 	n.Use(negroni.HandlerFunc(middleware.SetCacheControlHeader))
 	n.UseHandler(unprotectedRoutes)
 
