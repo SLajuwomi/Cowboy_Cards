@@ -2,15 +2,13 @@ package app
 
 import (
 	"context"
-	"fmt"
-	"crypto/tls"
 	"log"
 	"net/http"
 	"os"
-	"path"
 	"time"
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/controllers"
+	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/middleware"
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/routes"
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -18,68 +16,72 @@ import (
 	"github.com/urfave/negroni/v3"
 )
 
-func LoadConfig() (*controllers.Config, error) {
-	dbURL := os.Getenv("DATABASE_URL")
-	if dbURL == "" {
-		return nil, fmt.Errorf("DATABASE_URL environment variable is not set")
+func LoadPoolConfig() (config *pgxpool.Config) {
+	var (
+		dburl  = os.Getenv("DATABASE_URL")
+		dbuser = os.Getenv("DBUSER")
+		dbhost = os.Getenv("DBHOST")
+	)
+
+	if dburl == "" || dbuser == "" || dbhost == "" {
+		log.Fatalf("db env vars not loaded")
 	}
 
-	// Create a connection pool
-	ctx := context.Background()
-	pool, err := pgxpool.New(ctx, dbURL)
+	config, err := pgxpool.ParseConfig(dburl)
 	if err != nil {
-		return nil, fmt.Errorf("error creating connection pool: %v", err)
+		log.Fatalf("error parsing config: %v", err)
 	}
 
-	// Test the connection
-	if err := pool.Ping(ctx); err != nil {
-		return nil, fmt.Errorf("error connecting to database: %v", err)
-	}
+	config.ConnConfig.User = dbuser
+	config.ConnConfig.Host = dbhost
 
-	log.Printf("Successfully connected to database")
-
-
-	// Enable SSL for Supabase
-	conn.TLSConfig = &tls.Config{
-		MinVersion: tls.VersionTLS12,
-	}
-
-	cfg := &controllers.Config{
-		DB: pool,
-	}
-
-	return cfg, nil
+	return
 }
 
-func setCacheControlHeader(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	str := ""
+func CreatePool(config *pgxpool.Config) (h *controllers.Handler) {
+	ctx := context.Background()
 
-	if path.Clean(r.URL.Path) == "/" {
-		str = "no-cache, no-store, must-revalidate"
-	} else {
-		str = "public, max-age=31536000, immutable"
+	pgpool, err := pgxpool.NewWithConfig(ctx, config)
+	if err != nil {
+		log.Fatalf("error creating connection pool: %v", err)
 	}
 
-	w.Header().Set("Cache-Control", str)
-	next(w, r)
+	if err := pgpool.Ping(ctx); err != nil {
+		log.Fatalf("error connecting to database: %v", err)
+	}
+
+	log.Println("Successfully connected to database")
+
+	h = &controllers.Handler{DB: pgpool}
+
+	// Enable SSL for Supabase
+	// conn.TLSConfig = &tls.Config{
+	// 	MinVersion: tls.VersionTLS12,
+	// }
+
+	return
 }
 
 func Init() {
-	cfg, err := LoadConfig()
-	if err != nil {
-		log.Fatalf("error getting config: %v", err)
-	}
+	cfg := LoadPoolConfig()
+	h := CreatePool(cfg)
 
-	n := negroni.New()
-	n.Use(negroni.NewLogger())
-	n.Use(negroni.NewRecovery())
-	n.Use(negroni.HandlerFunc(setCacheControlHeader))
-	n.Use(negroni.NewStatic(http.Dir("./dist")))
+	//mw for protected routes only
+	protectedRoutes := chi.NewRouter()
+	routes.Protected(protectedRoutes, h)
+	protectedRouteHandler := negroni.New()
+	// protectedRouteHandler.Use(negroni.HandlerFunc(middleware.Auth))
+	protectedRouteHandler.UseHandler(protectedRoutes)
 
-	r := chi.NewRouter()
-	routes.Routes(r, cfg)
+	//mw for every route
+	unprotectedRoutes := chi.NewRouter()
+	routes.Unprotected(unprotectedRoutes, h)
+	n := negroni.Classic() // serves "./public"
+	n.Use(middleware.Cors)
+	n.Use(negroni.HandlerFunc(middleware.SetCacheControlHeader))
+	n.UseHandler(unprotectedRoutes)
 
-	n.UseHandler(r)
+	unprotectedRoutes.Mount("/api", protectedRouteHandler)
 
 	port, ok := os.LookupEnv("PORT")
 	if !ok {
@@ -88,8 +90,7 @@ func Init() {
 	log.Println("server running on port " + port)
 
 	srv := &http.Server{
-		Handler: n,
-		// Addr:         "127.0.0.1:" + port,
+		Handler:      n,
 		Addr:         ":" + port,
 		WriteTimeout: 10 * time.Second,
 		ReadTimeout:  10 * time.Second,
