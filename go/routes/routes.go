@@ -18,11 +18,11 @@ func Protected(r *chi.Mux, h *controllers.Handler) {
 	})
 
 	r.Route("/flashcards", func(r chi.Router) {
-		// r.Get("/", h.GetFlashcardById)
-		// r.Post("/", h.CreateFlashCard)
-		// r.Put("/front", h.UpdateFlashcardFront)
-		// r.Put("/back", h.UpdateFlashcardBack)
-		// r.Put("/sid", h.UpdateFlashcardSetId)
+		r.Get("/", h.GetFlashcardById)
+		r.Post("/", h.CreateFlashcard)
+		r.Put("/front", h.UpdateFlashcard)
+		r.Put("/back", h.UpdateFlashcard)
+		r.Put("/setid", h.UpdateFlashcard)
 		// r.Delete("/", h.DeleteFlashCard)
 
 		r.Route("/sets", func(r chi.Router) {
