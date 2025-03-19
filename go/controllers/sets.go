@@ -5,12 +5,11 @@ import (
 	"errors"
 	"net/http"
 	"path"
-	"strings"
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 )
 
-// func (h *Handler) ListFlashcards(w http.ResponseWriter, r *http.Request) {
+// func (h *Handler) ListFlashcardsets(w http.ResponseWriter, r *http.Request) {
 // 	// curl http://localhost:8000/api/flashcards/list | jq
 
 // 	query, ctx, conn, err := getQueryConnAndContext(r, h)
@@ -32,8 +31,8 @@ import (
 // 	}
 // }
 
-func (h *Handler) GetFlashcardById(w http.ResponseWriter, r *http.Request) {
-	// curl http://localhost:8000/api/flashcards/ -H "id: 1"
+func (h *Handler) GetFlashcardSetById(w http.ResponseWriter, r *http.Request) {
+	// curl http://localhost:8000/api/flashcards/sets/ -H "id: 1"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -54,9 +53,9 @@ func (h *Handler) GetFlashcardById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	flashcard, err := query.GetFlashcardById(ctx, id)
+	flashcard, err := query.GetFlashcardSetById(ctx, id)
 	if err != nil {
-		logAndSendError(w, err, "Failed to get flashcard", http.StatusInternalServerError)
+		logAndSendError(w, err, "Failed to get flashcard set", http.StatusInternalServerError)
 		return
 	}
 
@@ -65,8 +64,8 @@ func (h *Handler) GetFlashcardById(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) CreateFlashcard(w http.ResponseWriter, r *http.Request) {
-	// curl -X POST localhost:8000/api/flashcards -H "front: test front" -H "back: back test" -H "setid: 1"
+func (h *Handler) CreateFlashcardSet(w http.ResponseWriter, r *http.Request) {
+	// curl -X POST localhost:8000/api/flashcards/sets -H "name: Knights Errant" -H "description: collection of famous knights"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
 		logAndSendError(w, err, "Database connection error", http.StatusInternalServerError)
@@ -74,36 +73,29 @@ func (h *Handler) CreateFlashcard(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Release()
 
-	headerVals, err := getHeaderVals(r, "front", "back", "setid")
+	headerVals, err := getHeaderVals(r, "name", "description")
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
 		return
 	}
 
-	sid, err := getInt32Id(headerVals["setid"])
-	if err != nil {
-		logAndSendError(w, err, "Invalid set id", http.StatusBadRequest)
-		return
-	}
-
-	err = query.CreateFlashcard(ctx, db.CreateFlashcardParams{
-		Front: headerVals["front"],
-		Back:  headerVals["back"],
-		SetID: sid,
+	err = query.CreateFlashcardSet(ctx, db.CreateFlashcardSetParams{
+		Name:        headerVals["name"],
+		Description: headerVals["description"],
 	})
 	if err != nil {
-		logAndSendError(w, err, "Failed to create flashcard", http.StatusInternalServerError)
+		logAndSendError(w, err, "Failed to create flashcard set", http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	if err := json.NewEncoder(w).Encode("Flashcard created"); err != nil {
+	if err := json.NewEncoder(w).Encode("Flashcard Set created"); err != nil {
 		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
 	}
 }
 
-func (h *Handler) UpdateFlashcard(w http.ResponseWriter, r *http.Request) {
-	// curl -X PUT localhost:8000/api/flashcards/front -H "id: 1" -H "front: Who is Don Quixote?"
+func (h *Handler) UpdateFlashcardSet(w http.ResponseWriter, r *http.Request) {
+	// curl -X PUT localhost:8000/api/flashcards/sets/name -H "id: 1" -H "name: Dad Jokes"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -128,62 +120,34 @@ func (h *Handler) UpdateFlashcard(w http.ResponseWriter, r *http.Request) {
 
 	val := headerVals[route]
 
-	if strings.HasSuffix(route, "id") {
-		var res int32
-		switch route {
-		case "setid":
-			sid, err := getInt32Id(val)
-			if err != nil {
-				logAndSendError(w, err, "Invalid set id", http.StatusBadRequest)
-				return
-			}
+	var res string
+	switch route {
+	case "name":
+		res, err = query.UpdateFlashcardSetName(ctx, db.UpdateFlashcardSetNameParams{
+			Name: val,
+			ID:   id,
+		})
+	case "description":
+		res, err = query.UpdateFlashcardSetDescription(ctx, db.UpdateFlashcardSetDescriptionParams{
+			Description: val,
+			ID:          id,
+		})
+	default:
+		logAndSendError(w, errors.New("invalid column"), "Improper header", http.StatusBadRequest)
+		return
+	}
 
-			res, err = query.UpdateFlashcardSetId(ctx, db.UpdateFlashcardSetIdParams{
-				SetID: sid,
-				ID:    id,
-			})
-			if err != nil {
-				logAndSendError(w, err, "Failed to update flashcard", http.StatusInternalServerError)
-				return
-			}
-		default:
-			logAndSendError(w, errors.New("invalid column"), "Improper header", http.StatusBadRequest)
-			return
-		}
-
-		if err := json.NewEncoder(w).Encode(res); err != nil {
-			logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
-		}
-	} else {
-		var res string
-		switch route {
-		case "front":
-			res, err = query.UpdateFlashcardFront(ctx, db.UpdateFlashcardFrontParams{
-				Front: val,
-				ID:    id,
-			})
-		case "back":
-			res, err = query.UpdateFlashcardBack(ctx, db.UpdateFlashcardBackParams{
-				Back: val,
-				ID:   id,
-			})
-		default:
-			logAndSendError(w, errors.New("invalid column"), "Improper header", http.StatusBadRequest)
-			return
-		}
-
-		if err != nil {
-			logAndSendError(w, err, "Failed to update flashcard", http.StatusInternalServerError)
-			return
-		}
-		if err := json.NewEncoder(w).Encode(res); err != nil {
-			logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
-		}
+	if err != nil {
+		logAndSendError(w, err, "Failed to update flashcard set", http.StatusInternalServerError)
+		return
+	}
+	if err := json.NewEncoder(w).Encode(res); err != nil {
+		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
 	}
 }
 
-func (h *Handler) DeleteFlashcard(w http.ResponseWriter, r *http.Request) {
-	// curl -X DELETE http://localhost:8000/api/flashcards/ -H "id: 1"
+func (h *Handler) DeleteFlashcardSet(w http.ResponseWriter, r *http.Request) {
+	// curl -X DELETE http://localhost:8000/api/flashcards/sets -H "id: 1"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -204,9 +168,9 @@ func (h *Handler) DeleteFlashcard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = query.DeleteFlashcard(ctx, id)
+	err = query.DeleteFlashcardSet(ctx, id)
 	if err != nil {
-		logAndSendError(w, err, "Failed to delete flashcard", http.StatusInternalServerError)
+		logAndSendError(w, err, "Failed to delete flashcard set", http.StatusInternalServerError)
 		return
 	}
 
