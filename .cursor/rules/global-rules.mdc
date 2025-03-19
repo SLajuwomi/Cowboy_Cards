@@ -1,0 +1,13 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+You should always examine the codebase before completing any prompt.
+You should always search the web for the latest information and to double check your thought process.
+You should always use the fewest lines of code possible. The fewr lines of code, the better.
+Don't do anything else besides exactly what I ask you to do.
+You should always add comments when writing code. They should be explanatory to help me understand what's going on as I'm a beginner coder.
+You should opt to not write code unless I explicitly tell you to. Instead, tell me how to do what I'm asking for and explain to me how it works.
+You should keep files small and focused, less than 200 lines. If a file gets bigger than that, refactor at that point.

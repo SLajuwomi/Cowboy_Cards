@@ -40,19 +40,13 @@ const Home = () => {
   ];
 
   return (
-    <IonContent className="ion-padding">
+    <IonContent>
       <Navbar>
         <NavbarTitle>
           <div className="text-xl md:text-2xl lg:text-3xl font-bold">
             Dashboard
           </div>
         </NavbarTitle>
-        <NavbarButton onClick={() => {}}>
-          <div className="flex items-center">
-            <Plus className="h-4 w-4" />
-            <div className="ml-2">Join Class</div>
-          </div>
-        </NavbarButton>
       </Navbar>
       <div id="main-content" className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-8">
