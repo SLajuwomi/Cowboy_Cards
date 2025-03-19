@@ -12,8 +12,7 @@ type Class struct {
 	ID          int32
 	Name        string
 	Description string
-	JoinCode    string
-	TeacherID   pgtype.Int4
+	JoinCode    pgtype.Text
 	CreatedAt   pgtype.Timestamp
 	UpdatedAt   pgtype.Timestamp
 }

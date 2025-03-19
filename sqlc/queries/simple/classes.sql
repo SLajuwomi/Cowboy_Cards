@@ -5,16 +5,13 @@ SELECT * FROM classes ORDER BY name;
 SELECT * FROM classes WHERE id = $1;
 
 -- name: CreateClass :exec
-INSERT INTO classes (name, description, join_code, teacher_id) VALUES ($1, $2, $3, $4);
+INSERT INTO classes (name, description, join_code) VALUES ($1, $2, $3);
 
 -- name: UpdateClassName :one
 UPDATE classes SET name = $1, updated_at = NOW() WHERE id = $2 RETURNING name;
 
 -- name: UpdateClassDescription :one
 UPDATE classes SET description = $1, updated_at = NOW() WHERE id = $2 RETURNING description;
-
--- name: UpdateClassTeacherId :one
-UPDATE classes SET teacher_id = $1, updated_at = NOW() WHERE id = $2 RETURNING teacher_id;
 
 -- name: DeleteClass :exec
 DELETE FROM classes WHERE id = $1;
