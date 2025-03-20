@@ -35,12 +35,10 @@ CREATE TABLE classes (
 	id SERIAL, 
 	name TEXT NOT NULL,
 	description TEXT NOT NULL,
-	join_code TEXT NOT NULL,
-	teacher_id INTEGER,
+	join_code TEXT,
 	created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_DATE,
 	updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_DATE,
 	PRIMARY KEY (id),
-	FOREIGN KEY (teacher_id) REFERENCES users(id),
 	UNIQUE (join_code)
 );
 
