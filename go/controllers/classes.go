@@ -5,7 +5,6 @@ import (
 	"errors"
 	"net/http"
 	"path"
-	"strings"
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -82,17 +81,10 @@ func (h *Handler) CreateClass(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tid, err := getInt32Id(headerVals["teacherid"])
-	if err != nil {
-		logAndSendError(w, err, "Invalid teacher id", http.StatusBadRequest)
-		return
-	}
-
 	err = query.CreateClass(ctx, db.CreateClassParams{
 		Name:        headerVals["name"],
 		Description: headerVals["description"],
-		JoinCode:    headerVals["joincode"],
-		TeacherID:   pgtype.Int4{Int32: int32(tid), Valid: true},
+		JoinCode:    pgtype.Text{String: headerVals["joincode"], Valid: true},
 	})
 	if err != nil {
 		logAndSendError(w, err, "Failed to create class", http.StatusInternalServerError)
@@ -131,57 +123,29 @@ func (h *Handler) UpdateClass(w http.ResponseWriter, r *http.Request) {
 
 	val := headerVals[route]
 
-	if strings.HasSuffix(route, "id") {
-		var res pgtype.Int4
-		switch route {
-		case "teacherid":
-			tid, err := getInt32Id(val)
-			if err != nil {
-				logAndSendError(w, err, "Invalid teacher id", http.StatusBadRequest)
-				return
-			}
+	var res string
+	switch route {
+	case "name":
+		res, err = query.UpdateClassName(ctx, db.UpdateClassNameParams{
+			Name: val,
+			ID:   id,
+		})
+	case "description":
+		res, err = query.UpdateClassDescription(ctx, db.UpdateClassDescriptionParams{
+			Description: val,
+			ID:          id,
+		})
+	default:
+		logAndSendError(w, errors.New("invalid column"), "Improper header", http.StatusBadRequest)
+		return
+	}
 
-			res, err = query.UpdateClassTeacherId(ctx, db.UpdateClassTeacherIdParams{
-				TeacherID: pgtype.Int4{Int32: int32(tid), Valid: true},
-				ID:        id,
-			})
-			if err != nil {
-				logAndSendError(w, err, "Failed to update class", http.StatusInternalServerError)
-				return
-			}
-		default:
-			logAndSendError(w, errors.New("invalid column"), "Improper header", http.StatusBadRequest)
-			return
-		}
-
-		if err := json.NewEncoder(w).Encode(res); err != nil {
-			logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
-		}
-	} else {
-		var res string
-		switch route {
-		case "name":
-			res, err = query.UpdateClassName(ctx, db.UpdateClassNameParams{
-				Name: val,
-				ID:   id,
-			})
-		case "description":
-			res, err = query.UpdateClassDescription(ctx, db.UpdateClassDescriptionParams{
-				Description: val,
-				ID:          id,
-			})
-		default:
-			logAndSendError(w, errors.New("invalid column"), "Improper header", http.StatusBadRequest)
-			return
-		}
-
-		if err != nil {
-			logAndSendError(w, err, "Failed to update class", http.StatusInternalServerError)
-			return
-		}
-		if err := json.NewEncoder(w).Encode(res); err != nil {
-			logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
-		}
+	if err != nil {
+		logAndSendError(w, err, "Failed to update class", http.StatusInternalServerError)
+		return
+	}
+	if err := json.NewEncoder(w).Encode(res); err != nil {
+		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
 	}
 }
 
