@@ -154,6 +154,39 @@ func (h *Handler) UpdateFlashcard(w http.ResponseWriter, r *http.Request) {
 		if err := json.NewEncoder(w).Encode(res); err != nil {
 			logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
 		}
+	} else if strings.HasSuffix(route, "score") {
+		var res int32
+		switch route {
+		case "score":
+			score, err := getInt32Id(val)
+			// userID, ok := middleware.FromContext(ctx)
+			// if !ok {
+			// 	logAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
+			// 	return
+			// }
+			userID := int32(1) // placeholder for userID, replace with middleware.FromContext(ctx) when auth is implemented
+			if err != nil {
+				logAndSendError(w, err, "Invalid score", http.StatusBadRequest)
+				return
+			}
+
+			res, err = query.UpdateFlashcardScore(ctx, db.UpdateFlashcardScoreParams{
+				Score:  score,
+				UserID: userID,
+				CardID: id,
+			})
+			if err != nil {
+				logAndSendError(w, err, "Failed to update flashcard", http.StatusInternalServerError)
+				return
+			}
+		default:
+			logAndSendError(w, errors.New("invalid column"), "Improper header", http.StatusBadRequest)
+			return
+		}
+
+		if err := json.NewEncoder(w).Encode(res); err != nil {
+			logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
+		}
 	} else {
 		var res string
 		switch route {

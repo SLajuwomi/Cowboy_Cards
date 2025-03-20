@@ -61,5 +61,6 @@ type UserCardHistory struct {
 	CardID     int32
 	CreatedAt  pgtype.Timestamp
 	TimesSeen  pgtype.Int4
+	Score      int32
 	IsMastered bool
 }

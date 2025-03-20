@@ -70,11 +70,11 @@ CREATE TABLE classes (
 ) TABLESPACE pg_default;
 
 
-INSERT INTO classes VALUES (DEFAULT, '3rd Grade Math', 'Elementary math, 3rd grade', 'lemmein1', 12,DEFAULT,DEFAULT);
-INSERT INTO classes VALUES (DEFAULT, '1st Grade Math', 'Elementary math, 1st grade', 'lemmein2', 12,DEFAULT,DEFAULT);
-INSERT INTO classes VALUES (DEFAULT, '2nd Grade Math', 'Elementary math, 2nd grade', 'lemmein3', 12,DEFAULT,DEFAULT);
-INSERT INTO classes VALUES (DEFAULT, '4th Grade Math', 'Elementary math, 4th grade', 'lemmein4', 12,DEFAULT,DEFAULT);
-INSERT INTO classes VALUES (DEFAULT, '5th Grade Math', 'Elementary math, 5th grade', 'lemmein5', 12,DEFAULT,DEFAULT);
+INSERT INTO classes VALUES (DEFAULT, '3rd Grade Math', 'Elementary math, 3rd grade', 'lemmein1',DEFAULT,DEFAULT);
+INSERT INTO classes VALUES (DEFAULT, '1st Grade Math', 'Elementary math, 1st grade', 'lemmein2',DEFAULT,DEFAULT);
+INSERT INTO classes VALUES (DEFAULT, '2nd Grade Math', 'Elementary math, 2nd grade', 'lemmein3',DEFAULT,DEFAULT);
+INSERT INTO classes VALUES (DEFAULT, '4th Grade Math', 'Elementary math, 4th grade', 'lemmein4',DEFAULT,DEFAULT);
+INSERT INTO classes VALUES (DEFAULT, '5th Grade Math', 'Elementary math, 5th grade', 'lemmein5',DEFAULT,DEFAULT);
 
 
 CREATE TABLE user_card_history (
@@ -82,6 +82,7 @@ CREATE TABLE user_card_history (
 	card_id INTEGER NOT NULL,
 	created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_DATE,
 	times_seen INTEGER DEFAULT 0, 
+	score INTEGER DEFAULT 0 NOT NULL,
 	is_mastered BOOLEAN NOT NULL DEFAULT FALSE,
 	PRIMARY KEY (user_id,card_id),
 	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
