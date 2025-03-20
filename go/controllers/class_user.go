@@ -129,6 +129,70 @@ func (h *Handler) GetStudentsOfAClass(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (h *Handler) GetTeacherOfAClass(w http.ResponseWriter, r *http.Request) {
+	//curl -X GET localhost:8000/api/class_user/getstudents -H "class_id: 1"
+	query, ctx, conn, err := getQueryConnAndContext(r, h)
+	if err != nil {
+		logAndSendError(w, err, "Error connecting to database", http.StatusInternalServerError)
+		return;
+	}
+	defer conn.Release()
+
+	headerVals, err := getHeaderVals(r, "class_id")
+	if err != nil {
+		logAndSendError(w, err, "Header error", http.StatusBadRequest)
+		return;
+	}
+
+	cid, err := getInt32Id(headerVals["class_id"])
+	if err != nil {
+		logAndSendError(w, err, "Invalid class id", http.StatusBadRequest)
+		return;
+	}
+
+	teacher, err := query.GetTeacherOfAClass(ctx, cid)
+	if err != nil {
+		logAndSendError(w, err, "Error getting teacher", http.StatusInternalServerError)
+		return;
+	}
+
+	if err := json.NewEncoder(w).Encode(teacher); err != nil {
+		logAndSendError(w, err, "Error encoding message", http.StatusInternalServerError)
+	}
+}
+
+func (h *Handler) GetMembersOfAClass(w http.ResponseWriter, r *http.Request) {
+	//curl -X GET localhost:8000/api/class_user/getmembers -H "class_id: 1"
+	query, ctx, conn, err := getQueryConnAndContext(r, h)
+	if err != nil {
+		logAndSendError(w, err, "Error connecting to database", http.StatusInternalServerError)
+		return;
+	}
+	defer conn.Release()
+
+	headerVals, err := getHeaderVals(r, "class_id")
+	if err != nil {
+		logAndSendError(w, err, "Header error", http.StatusBadRequest)
+		return;
+	}
+
+	cid, err := getInt32Id(headerVals["class_id"])
+	if err != nil {
+		logAndSendError(w, err, "Invalid class id", http.StatusBadRequest)
+		return;
+	}
+
+	members, err := query.GetMembersOfAClass(ctx, cid)
+	if err != nil {
+		logAndSendError(w, err, "Error getting members", http.StatusInternalServerError)
+		return;
+	}
+
+	if err := json.NewEncoder(w).Encode(members); err != nil {
+		logAndSendError(w, err, "Error encoding message", http.StatusInternalServerError)
+	}
+}
+
 func (h *Handler) GetClassesOfAUser(w http.ResponseWriter, r *http.Request) {
 	//curl -X GET localhost:8000/api/class_user/getclasses -H "user_id: 1"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)

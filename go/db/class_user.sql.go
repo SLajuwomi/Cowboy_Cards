@@ -120,6 +120,33 @@ func (q *Queries) GetStudentsOfAClass(ctx context.Context, classID int32) ([]Get
 	return items, nil
 }
 
+const getTeacherOfAClass = `-- name: GetTeacherOfAClass :one
+SELECT user_id, class_id, role, first_name, last_name
+FROM class_user JOIN users ON class_user.user_id = users.id
+WHERE class_id = $1 AND role = 'Teacher'
+`
+
+type GetTeacherOfAClassRow struct {
+	UserID    int32
+	ClassID   int32
+	Role      string
+	FirstName string
+	LastName  string
+}
+
+func (q *Queries) GetTeacherOfAClass(ctx context.Context, classID int32) (GetTeacherOfAClassRow, error) {
+	row := q.db.QueryRow(ctx, getTeacherOfAClass, classID)
+	var i GetTeacherOfAClassRow
+	err := row.Scan(
+		&i.UserID,
+		&i.ClassID,
+		&i.Role,
+		&i.FirstName,
+		&i.LastName,
+	)
+	return i, err
+}
+
 const joinClass = `-- name: JoinClass :exec
 INSERT INTO class_user (user_id, class_id, role) VALUES ($1, $2, $3)
 `

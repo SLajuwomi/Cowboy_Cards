@@ -21,6 +21,8 @@ func Protected(r *chi.Mux, h *controllers.Handler) {
 		r.Post("/", h.JoinClass)
 		r.Delete("/", h.LeaveClass)
 		r.Get("/getstudents", h.GetStudentsOfAClass)
+		r.Get("/getmembers", h.GetMembersOfAClass)
+		r.Get("/getteacher", h.GetTeacherOfAClass)
 		r.Get("/getclasses", h.GetClassesOfAUser)
 	})
 

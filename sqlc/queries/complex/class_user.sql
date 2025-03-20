@@ -19,3 +19,6 @@ FROM class_user JOIN users ON class_user.user_id = users.id
 WHERE class_id = $1;
 
 -- name: GetTeacherOfAClass :one
+SELECT user_id, class_id, role, first_name, last_name
+FROM class_user JOIN users ON class_user.user_id = users.id
+WHERE class_id = $1 AND role = 'Teacher';
