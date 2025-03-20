@@ -9,26 +9,26 @@ import (
 	"context"
 )
 
-const getClasses = `-- name: GetClasses :many
+const getClassesOfAUser = `-- name: GetClassesOfAUser :many
 SELECT class_id, role, name FROM class_user JOIN classes ON class_user.class_id = classes.id
 WHERE user_id = $1
 `
 
-type GetClassesRow struct {
+type GetClassesOfAUserRow struct {
 	ClassID int32
 	Role    string
 	Name    string
 }
 
-func (q *Queries) GetClasses(ctx context.Context, userID int32) ([]GetClassesRow, error) {
-	rows, err := q.db.Query(ctx, getClasses, userID)
+func (q *Queries) GetClassesOfAUser(ctx context.Context, userID int32) ([]GetClassesOfAUserRow, error) {
+	rows, err := q.db.Query(ctx, getClassesOfAUser, userID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetClassesRow
+	var items []GetClassesOfAUserRow
 	for rows.Next() {
-		var i GetClassesRow
+		var i GetClassesOfAUserRow
 		if err := rows.Scan(&i.ClassID, &i.Role, &i.Name); err != nil {
 			return nil, err
 		}
@@ -40,13 +40,13 @@ func (q *Queries) GetClasses(ctx context.Context, userID int32) ([]GetClassesRow
 	return items, nil
 }
 
-const getMembers = `-- name: GetMembers :many
+const getMembersOfAClass = `-- name: GetMembersOfAClass :many
 SELECT user_id, class_id, role, first_name, last_name
 FROM class_user JOIN users ON class_user.user_id = users.id
 WHERE class_id = $1
 `
 
-type GetMembersRow struct {
+type GetMembersOfAClassRow struct {
 	UserID    int32
 	ClassID   int32
 	Role      string
@@ -54,15 +54,15 @@ type GetMembersRow struct {
 	LastName  string
 }
 
-func (q *Queries) GetMembers(ctx context.Context, classID int32) ([]GetMembersRow, error) {
-	rows, err := q.db.Query(ctx, getMembers, classID)
+func (q *Queries) GetMembersOfAClass(ctx context.Context, classID int32) ([]GetMembersOfAClassRow, error) {
+	rows, err := q.db.Query(ctx, getMembersOfAClass, classID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetMembersRow
+	var items []GetMembersOfAClassRow
 	for rows.Next() {
-		var i GetMembersRow
+		var i GetMembersOfAClassRow
 		if err := rows.Scan(
 			&i.UserID,
 			&i.ClassID,
@@ -80,13 +80,13 @@ func (q *Queries) GetMembers(ctx context.Context, classID int32) ([]GetMembersRo
 	return items, nil
 }
 
-const getStudents = `-- name: GetStudents :many
+const getStudentsOfAClass = `-- name: GetStudentsOfAClass :many
 SELECT user_id, class_id, role, first_name, last_name
 FROM class_user JOIN users ON class_user.user_id = users.id
 WHERE class_id = $1 AND role = 'Student'
 `
 
-type GetStudentsRow struct {
+type GetStudentsOfAClassRow struct {
 	UserID    int32
 	ClassID   int32
 	Role      string
@@ -94,15 +94,15 @@ type GetStudentsRow struct {
 	LastName  string
 }
 
-func (q *Queries) GetStudents(ctx context.Context, classID int32) ([]GetStudentsRow, error) {
-	rows, err := q.db.Query(ctx, getStudents, classID)
+func (q *Queries) GetStudentsOfAClass(ctx context.Context, classID int32) ([]GetStudentsOfAClassRow, error) {
+	rows, err := q.db.Query(ctx, getStudentsOfAClass, classID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetStudentsRow
+	var items []GetStudentsOfAClassRow
 	for rows.Next() {
-		var i GetStudentsRow
+		var i GetStudentsOfAClassRow
 		if err := rows.Scan(
 			&i.UserID,
 			&i.ClassID,
@@ -136,10 +136,15 @@ func (q *Queries) JoinClass(ctx context.Context, arg JoinClassParams) error {
 }
 
 const leaveClass = `-- name: LeaveClass :exec
-DELETE FROM class_user WHERE user_id = $1
+DELETE FROM class_user WHERE user_id = $1 AND class_id = $2
 `
 
-func (q *Queries) LeaveClass(ctx context.Context, userID int32) error {
-	_, err := q.db.Exec(ctx, leaveClass, userID)
+type LeaveClassParams struct {
+	UserID  int32
+	ClassID int32
+}
+
+func (q *Queries) LeaveClass(ctx context.Context, arg LeaveClassParams) error {
+	_, err := q.db.Exec(ctx, leaveClass, arg.UserID, arg.ClassID)
 	return err
 }

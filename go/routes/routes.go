@@ -19,6 +19,9 @@ func Protected(r *chi.Mux, h *controllers.Handler) {
 
 	r.Route("/class_user", func(r chi.Router) {
 		r.Post("/", h.JoinClass)
+		r.Delete("/", h.LeaveClass)
+		r.Get("/getstudents", h.GetStudentsOfAClass)
+		r.Get("/getclasses", h.GetClassesOfAUser)
 	})
 
 	r.Route("/flashcards", func(r chi.Router) {
