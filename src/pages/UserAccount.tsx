@@ -12,10 +12,6 @@ import {
   IonInput,
   IonSelect,
   IonSelectOption,
-  IonModal,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
   IonList,
   IonAlert,
   useIonToast,
@@ -103,11 +99,11 @@ const UserAccount = () => {
     // Mock API call for fetching user stats
   }, []);
 
-  // Hook for showing toast messages
+  // Hook for showing toast messages, used for password change
   const [presentToast] = useIonToast();
 
   return (
-    <IonContent className="ion-padding">
+    <IonContent>
       <Navbar>
         <NavbarTitle>
           <div className="text-xl md:text-2xl lg:text-3xl font-bold">
@@ -115,14 +111,13 @@ const UserAccount = () => {
           </div>
         </NavbarTitle>
       </Navbar>
-      <div className="container mx-auto px-4 py-8">
-      
+
+      <div id="main-content" className="container mx-auto px-4 py-8">
         {/* Header Section */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2 text-primary">
-            User Dashboard
-          </h1>
-          <p className="text-gray-600">Welcome back, {userInfo.username}!</p>
+          <p className="text-xl font-semibold text-primary">
+            Welcome back, {userInfo.username}!
+          </p>
         </div>
 
         {/* Back Button */}
@@ -281,7 +276,11 @@ const UserAccount = () => {
                     <IonItem button onClick={() => toggleClassDetails(cls.id)}>
                       <IonLabel>{cls.title}</IonLabel>
                       <IonIcon
-                        icon={expandedClass === cls.id ? chevronUpOutline : chevronDownOutline}
+                        icon={
+                          expandedClass === cls.id
+                            ? chevronUpOutline
+                            : chevronDownOutline
+                        }
                         slot="end"
                       />
                     </IonItem>
@@ -289,10 +288,12 @@ const UserAccount = () => {
                       <IonItem lines="none">
                         <div className="pl-4 text-gray-700">
                           <p>
-                            <span className="font-medium">Date Started:</span> {cls.startDate}
+                            <span className="font-medium">Date Started:</span>{' '}
+                            {cls.startDate}
                           </p>
                           <p>
-                            <span className="font-medium">Date Ended:</span> {cls.endDate}
+                            <span className="font-medium">Date Ended:</span>{' '}
+                            {cls.endDate}
                           </p>
                           <a href={cls.link} className="text-primary underline">
                             Go to Class Page
@@ -319,7 +320,9 @@ const UserAccount = () => {
                   <IonLabel>Theme</IonLabel>
                   <IonSelect
                     value={theme}
-                    onIonChange={(e) => setTheme(e.detail.value as 'light' | 'dark')}
+                    onIonChange={(e) =>
+                      setTheme(e.detail.value as 'light' | 'dark')
+                    }
                     interface="popover"
                     placeholder="Select Theme"
                   >
@@ -364,42 +367,42 @@ const UserAccount = () => {
           header="Change Password"
           inputs={[
             {
-              name: "oldPassword",
-              type: "password",
-              placeholder: "Old Password",
+              name: 'oldPassword',
+              type: 'password',
+              placeholder: 'Old Password',
             },
             {
-              name: "newPassword",
-              type: "password",
-              placeholder: "New Password",
+              name: 'newPassword',
+              type: 'password',
+              placeholder: 'New Password',
             },
             {
-              name: "confirmPassword",
-              type: "password",
-              placeholder: "Confirm New Password",
+              name: 'confirmPassword',
+              type: 'password',
+              placeholder: 'Confirm New Password',
             },
           ]}
           buttons={[
             {
-              text: "Cancel",
-              role: "cancel",
+              text: 'Cancel',
+              role: 'cancel',
               handler: () => {
-                console.log("Cancel clicked");
+                console.log('Cancel clicked');
               },
             },
             {
-              text: "Save",
+              text: 'Save',
               handler: (data) => {
                 if (data.newPassword !== data.confirmPassword) {
                   presentToast({
-                    message: "Passwords do not match",
+                    message: 'Passwords do not match',
                     duration: 2000,
-                    color: "danger",
+                    color: 'danger',
                   });
                   return true; // Allow the alert to close
                 }
                 // Add your password change logic here
-                console.log("Password changed");
+                console.log('Password changed');
                 return true;
               },
             },
@@ -414,17 +417,17 @@ const UserAccount = () => {
           message="Are you sure you want to delete your account? This action cannot be undone."
           buttons={[
             {
-              text: "Cancel",
-              role: "cancel",
+              text: 'Cancel',
+              role: 'cancel',
               handler: () => {
-                console.log("Cancel clicked");
+                console.log('Cancel clicked');
               },
             },
             {
-              text: "Delete",
+              text: 'Delete',
               handler: () => {
                 // Add your delete account logic here
-                console.log("Account deleted");
+                console.log('Account deleted');
               },
             },
           ]}
