@@ -8,7 +8,7 @@ import {
   IonText,
 } from '@ionic/react';
 import { Link } from 'react-router-dom';
-import { Navbar, NavbarTitle, NavbarButton } from '@/components/navbar';
+import { Navbar } from '@/components/navbar';
 
 const PublicFlashcards = () => {
   const flashcardSets = [
@@ -24,13 +24,7 @@ const PublicFlashcards = () => {
 
   return (
     <IonContent>
-      <Navbar>
-        <NavbarTitle>
-          <div className="text-xl md:text-2xl lg:text-3xl font-bold">
-            Public Flashcards
-          </div>
-        </NavbarTitle>
-      </Navbar>
+      <Navbar />
       <div id="main-content" className="container mx-auto px-4 py-8">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {flashcardSets.map((set) => (
