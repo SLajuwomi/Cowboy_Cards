@@ -18,6 +18,7 @@ import {
   IonTitle,
   IonList,
   IonAlert,
+  useIonToast,
 } from '@ionic/react';
 import {
   arrowBackOutline,
@@ -71,7 +72,7 @@ const UserAccount = () => {
   ]);
 
   const [expandedClass, setExpandedClass] = useState<number | null>(null);
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showPasswordAlert, setShowPasswordAlert] = useState(false);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [updatedInfo, setUpdatedInfo] = useState(userInfo);
@@ -101,6 +102,9 @@ const UserAccount = () => {
   useEffect(() => {
     // Mock API call for fetching user stats
   }, []);
+
+  // Hook for showing toast messages
+  const [presentToast] = useIonToast();
 
   return (
     <IonContent className="ion-padding">
@@ -328,7 +332,7 @@ const UserAccount = () => {
                       Reset your account password.
                     </p>
                   </div>
-                  <IonButton onClick={() => setShowPasswordModal(true)}>
+                  <IonButton onClick={() => setShowPasswordAlert(true)}>
                     Change Password
                   </IonButton>
                 </div>
@@ -351,35 +355,54 @@ const UserAccount = () => {
           </IonCard>
         </div>
 
-        {/* Password Change Modal */}
-        <IonModal isOpen={showPasswordModal} onDidDismiss={() => setShowPasswordModal(false)}>
-          <IonHeader>
-            <IonToolbar>
-              <IonTitle>Change Password</IonTitle>
-              <IonButton slot="end" onClick={() => setShowPasswordModal(false)}>
-                Close
-              </IonButton>
-            </IonToolbar>
-          </IonHeader>
-          <IonContent className="ion-padding">
-            <IonItem>
-              <IonLabel position="stacked">Old Password</IonLabel>
-              <IonInput type="password" />
-            </IonItem>
-            <IonItem>
-              <IonLabel position="stacked">New Password</IonLabel>
-              <IonInput type="password" />
-            </IonItem>
-            <IonItem>
-              <IonLabel position="stacked">Confirm New Password</IonLabel>
-              <IonInput type="password" />
-            </IonItem>
-            <div className="flex justify-end space-x-2 mt-4">
-              <IonButton onClick={() => setShowPasswordModal(false)}>Cancel</IonButton>
-              <IonButton onClick={() => setShowPasswordModal(false)}>Save</IonButton>
-            </div>
-          </IonContent>
-        </IonModal>
+        {/* Change Password Alert */}
+        <IonAlert
+          isOpen={showPasswordAlert}
+          onDidDismiss={() => setShowPasswordAlert(false)}
+          header="Change Password"
+          inputs={[
+            {
+              name: "oldPassword",
+              type: "password",
+              placeholder: "Old Password",
+            },
+            {
+              name: "newPassword",
+              type: "password",
+              placeholder: "New Password",
+            },
+            {
+              name: "confirmPassword",
+              type: "password",
+              placeholder: "Confirm New Password",
+            },
+          ]}
+          buttons={[
+            {
+              text: "Cancel",
+              role: "cancel",
+              handler: () => {
+                console.log("Cancel clicked");
+              },
+            },
+            {
+              text: "Save",
+              handler: (data) => {
+                if (data.newPassword !== data.confirmPassword) {
+                  presentToast({
+                    message: "Passwords do not match",
+                    duration: 2000,
+                    color: "danger",
+                  });
+                  return true; // Allow the alert to close
+                }
+                // Add your password change logic here
+                console.log("Password changed");
+                return true;
+              },
+            },
+          ]}
+        />
 
         {/* Delete Account Alert */}
         <IonAlert
