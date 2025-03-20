@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { menu, close, personCircle, moon, sunny } from 'ionicons/icons';
+import { menu, close, personCircle, moon, sunny, add } from 'ionicons/icons';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import {
@@ -17,15 +17,19 @@ import {
   IonMenuButton,
   IonMenuToggle,
   useIonRouter,
+  IonPopover,
 } from '@ionic/react';
 
-const Navbar = ({ children }) => {
-  // Ensure children is always an array
-  const childrenArray = React.Children.toArray(children);
+const Navbar = () => {
+  const [popoverEvent, setPopoverEvent] = useState(null);
 
-  // Get left and right children, or defaults to null if not available
-  const leftChild = childrenArray[0] || null;
-  const rightChild = childrenArray[1] || null;
+  const openPopover = (event) => setPopoverEvent(event.nativeEvent);
+  const closePopover = () => setPopoverEvent(null);
+
+  const handleMenuItemClick = (route) => {
+      router.push(route);
+      document.querySelector('ion-menu')?.close();
+  };
 
   const router = useIonRouter();
   const { theme, setTheme } = useTheme();
@@ -33,13 +37,6 @@ const Navbar = ({ children }) => {
   // Function to toggle dark mode
   const toggleDarkMode = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
-  };
-
-  // Function to handle menu item clicks and close the menu
-  const handleMenuItemClick = (route: string) => {
-    router.push(route);
-    // Close the menu manually after navigating
-    document.querySelector('ion-menu')?.close();
   };
 
   return (
@@ -69,7 +66,7 @@ const Navbar = ({ children }) => {
             >
               Public Cards
             </IonItem>
-            <IonItem button onClick={() => handleMenuItemClick('/account')}>
+            <IonItem button onClick={() => handleMenuItemClick('/userAccount')}>
               My Account
             </IonItem>
           </IonList>
@@ -90,15 +87,33 @@ const Navbar = ({ children }) => {
           </IonButtons>
 
           {/* Middle Section (Title / Children) */}
-          <IonTitle>{leftChild}</IonTitle>
-
-          {/* Right Side (Custom Button / Children) */}
-          <IonButtons slot="end" className="hidden md:block">
-            {rightChild}
-          </IonButtons>
+          <IonTitle>Cowboy Cards</IonTitle>
 
           {/* Theme Toggle Button */}
           <IonButtons slot="end">
+            <IonButton onClick={openPopover}>
+              <IonIcon icon={add} className="text-[32px] stroke-[2]" />
+            </IonButton>
+            {/* Popover for Create Options */}
+            <IonPopover
+              event={popoverEvent}
+              isOpen={!!popoverEvent}
+              onDidDismiss={closePopover}
+            >
+            <IonContent className="p-2">
+              <IonList>
+                <IonItem button onClick={() => { closePopover(); router.push('#'); }}>
+                  Create Set
+                </IonItem>
+                <IonItem button onClick={() => { closePopover(); router.push('#'); }}>
+                  Create Class
+                </IonItem>
+                <IonItem button onClick={() => { closePopover(); router.push('#'); }}>
+                  Join Class
+                </IonItem>
+              </IonList>
+            </IonContent>
+          </IonPopover>
             <IonButton fill="clear" onClick={toggleDarkMode}>
               <IonIcon
                 slot="icon-only"
@@ -119,12 +134,4 @@ const Navbar = ({ children }) => {
   );
 };
 
-const NavbarTitle = ({ children }) => {
-  return <h1 className="text-3xl font-bold">{children}</h1>;
-};
-
-const NavbarButton = ({ children, onClick }) => {
-  return <Button onClick={onClick}>{children}</Button>;
-};
-
-export { Navbar, NavbarTitle, NavbarButton };
+export { Navbar };
