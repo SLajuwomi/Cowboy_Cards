@@ -17,6 +17,7 @@ import {
   IonToolbar,
   IonTitle,
   IonList,
+  IonAlert,
 } from '@ionic/react';
 import {
   arrowBackOutline,
@@ -71,7 +72,7 @@ const UserAccount = () => {
 
   const [expandedClass, setExpandedClass] = useState<number | null>(null);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [updatedInfo, setUpdatedInfo] = useState(userInfo);
 
@@ -114,9 +115,9 @@ const UserAccount = () => {
       
         {/* Header Section */}
         <div className="mb-8">
-          {/* <h1 className="text-3xl font-bold mb-2 text-primary">
+          <h1 className="text-3xl font-bold mb-2 text-primary">
             User Dashboard
-          </h1> */}
+          </h1>
           <p className="text-gray-600">Welcome back, {userInfo.username}!</p>
         </div>
 
@@ -340,7 +341,7 @@ const UserAccount = () => {
                   </div>
                   <IonButton
                     color="danger"
-                    onClick={() => setShowDeleteModal(true)}
+                    onClick={() => setShowDeleteAlert(true)}
                   >
                     Delete Account
                   </IonButton>
@@ -351,7 +352,7 @@ const UserAccount = () => {
         </div>
 
         {/* Password Change Modal */}
-        <IonModal isOpen={showPasswordModal}>
+        <IonModal isOpen={showPasswordModal} onDidDismiss={() => setShowPasswordModal(false)}>
           <IonHeader>
             <IonToolbar>
               <IonTitle>Change Password</IonTitle>
@@ -380,34 +381,29 @@ const UserAccount = () => {
           </IonContent>
         </IonModal>
 
-        {/* Delete Account Modal */}
-        <IonModal isOpen={showDeleteModal}>
-          <IonHeader>
-            <IonToolbar>
-              <IonTitle>Confirm Deletion</IonTitle>
-              <IonButton slot="end" onClick={() => setShowDeleteModal(false)}>
-                Close
-              </IonButton>
-            </IonToolbar>
-          </IonHeader>
-          <IonContent className="ion-padding">
-            <p className="text-gray-700 mb-4">
-              Are you sure you want to delete your account? This action cannot be undone.
-            </p>
-            <div className="flex justify-end space-x-2">
-              <IonButton onClick={() => setShowDeleteModal(false)}>Cancel</IonButton>
-              <IonButton
-                color="danger"
-                onClick={() => {
-                  alert('Account Deleted');
-                  setShowDeleteModal(false);
-                }}
-              >
-                Delete
-              </IonButton>
-            </div>
-          </IonContent>
-        </IonModal>
+        {/* Delete Account Alert */}
+        <IonAlert
+          isOpen={showDeleteAlert}
+          onDidDismiss={() => setShowDeleteAlert(false)}
+          header="Confirm Deletion"
+          message="Are you sure you want to delete your account? This action cannot be undone."
+          buttons={[
+            {
+              text: "Cancel",
+              role: "cancel",
+              handler: () => {
+                console.log("Cancel clicked");
+              },
+            },
+            {
+              text: "Delete",
+              handler: () => {
+                // Add your delete account logic here
+                console.log("Account deleted");
+              },
+            },
+          ]}
+        />
       </div>
     </IonContent>
   );
