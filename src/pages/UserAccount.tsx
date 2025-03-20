@@ -320,6 +320,8 @@ const UserAccount = () => {
                   <IonSelect
                     value={theme}
                     onIonChange={(e) => setTheme(e.detail.value as 'light' | 'dark')}
+                    interface="popover"
+                    placeholder="Select Theme"
                   >
                     <IonSelectOption value="light">Light</IonSelectOption>
                     <IonSelectOption value="dark">Dark</IonSelectOption>
