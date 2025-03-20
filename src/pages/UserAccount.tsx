@@ -30,7 +30,6 @@ const UserAccount = () => {
   const [userInfo, setUserInfo] = useState({
     username: 'john_doe',
     email: 'john.doe@example.com',
-    phoneNumber: '123-456-7890',
     firstname: 'John',
     lastname: 'Doe',
   });
@@ -178,15 +177,6 @@ const UserAccount = () => {
                       onIonChange={handleChange}
                     />
                   </IonItem>
-                  <IonItem>
-                    <IonLabel position="stacked">Phone Number</IonLabel>
-                    <IonInput
-                      type="text"
-                      name="phoneNumber"
-                      value={updatedInfo.phoneNumber}
-                      onIonChange={handleChange}
-                    />
-                  </IonItem>
                   <div className="mt-4 flex justify-end">
                     <IonButton onClick={handleSave}>Save Changes</IonButton>
                   </div>
@@ -208,10 +198,6 @@ const UserAccount = () => {
                   <div>
                     <span className="font-medium">Email: </span>
                     {userInfo.email}
-                  </div>
-                  <div>
-                    <span className="font-medium">Phone Number: </span>
-                    {userInfo.phoneNumber}
                   </div>
                   <IonButton
                     fill="outline"
