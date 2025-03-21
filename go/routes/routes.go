@@ -7,13 +7,18 @@ import (
 
 // every protected route is preceded by /api
 func Protected(r *chi.Mux, h *controllers.Handler) {
-	r.Route("/classes", func(r chi.Router) {
-		r.Get("/list", h.ListClasses)
-		r.Get("/", h.GetClassById)
-		r.Post("/", h.CreateClass)
-		r.Put("/name", h.UpdateClass)
-		r.Put("/description", h.UpdateClass)
-		// r.Delete("/", h.DeleteClass)
+
+	// -------------------complex-------------------------
+
+	// these are upserts, one each for (in)correct
+	r.Route("/card_history", func(r chi.Router) {
+		// r.Post("/incscore", h.UpdateHistory)
+		// r.Post("/decscore", h.UpdateHistory)
+	})
+
+	r.Route("/class_set", func(r chi.Router) {
+		// r.Post("/", h.AddSet)
+		// r.Delete("/", h.RemoveSet)
 	})
 
 	r.Route("/class_user", func(r chi.Router) {
@@ -25,14 +30,22 @@ func Protected(r *chi.Mux, h *controllers.Handler) {
 		// r.Get("/getteacher", h.GetTeacherOfAClass)
 	})
 
+	// -------------------simple-------------------------
+
+	r.Route("/classes", func(r chi.Router) {
+		r.Get("/list", h.ListClasses)
+		r.Get("/", h.GetClassById)
+		r.Post("/", h.CreateClass)
+		r.Put("/name", h.UpdateClass)
+		r.Put("/description", h.UpdateClass)
+		// r.Delete("/", h.DeleteClass)
+	})
+
 	r.Route("/flashcards", func(r chi.Router) {
-		r.Get("/", h.GetFlashcardById)
 		r.Post("/", h.CreateFlashcard)
 		r.Put("/front", h.UpdateFlashcard)
 		r.Put("/back", h.UpdateFlashcard)
 		r.Put("/setid", h.UpdateFlashcard)
-		r.Put("/incscore", h.UpdateFlashcard)
-		r.Put("/decscore", h.UpdateFlashcard)
 		// r.Delete("/", h.DeleteFlashcard)
 
 		r.Route("/sets", func(r chi.Router) {
@@ -57,6 +70,7 @@ func Protected(r *chi.Mux, h *controllers.Handler) {
 	})
 }
 
+// auth
 func Unprotected(r *chi.Mux, h *controllers.Handler) {
 	r.Post("/login", h.Login)
 	r.Post("/signup", h.Signup)

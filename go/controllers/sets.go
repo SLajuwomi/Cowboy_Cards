@@ -80,8 +80,8 @@ func (h *Handler) CreateFlashcardSet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = query.CreateFlashcardSet(ctx, db.CreateFlashcardSetParams{
-		Name:        headerVals["name"],
-		Description: headerVals["description"],
+		SetName:        headerVals["name"],
+		SetDescription: headerVals["description"],
 	})
 	if err != nil {
 		logAndSendError(w, err, "Failed to create flashcard set", http.StatusInternalServerError)
@@ -124,13 +124,13 @@ func (h *Handler) UpdateFlashcardSet(w http.ResponseWriter, r *http.Request) {
 	switch route {
 	case "name":
 		res, err = query.UpdateFlashcardSetName(ctx, db.UpdateFlashcardSetNameParams{
-			Name: val,
-			ID:   id,
+			SetName: val,
+			ID:      id,
 		})
 	case "description":
 		res, err = query.UpdateFlashcardSetDescription(ctx, db.UpdateFlashcardSetDescriptionParams{
-			Description: val,
-			ID:          id,
+			SetDescription: val,
+			ID:             id,
 		})
 	default:
 		logAndSendError(w, errors.New("invalid column"), "Improper header", http.StatusBadRequest)

@@ -11,10 +11,10 @@ import (
 type CardHistory struct {
 	UserID         int32
 	CardID         int32
-	CreatedAt      pgtype.Timestamp
-	TimesAttempted int32
 	Score          int32
+	TimesAttempted int32
 	IsMastered     bool
+	CreatedAt      pgtype.Timestamp
 }
 
 type Class struct {

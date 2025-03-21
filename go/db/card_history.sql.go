@@ -9,30 +9,30 @@ import (
 	"context"
 )
 
-const decrementFlashcardScore = `-- name: DecrementFlashcardScore :exec
-UPDATE card_history SET score = score - 1, times_attempted = times_attempted + 1 WHERE user_id = $1 AND card_id = $2
+const upsertCorrectFlashcardScore = `-- name: UpsertCorrectFlashcardScore :exec
+INSERT INTO card_history (user_id, card_id, score) VALUES ($1, $2, 1) ON CONFLICT (user_id, card_id) DO UPDATE SET score = score + 1, times_attempted = times_attempted + 1
 `
 
-type DecrementFlashcardScoreParams struct {
+type UpsertCorrectFlashcardScoreParams struct {
 	UserID int32
 	CardID int32
 }
 
-func (q *Queries) DecrementFlashcardScore(ctx context.Context, arg DecrementFlashcardScoreParams) error {
-	_, err := q.db.Exec(ctx, decrementFlashcardScore, arg.UserID, arg.CardID)
+func (q *Queries) UpsertCorrectFlashcardScore(ctx context.Context, arg UpsertCorrectFlashcardScoreParams) error {
+	_, err := q.db.Exec(ctx, upsertCorrectFlashcardScore, arg.UserID, arg.CardID)
 	return err
 }
 
-const incrementFlashcardScore = `-- name: IncrementFlashcardScore :exec
-UPDATE card_history SET score = score + 1, times_attempted = times_attempted + 1 WHERE user_id = $1 AND card_id = $2
+const upsertIncorrectFlashcardScore = `-- name: UpsertIncorrectFlashcardScore :exec
+INSERT INTO card_history (user_id, card_id, score) VALUES ($1, $2, 0) ON CONFLICT (user_id, card_id) DO UPDATE SET times_attempted = times_attempted + 1
 `
 
-type IncrementFlashcardScoreParams struct {
+type UpsertIncorrectFlashcardScoreParams struct {
 	UserID int32
 	CardID int32
 }
 
-func (q *Queries) IncrementFlashcardScore(ctx context.Context, arg IncrementFlashcardScoreParams) error {
-	_, err := q.db.Exec(ctx, incrementFlashcardScore, arg.UserID, arg.CardID)
+func (q *Queries) UpsertIncorrectFlashcardScore(ctx context.Context, arg UpsertIncorrectFlashcardScoreParams) error {
+	_, err := q.db.Exec(ctx, upsertIncorrectFlashcardScore, arg.UserID, arg.CardID)
 	return err
 }
