@@ -31,7 +31,8 @@ func Protected(r *chi.Mux, h *controllers.Handler) {
 		r.Put("/front", h.UpdateFlashcard)
 		r.Put("/back", h.UpdateFlashcard)
 		r.Put("/setid", h.UpdateFlashcard)
-		r.Put("/score", h.UpdateFlashcard)
+		r.Put("/incscore", h.UpdateFlashcard)
+		r.Put("/decscore", h.UpdateFlashcard)
 		// r.Delete("/", h.DeleteFlashcard)
 
 		r.Route("/sets", func(r chi.Router) {

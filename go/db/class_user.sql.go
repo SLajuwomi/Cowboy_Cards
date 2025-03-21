@@ -39,12 +39,11 @@ func (q *Queries) GetClassesOfAUser(ctx context.Context, userID int32) ([]GetCla
 	return items, nil
 }
 
-const getStudentsOfAClass = `-- name: GetStudentsOfAClass :many
-
+const getMembersOfAClass = `-- name: GetMembersOfAClass :many
 SELECT user_id, class_id, role, first_name, last_name FROM class_user JOIN users ON class_user.user_id = users.id WHERE class_id = $1
 `
 
-type GetStudentsOfAClassRow struct {
+type GetMembersOfAClassRow struct {
 	UserID    int32
 	ClassID   int32
 	Role      string
@@ -52,18 +51,15 @@ type GetStudentsOfAClassRow struct {
 	LastName  string
 }
 
-// SELECT user_id, class_id, role, first_name, last_name
-// FROM class_user JOIN users ON class_user.user_id = users.id
-// WHERE class_id = $1 AND role = 'student';
-func (q *Queries) GetStudentsOfAClass(ctx context.Context, classID int32) ([]GetStudentsOfAClassRow, error) {
-	rows, err := q.db.Query(ctx, getStudentsOfAClass, classID)
+func (q *Queries) GetMembersOfAClass(ctx context.Context, classID int32) ([]GetMembersOfAClassRow, error) {
+	rows, err := q.db.Query(ctx, getMembersOfAClass, classID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetStudentsOfAClassRow
+	var items []GetMembersOfAClassRow
 	for rows.Next() {
-		var i GetStudentsOfAClassRow
+		var i GetMembersOfAClassRow
 		if err := rows.Scan(
 			&i.UserID,
 			&i.ClassID,

@@ -75,16 +75,17 @@ func (h *Handler) CreateClass(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Release()
 
-	headerVals, err := getHeaderVals(r, "name", "description", "private", "teacherid")
+	// "private"
+	headerVals, err := getHeaderVals(r, "name", "description")
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
 		return
 	}
 
 	err = query.CreateClass(ctx, db.CreateClassParams{
-		Name:        headerVals["name"],
-		Description: headerVals["description"],
-		JoinCode:    pgtype.Text{String: headerVals["joincode"], Valid: true},
+		ClassName:        headerVals["name"],
+		ClassDescription: headerVals["description"],
+		JoinCode:         pgtype.Text{String: "123", Valid: false},
 	})
 	if err != nil {
 		logAndSendError(w, err, "Failed to create class", http.StatusInternalServerError)
@@ -127,13 +128,13 @@ func (h *Handler) UpdateClass(w http.ResponseWriter, r *http.Request) {
 	switch route {
 	case "name":
 		res, err = query.UpdateClassName(ctx, db.UpdateClassNameParams{
-			Name: val,
-			ID:   id,
+			ClassName: val,
+			ID:        id,
 		})
 	case "description":
 		res, err = query.UpdateClassDescription(ctx, db.UpdateClassDescriptionParams{
-			Description: val,
-			ID:          id,
+			ClassDescription: val,
+			ID:               id,
 		})
 	default:
 		logAndSendError(w, errors.New("invalid column"), "Improper header", http.StatusBadRequest)

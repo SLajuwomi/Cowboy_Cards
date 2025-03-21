@@ -83,23 +83,6 @@ func (q *Queries) UpdateFlashcardFront(ctx context.Context, arg UpdateFlashcardF
 	return front, err
 }
 
-const updateFlashcardScore = `-- name: UpdateFlashcardScore :one
-UPDATE card_history SET score = $1 WHERE user_id = $2 AND card_id = $3 RETURNING score
-`
-
-type UpdateFlashcardScoreParams struct {
-	Score  int32
-	UserID int32
-	CardID int32
-}
-
-func (q *Queries) UpdateFlashcardScore(ctx context.Context, arg UpdateFlashcardScoreParams) (int32, error) {
-	row := q.db.QueryRow(ctx, updateFlashcardScore, arg.Score, arg.UserID, arg.CardID)
-	var score int32
-	err := row.Scan(&score)
-	return score, err
-}
-
 const updateFlashcardSetId = `-- name: UpdateFlashcardSetId :one
 UPDATE flashcards SET set_id = $1, updated_at = NOW() WHERE id = $2 RETURNING set_id
 `
