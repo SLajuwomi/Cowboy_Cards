@@ -13,8 +13,8 @@ CREATE TABLE users (
 
 CREATE TABLE flashcard_sets (
 	id SERIAL, 
-	name TEXT NOT NULL,
-	description TEXT NOT NULL,
+	set_name TEXT NOT NULL,
+	set_description TEXT NOT NULL,
 	created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_DATE,
 	updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_DATE,
 	PRIMARY KEY (id)
@@ -33,20 +33,19 @@ CREATE TABLE flashcards (
 
 CREATE TABLE classes (
 	id SERIAL, 
-	name TEXT NOT NULL,
-	description TEXT NOT NULL,
+	class_name TEXT NOT NULL,
+	class_description TEXT NOT NULL,
 	join_code TEXT,
 	created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_DATE,
 	updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_DATE,
-	PRIMARY KEY (id),
-	UNIQUE (join_code)
+	PRIMARY KEY (id)
 );
 
-CREATE TABLE user_card_history (
+CREATE TABLE card_history (
 	user_id INTEGER NOT NULL,
 	card_id INTEGER NOT NULL,
 	created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_DATE,
-	times_seen INTEGER DEFAULT 0, 
+	times_attempted INTEGER DEFAULT 0 NOT NULL,
 	score INTEGER DEFAULT 0 NOT NULL,
 	is_mastered BOOLEAN NOT NULL DEFAULT FALSE,
 	PRIMARY KEY (user_id,card_id),
@@ -57,7 +56,7 @@ CREATE TABLE user_card_history (
 CREATE TABLE class_user (
 	user_id INTEGER NOT NULL,
 	class_id INTEGER NOT NULL, 
-	role TEXT NOT NULL,
+	role TEXT NOT NULL CHECK (role IN ('student', 'teacher')) DEFAULT 'student',
 	PRIMARY KEY(user_id, class_id),
 	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE ON UPDATE CASCADE

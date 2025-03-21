@@ -84,7 +84,7 @@ func (q *Queries) UpdateFlashcardFront(ctx context.Context, arg UpdateFlashcardF
 }
 
 const updateFlashcardScore = `-- name: UpdateFlashcardScore :one
-UPDATE user_card_history SET score = $1 WHERE user_id = $2 AND card_id = $3 RETURNING score
+UPDATE card_history SET score = $1 WHERE user_id = $2 AND card_id = $3 RETURNING score
 `
 
 type UpdateFlashcardScoreParams struct {

@@ -66,7 +66,7 @@ func (h *Handler) GetClassById(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) CreateClass(w http.ResponseWriter, r *http.Request) {
-	// curl -X POST localhost:8000/class -H "name: class name" -H "description: class description" -H "joincode: join code" -H "teacherid: 1"
+	// curl -X POST localhost:8000/api/classes -H "name: class name" -H "description: class description" -H "private t/f -H "teacherid: 1"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -75,7 +75,7 @@ func (h *Handler) CreateClass(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Release()
 
-	headerVals, err := getHeaderVals(r, "name", "description", "joincode", "teacherid")
+	headerVals, err := getHeaderVals(r, "name", "description", "private", "teacherid")
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
 		return
