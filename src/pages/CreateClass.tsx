@@ -1,4 +1,4 @@
-import { Navbar, NavbarTitle } from '@/components/navbar';
+import { Navbar } from '@/components/navbar';
 import {
   IonContent,
   IonItem,
@@ -104,9 +104,7 @@ const CreateClass = () => {
 
   return (
     <IonContent>
-      <Navbar>
-        <NavbarTitle>Create Class</NavbarTitle>
-      </Navbar>
+      <Navbar />
       <div id="main-content" className="container mx-auto px-4 py-8">
         <IonText color="warning">
           <p>

@@ -27,8 +27,8 @@ const Navbar = () => {
   const closePopover = () => setPopoverEvent(null);
 
   const handleMenuItemClick = (route) => {
-      router.push(route);
-      document.querySelector('ion-menu')?.close();
+    router.push(route);
+    document.querySelector('ion-menu')?.close();
   };
 
   const router = useIonRouter();
@@ -66,7 +66,10 @@ const Navbar = () => {
             >
               Public Cards
             </IonItem>
-            <IonItem button onClick={() => handleMenuItemClick('/userAccount')}>
+            <IonItem
+              button
+              onClick={() => handleMenuItemClick('/user-account')}
+            >
               My Account
             </IonItem>
           </IonList>
@@ -87,7 +90,13 @@ const Navbar = () => {
           </IonButtons>
 
           {/* Middle Section (Title / Children) */}
-          <IonTitle>Cowboy Cards</IonTitle>
+          <IonTitle
+            color="primary"
+            className="text-lg md:text-xl lg:text-2xl font-bold hover:translate-x-1 transition-all duration-300 cursor-pointer"
+            onClick={() => router.push('/home')}
+          >
+            Cowboy Cards
+          </IonTitle>
 
           {/* Theme Toggle Button */}
           <IonButtons slot="end">
@@ -100,20 +109,38 @@ const Navbar = () => {
               isOpen={!!popoverEvent}
               onDidDismiss={closePopover}
             >
-            <IonContent className="p-2">
-              <IonList>
-                <IonItem button onClick={() => { closePopover(); router.push('#'); }}>
-                  Create Set
-                </IonItem>
-                <IonItem button onClick={() => { closePopover(); router.push('#'); }}>
-                  Create Class
-                </IonItem>
-                <IonItem button onClick={() => { closePopover(); router.push('#'); }}>
-                  Join Class
-                </IonItem>
-              </IonList>
-            </IonContent>
-          </IonPopover>
+              <IonContent className="p-2">
+                <IonList>
+                  <IonItem
+                    button
+                    onClick={() => {
+                      closePopover();
+                      router.push('#');
+                    }}
+                  >
+                    Create Set
+                  </IonItem>
+                  <IonItem
+                    button
+                    onClick={() => {
+                      closePopover();
+                      router.push('#');
+                    }}
+                  >
+                    Create Class
+                  </IonItem>
+                  <IonItem
+                    button
+                    onClick={() => {
+                      closePopover();
+                      router.push('#');
+                    }}
+                  >
+                    Join Class
+                  </IonItem>
+                </IonList>
+              </IonContent>
+            </IonPopover>
             <IonButton fill="clear" onClick={toggleDarkMode}>
               <IonIcon
                 slot="icon-only"
@@ -124,7 +151,7 @@ const Navbar = () => {
 
           {/* Profile Icon */}
           <IonButtons slot="end">
-            <IonButton routerLink="/userAccount">
+            <IonButton routerLink="/user-account">
               <IonIcon icon={personCircle} size="large" />
             </IonButton>
           </IonButtons>
