@@ -19,6 +19,8 @@ func Protected(r *chi.Mux, h *controllers.Handler) {
 	r.Route("/class_set", func(r chi.Router) {
 		r.Post("/", h.AddSet)
 		r.Delete("/", h.RemoveSet)
+		r.Get("/get_sets", h.GetSetsInClass)
+		r.Get("/get_classes", h.GetClassesHavingSet)
 	})
 
 	r.Route("/class_user", func(r chi.Router) {
