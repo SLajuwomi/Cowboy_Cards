@@ -1,6 +1,6 @@
 import { IonContent, IonIcon } from "@ionic/react";
 import FlashcardCarousel from "@/components/flashcards/FlashcardCarousel";
-import { Navbar, NavbarTitle } from "@/components/navbar";
+import { Navbar } from "@/components/navbar";
 import { construct } from "ionicons/icons"; // Importing the wrench (construct) icon
 
 const Flashcard = () => {
@@ -17,12 +17,7 @@ const Flashcard = () => {
 
   return (
     <IonContent className="ion-padding">
-      <Navbar>
-        {/* Page Title */}
-        <NavbarTitle>
-          <div className="text-xl md:text-2xl lg:text-3xl font-bold">{selectedSet.name}</div>
-        </NavbarTitle>
-      </Navbar>
+      <Navbar />
 
       <div id="main-content" className="container mx-auto px-4 py-8">
         {/* Flashcards */}
