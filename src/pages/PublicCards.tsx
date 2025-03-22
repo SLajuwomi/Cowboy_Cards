@@ -34,6 +34,7 @@ const PublicFlashcards = () => {
     <IonContent>
       <Navbar />
       <div id="main-content" className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold pb-8">Public Flashcard Sets</h1>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {flashcardSets.map((set) => (
             <Link key={set.ID} to={`/flashcards/${set.ID}`}>
