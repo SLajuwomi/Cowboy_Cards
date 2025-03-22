@@ -1,14 +1,14 @@
 -- name: ListUsers :many
-SELECT * FROM users ORDER BY last_name, first_name;
+SELECT id, username, first_name, last_name, email, created_at, updated_at FROM users ORDER BY last_name, first_name;
 
 -- name: GetUserById :one
-SELECT * FROM users WHERE id = $1;
+SELECT id, username, first_name, last_name, email, created_at, updated_at FROM users WHERE id = $1;
 
 -- name: GetUserByEmail :one
 SELECT * FROM users WHERE email = $1;
 
 -- name: GetUserByUsername :one
-SELECT * FROM users WHERE username = $1;
+SELECT id, username, first_name, last_name, email, created_at, updated_at FROM users WHERE username = $1;
 
 -- name: CreateUser :one
 INSERT INTO users (username, first_name, last_name, email, password) VALUES ($1, $2, $3, $4, $5) RETURNING *;

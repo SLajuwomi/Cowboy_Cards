@@ -185,6 +185,7 @@ func (h *Handler) GetMembersOfAClass(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(members); err != nil {
 		logAndSendError(w, err, "Error encoding message", http.StatusInternalServerError)
 	}
@@ -217,6 +218,7 @@ func (h *Handler) GetClassesOfAUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(classes); err != nil {
 		logAndSendError(w, err, "Error encoding message", http.StatusInternalServerError)
 	}
