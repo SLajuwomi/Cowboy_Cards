@@ -1,6 +1,7 @@
 import { IonContent } from '@ionic/react';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { Navbar } from '@/components/navbar';
 
 const NotFound = () => {
   const location = useLocation();
@@ -14,6 +15,8 @@ const NotFound = () => {
 
   return (
     <IonContent>
+      <Navbar />
+
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">404</h1>

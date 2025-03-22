@@ -8,20 +8,33 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type CardHistory struct {
+	UserID         int32
+	CardID         int32
+	Score          int32
+	TimesAttempted int32
+	IsMastered     bool
+	CreatedAt      pgtype.Timestamp
+}
+
 type Class struct {
-	ID          int32
-	Name        string
-	Description string
-	StudentIds  []int32
-	JoinCode    string
-	TeacherID   int32
-	CreatedAt   pgtype.Timestamp
-	UpdatedAt   pgtype.Timestamp
+	ID               int32
+	ClassName        string
+	ClassDescription string
+	JoinCode         pgtype.Text
+	CreatedAt        pgtype.Timestamp
+	UpdatedAt        pgtype.Timestamp
+}
+
+type ClassSet struct {
+	ClassID int32
+	SetID   int32
 }
 
 type ClassUser struct {
 	UserID  int32
 	ClassID int32
+	Role    string
 }
 
 type Flashcard struct {
@@ -29,19 +42,16 @@ type Flashcard struct {
 	Front     string
 	Back      string
 	SetID     int32
-	UserID    int32
 	CreatedAt pgtype.Timestamp
 	UpdatedAt pgtype.Timestamp
 }
 
 type FlashcardSet struct {
-	ID          int32
-	Name        string
-	Description string
-	UserID      int32
-	ClassID     int32
-	CreatedAt   pgtype.Timestamp
-	UpdatedAt   pgtype.Timestamp
+	ID             int32
+	SetName        string
+	SetDescription string
+	CreatedAt      pgtype.Timestamp
+	UpdatedAt      pgtype.Timestamp
 }
 
 type User struct {
@@ -49,15 +59,8 @@ type User struct {
 	Username  string
 	FirstName string
 	LastName  string
-	Role      string
+	Email     string
+	Password  string
 	CreatedAt pgtype.Timestamp
 	UpdatedAt pgtype.Timestamp
-}
-
-type UserCardHistory struct {
-	UserID     int32
-	CardID     int32
-	CreatedAt  pgtype.Timestamp
-	TimesSeen  pgtype.Int4
-	IsMastered bool
 }
