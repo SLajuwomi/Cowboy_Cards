@@ -24,10 +24,10 @@ func Protected(r *chi.Mux, h *controllers.Handler) {
 	r.Route("/class_user", func(r chi.Router) {
 		r.Post("/", h.JoinClass)
 		r.Delete("/", h.LeaveClass)
-		r.Get("/classes", h.GetClassesOfAUser)
-		r.Get("/members", h.GetMembersOfAClass)
-		// r.Get("/getstudents", h.GetStudentsOfAClass)
-		// r.Get("/getteacher", h.GetTeacherOfAClass)
+		r.Get("/classes", h.ListClassesOfAUser)
+		r.Get("/members", h.ListMembersOfAClass)
+		// r.Get("/getstudents", h.ListStudentsOfAClass)
+		// r.Get("/getteacher", h.ListTeachersOfAClass)
 	})
 
 	// -------------------simple-------------------------
@@ -36,23 +36,26 @@ func Protected(r *chi.Mux, h *controllers.Handler) {
 		r.Get("/list", h.ListClasses)
 		r.Get("/", h.GetClassById)
 		r.Post("/", h.CreateClass)
-		r.Put("/name", h.UpdateClass)
-		r.Put("/description", h.UpdateClass)
+		r.Put("/class_name", h.UpdateClass)
+		r.Put("/class_description", h.UpdateClass)
 		// r.Delete("/", h.DeleteClass)
 	})
 
 	r.Route("/flashcards", func(r chi.Router) {
+		r.Get("/", h.GetFlashcardById)
+		r.Get("/list", h.ListFlashcardsOfASet)
 		r.Post("/", h.CreateFlashcard)
 		r.Put("/front", h.UpdateFlashcard)
 		r.Put("/back", h.UpdateFlashcard)
-		r.Put("/setid", h.UpdateFlashcard)
+		r.Put("/set_id", h.UpdateFlashcard)
 		// r.Delete("/", h.DeleteFlashcard)
 
 		r.Route("/sets", func(r chi.Router) {
+			r.Get("/list", h.ListFlashcardSets)
 			r.Get("/", h.GetFlashcardSetById)
 			r.Post("/", h.CreateFlashcardSet)
-			r.Put("/name", h.UpdateFlashcardSet)
-			r.Put("/description", h.UpdateFlashcardSet)
+			r.Put("/set_name", h.UpdateFlashcardSet)
+			r.Put("/set_description", h.UpdateFlashcardSet)
 			// r.Delete("/", h.DeleteFlashcardSet)
 		})
 	})

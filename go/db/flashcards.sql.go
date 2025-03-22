@@ -9,8 +9,8 @@ import (
 	"context"
 )
 
-const createFlashcard = `-- name: CreateFlashcard :exec
-INSERT INTO flashcards (front, back, set_id) VALUES ($1, $2, $3)
+const createFlashcard = `-- name: CreateFlashcard :one
+INSERT INTO flashcards (front, back, set_id) VALUES ($1, $2, $3) RETURNING id, front, back, set_id, created_at, updated_at
 `
 
 type CreateFlashcardParams struct {
@@ -19,9 +19,18 @@ type CreateFlashcardParams struct {
 	SetID int32
 }
 
-func (q *Queries) CreateFlashcard(ctx context.Context, arg CreateFlashcardParams) error {
-	_, err := q.db.Exec(ctx, createFlashcard, arg.Front, arg.Back, arg.SetID)
-	return err
+func (q *Queries) CreateFlashcard(ctx context.Context, arg CreateFlashcardParams) (Flashcard, error) {
+	row := q.db.QueryRow(ctx, createFlashcard, arg.Front, arg.Back, arg.SetID)
+	var i Flashcard
+	err := row.Scan(
+		&i.ID,
+		&i.Front,
+		&i.Back,
+		&i.SetID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const deleteFlashcard = `-- name: DeleteFlashcard :exec
@@ -49,6 +58,37 @@ func (q *Queries) GetFlashcardById(ctx context.Context, id int32) (Flashcard, er
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const listFlashcardsOfASet = `-- name: ListFlashcardsOfASet :many
+SELECT id, front, back, set_id, created_at, updated_at FROM flashcards WHERE set_id = $1
+`
+
+func (q *Queries) ListFlashcardsOfASet(ctx context.Context, setID int32) ([]Flashcard, error) {
+	rows, err := q.db.Query(ctx, listFlashcardsOfASet, setID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Flashcard
+	for rows.Next() {
+		var i Flashcard
+		if err := rows.Scan(
+			&i.ID,
+			&i.Front,
+			&i.Back,
+			&i.SetID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const updateFlashcardBack = `-- name: UpdateFlashcardBack :one
