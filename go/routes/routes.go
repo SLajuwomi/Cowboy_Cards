@@ -12,8 +12,8 @@ func Protected(r *chi.Mux, h *controllers.Handler) {
 
 	// these are upserts, one each for (in)correct
 	r.Route("/card_history", func(r chi.Router) {
-		// r.Post("/incscore", h.UpdateHistory)
-		// r.Post("/decscore", h.UpdateHistory)
+		r.Post("/incscore", h.UpsertCorrectFlashcardScore)
+		r.Post("/decscore", h.UpsertIncorrectFlashcardScore)
 	})
 
 	r.Route("/class_set", func(r chi.Router) {
