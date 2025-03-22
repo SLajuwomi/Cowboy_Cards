@@ -23,7 +23,7 @@ import {
   chevronUpOutline,
 } from 'ionicons/icons';
 import { useTheme } from '@/contexts/ThemeContext';
-import { Navbar, NavbarTitle } from '@/components/navbar';
+import { Navbar } from '@/components/navbar';
 
 const UserAccount = () => {
   const { theme, setTheme } = useTheme();
@@ -103,13 +103,7 @@ const UserAccount = () => {
 
   return (
     <IonContent>
-      <Navbar>
-        <NavbarTitle>
-          <div className="text-xl md:text-2xl lg:text-3xl font-bold">
-            User Dashboard
-          </div>
-        </NavbarTitle>
-      </Navbar>
+      <Navbar />
 
       <div id="main-content" className="container mx-auto px-4 py-8">
         {/* Header Section */}
