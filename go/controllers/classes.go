@@ -67,7 +67,7 @@ func (h *Handler) GetClassById(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) CreateClass(w http.ResponseWriter, r *http.Request) {
-	// curl -X POST localhost:8000/api/classes -H "name: class name" -H "description: class description" -H "private t/f -H "teacherid: 1"
+	// curl -X POST localhost:8000/api/classes -H "name: class name" -H "description: class description" -H "private t/f
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -77,15 +77,15 @@ func (h *Handler) CreateClass(w http.ResponseWriter, r *http.Request) {
 	defer conn.Release()
 
 	// "private"
-	headerVals, err := getHeaderVals(r, "name", "description")
+	headerVals, err := getHeaderVals(r, "class_name", "class_description")
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
 		return
 	}
 
-	err = query.CreateClass(ctx, db.CreateClassParams{
-		ClassName:        headerVals["name"],
-		ClassDescription: headerVals["description"],
+	class, err := query.CreateClass(ctx, db.CreateClassParams{
+		ClassName:        headerVals["class_name"],
+		ClassDescription: headerVals["class_description"],
 		JoinCode:         pgtype.Text{String: "123", Valid: false},
 	})
 	if err != nil {
@@ -93,8 +93,9 @@ func (h *Handler) CreateClass(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	if err := json.NewEncoder(w).Encode("Class created"); err != nil {
+	if err := json.NewEncoder(w).Encode(class); err != nil {
 		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
 	}
 }
@@ -127,12 +128,12 @@ func (h *Handler) UpdateClass(w http.ResponseWriter, r *http.Request) {
 
 	var res string
 	switch route {
-	case "name":
+	case "class_name":
 		res, err = query.UpdateClassName(ctx, db.UpdateClassNameParams{
 			ClassName: val,
 			ID:        id,
 		})
-	case "description":
+	case "class_description":
 		res, err = query.UpdateClassDescription(ctx, db.UpdateClassDescriptionParams{
 			ClassDescription: val,
 			ID:               id,

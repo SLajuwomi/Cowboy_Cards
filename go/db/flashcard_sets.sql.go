@@ -9,8 +9,8 @@ import (
 	"context"
 )
 
-const createFlashcardSet = `-- name: CreateFlashcardSet :exec
-INSERT INTO flashcard_sets (set_name, set_description) VALUES ($1, $2)
+const createFlashcardSet = `-- name: CreateFlashcardSet :one
+INSERT INTO flashcard_sets (set_name, set_description) VALUES ($1, $2) RETURNING id, set_name, set_description, created_at, updated_at
 `
 
 type CreateFlashcardSetParams struct {
@@ -18,9 +18,17 @@ type CreateFlashcardSetParams struct {
 	SetDescription string
 }
 
-func (q *Queries) CreateFlashcardSet(ctx context.Context, arg CreateFlashcardSetParams) error {
-	_, err := q.db.Exec(ctx, createFlashcardSet, arg.SetName, arg.SetDescription)
-	return err
+func (q *Queries) CreateFlashcardSet(ctx context.Context, arg CreateFlashcardSetParams) (FlashcardSet, error) {
+	row := q.db.QueryRow(ctx, createFlashcardSet, arg.SetName, arg.SetDescription)
+	var i FlashcardSet
+	err := row.Scan(
+		&i.ID,
+		&i.SetName,
+		&i.SetDescription,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const deleteFlashcardSet = `-- name: DeleteFlashcardSet :exec
@@ -47,6 +55,36 @@ func (q *Queries) GetFlashcardSetById(ctx context.Context, id int32) (FlashcardS
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const listFlashcardSets = `-- name: ListFlashcardSets :many
+SELECT id, set_name, set_description, created_at, updated_at FROM flashcard_sets ORDER BY set_name
+`
+
+func (q *Queries) ListFlashcardSets(ctx context.Context) ([]FlashcardSet, error) {
+	rows, err := q.db.Query(ctx, listFlashcardSets)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []FlashcardSet
+	for rows.Next() {
+		var i FlashcardSet
+		if err := rows.Scan(
+			&i.ID,
+			&i.SetName,
+			&i.SetDescription,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const updateFlashcardSetDescription = `-- name: UpdateFlashcardSetDescription :one
