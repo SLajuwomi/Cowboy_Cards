@@ -1,7 +1,7 @@
-import { IonContent, IonIcon } from '@ionic/react';
-import FlashcardCarousel from '@/components/flashcards/FlashcardCarousel';
-import { Navbar } from '@/components/navbar';
-import { construct } from 'ionicons/icons'; // Importing the wrench (construct) icon
+import { IonContent, IonIcon } from "@ionic/react";
+import FlashcardCarousel from "@/components/flashcards/FlashcardCarousel";
+import { Navbar } from "@/components/navbar";
+import { construct } from "ionicons/icons"; // Importing the wrench (construct) icon
 
 const Flashcard = () => {
   const selectedSet = {
