@@ -15,6 +15,7 @@ import ResetPass from '@/components/auth/ResetPass';
 import PublicCards from './pages/PublicCards';
 import UserAccount from './pages/UserAccount';
 import { ThemeProvider } from './contexts/ThemeContext';
+import CreateClass from './pages/CreateClass';
 import Flashcard from './pages/Flashcard';
 import CreateSet from './pages/CreateSet';
 
@@ -59,6 +60,7 @@ function App() {
                 <Route exact path="/user-account" component={UserAccount} />
                 <Route exact path="/flashcards" component={Flashcard} />
                 <Route exact path="/create-set" component={CreateSet} />
+                <Route exact path="/class/create" component={CreateClass} />
                 <Route component={NotFound} />
               </IonRouterOutlet>
             </IonReactRouter>

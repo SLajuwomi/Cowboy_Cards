@@ -23,6 +23,72 @@ func (q *Queries) AddSet(ctx context.Context, arg AddSetParams) error {
 	return err
 }
 
+const getClassesHavingSet = `-- name: GetClassesHavingSet :many
+SELECT classes.id, class_name, class_description FROM classes
+JOIN class_set ON classes.id = class_set.class_id 
+JOIN flashcard_sets ON class_set.set_id = flashcard_sets.id
+WHERE set_id = $1
+`
+
+type GetClassesHavingSetRow struct {
+	ID               int32
+	ClassName        string
+	ClassDescription string
+}
+
+func (q *Queries) GetClassesHavingSet(ctx context.Context, setID int32) ([]GetClassesHavingSetRow, error) {
+	rows, err := q.db.Query(ctx, getClassesHavingSet, setID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetClassesHavingSetRow
+	for rows.Next() {
+		var i GetClassesHavingSetRow
+		if err := rows.Scan(&i.ID, &i.ClassName, &i.ClassDescription); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getSetsInClass = `-- name: GetSetsInClass :many
+SELECT flashcard_sets.id, set_name, set_description FROM classes
+JOIN class_set ON classes.id = class_set.class_id 
+JOIN flashcard_sets ON class_set.set_id = flashcard_sets.id
+WHERE class_id = $1
+`
+
+type GetSetsInClassRow struct {
+	ID             int32
+	SetName        string
+	SetDescription string
+}
+
+func (q *Queries) GetSetsInClass(ctx context.Context, classID int32) ([]GetSetsInClassRow, error) {
+	rows, err := q.db.Query(ctx, getSetsInClass, classID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetSetsInClassRow
+	for rows.Next() {
+		var i GetSetsInClassRow
+		if err := rows.Scan(&i.ID, &i.SetName, &i.SetDescription); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const removeSet = `-- name: RemoveSet :exec
 DELETE FROM class_set WHERE class_id = $1 AND set_id = $2
 `
