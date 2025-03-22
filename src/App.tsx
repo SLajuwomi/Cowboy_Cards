@@ -16,6 +16,8 @@ import PublicCards from './pages/PublicCards';
 import UserAccount from './pages/UserAccount';
 import { ThemeProvider } from './contexts/ThemeContext';
 import CreateClass from './pages/CreateClass';
+import Flashcard from './pages/Flashcard';
+
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
 
@@ -54,7 +56,8 @@ function App() {
                 <Route exact path="/auth" component={AuthForm} />
                 <Route exact path="/reset-password" component={ResetPass} />
                 <Route exact path="/public-cards" component={PublicCards} />
-                <Route exact path="/userAccount" component={UserAccount} />
+                <Route exact path="/user-account" component={UserAccount} />
+                <Route exact path="/flashcards" component={Flashcard} />
                 <Route exact path="/class/create" component={CreateClass} />
                 <Route component={NotFound} />
               </IonRouterOutlet>

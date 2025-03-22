@@ -16,6 +16,5 @@ UPDATE flashcards SET set_id = $1, updated_at = NOW() WHERE id = $2 RETURNING se
 -- name: DeleteFlashcard :exec
 DELETE FROM flashcards WHERE id = $1;
 
-
 -- execresult annotation is buggy, trying exec https://github.com/sqlc-dev/sqlc/issues/3699#issuecomment-2486892414
 

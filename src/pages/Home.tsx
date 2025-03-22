@@ -16,7 +16,8 @@ import { addOutline, listOutline, bookOutline } from 'ionicons/icons';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Navbar, NavbarTitle, NavbarButton } from '@/components/navbar';
+import { Navbar } from '@/components/navbar';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const Home = () => {
   const [tab, setTab] = useState('classes');
@@ -40,14 +41,8 @@ const Home = () => {
   ];
 
   return (
-    <IonContent>
-      <Navbar>
-        <NavbarTitle>
-          <div className="text-xl md:text-2xl lg:text-3xl font-bold">
-            Dashboard
-          </div>
-        </NavbarTitle>
-      </Navbar>
+    <IonContent className="ion-padding">
+      <Navbar />
       <div id="main-content" className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-8">
           <h1 className="text-3xl font-bold">
