@@ -158,7 +158,7 @@ func (h *Handler) LeaveClass(w http.ResponseWriter, r *http.Request) {
 // 	}
 // }
 
-func (h *Handler) GetMembersOfAClass(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ListMembersOfAClass(w http.ResponseWriter, r *http.Request) {
 	//curl -X GET localhost:8000/api/class_user/getmembers -H "class_id: 1"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -179,7 +179,7 @@ func (h *Handler) GetMembersOfAClass(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	members, err := query.GetMembersOfAClass(ctx, cid)
+	members, err := query.ListMembersOfAClass(ctx, cid)
 	if err != nil {
 		logAndSendError(w, err, "Error getting members", http.StatusInternalServerError)
 		return
@@ -191,7 +191,7 @@ func (h *Handler) GetMembersOfAClass(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) GetClassesOfAUser(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ListClassesOfAUser(w http.ResponseWriter, r *http.Request) {
 	//curl -X GET localhost:8000/api/class_user/getclasses -H "user_id: 1"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -212,7 +212,7 @@ func (h *Handler) GetClassesOfAUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	classes, err := query.GetClassesOfAUser(ctx, uid)
+	classes, err := query.ListClassesOfAUser(ctx, uid)
 	if err != nil {
 		logAndSendError(w, err, "Error getting classes", http.StatusInternalServerError)
 		return

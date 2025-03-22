@@ -1,8 +1,11 @@
+-- name: ListFlashcardSets :many
+SELECT * FROM flashcard_sets ORDER BY set_name;
+
 -- name: GetFlashcardSetById :one
 SELECT * FROM flashcard_sets WHERE id = $1;
 
--- name: CreateFlashcardSet :exec
-INSERT INTO flashcard_sets (set_name, set_description) VALUES ($1, $2);
+-- name: CreateFlashcardSet :one
+INSERT INTO flashcard_sets (set_name, set_description) VALUES ($1, $2) RETURNING *;
 
 -- name: UpdateFlashcardSetName :one
 UPDATE flashcard_sets SET set_name = $1, updated_at = NOW() WHERE id = $2 RETURNING set_name;

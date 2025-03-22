@@ -11,8 +11,8 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const createClass = `-- name: CreateClass :exec
-INSERT INTO classes (class_name, class_description, join_code) VALUES ($1, $2, $3)
+const createClass = `-- name: CreateClass :one
+INSERT INTO classes (class_name, class_description, join_code) VALUES ($1, $2, $3) RETURNING id, class_name, class_description, join_code, created_at, updated_at
 `
 
 type CreateClassParams struct {
@@ -21,9 +21,18 @@ type CreateClassParams struct {
 	JoinCode         pgtype.Text
 }
 
-func (q *Queries) CreateClass(ctx context.Context, arg CreateClassParams) error {
-	_, err := q.db.Exec(ctx, createClass, arg.ClassName, arg.ClassDescription, arg.JoinCode)
-	return err
+func (q *Queries) CreateClass(ctx context.Context, arg CreateClassParams) (Class, error) {
+	row := q.db.QueryRow(ctx, createClass, arg.ClassName, arg.ClassDescription, arg.JoinCode)
+	var i Class
+	err := row.Scan(
+		&i.ID,
+		&i.ClassName,
+		&i.ClassDescription,
+		&i.JoinCode,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const deleteClass = `-- name: DeleteClass :exec

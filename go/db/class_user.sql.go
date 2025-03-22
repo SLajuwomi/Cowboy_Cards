@@ -9,74 +9,6 @@ import (
 	"context"
 )
 
-const getClassesOfAUser = `-- name: GetClassesOfAUser :many
-SELECT class_id, role, class_name FROM class_user JOIN classes ON class_user.class_id = classes.id WHERE user_id = $1
-`
-
-type GetClassesOfAUserRow struct {
-	ClassID   int32
-	Role      string
-	ClassName string
-}
-
-func (q *Queries) GetClassesOfAUser(ctx context.Context, userID int32) ([]GetClassesOfAUserRow, error) {
-	rows, err := q.db.Query(ctx, getClassesOfAUser, userID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []GetClassesOfAUserRow
-	for rows.Next() {
-		var i GetClassesOfAUserRow
-		if err := rows.Scan(&i.ClassID, &i.Role, &i.ClassName); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getMembersOfAClass = `-- name: GetMembersOfAClass :many
-SELECT user_id, class_id, role, first_name, last_name FROM class_user JOIN users ON class_user.user_id = users.id WHERE class_id = $1
-`
-
-type GetMembersOfAClassRow struct {
-	UserID    int32
-	ClassID   int32
-	Role      string
-	FirstName string
-	LastName  string
-}
-
-func (q *Queries) GetMembersOfAClass(ctx context.Context, classID int32) ([]GetMembersOfAClassRow, error) {
-	rows, err := q.db.Query(ctx, getMembersOfAClass, classID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []GetMembersOfAClassRow
-	for rows.Next() {
-		var i GetMembersOfAClassRow
-		if err := rows.Scan(
-			&i.UserID,
-			&i.ClassID,
-			&i.Role,
-			&i.FirstName,
-			&i.LastName,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const joinClass = `-- name: JoinClass :exec
 INSERT INTO class_user (user_id, class_id, role) VALUES ($1, $2, $3)
 `
@@ -104,4 +36,72 @@ type LeaveClassParams struct {
 func (q *Queries) LeaveClass(ctx context.Context, arg LeaveClassParams) error {
 	_, err := q.db.Exec(ctx, leaveClass, arg.UserID, arg.ClassID)
 	return err
+}
+
+const listClassesOfAUser = `-- name: ListClassesOfAUser :many
+SELECT class_id, role, class_name FROM class_user JOIN classes ON class_user.class_id = classes.id WHERE user_id = $1
+`
+
+type ListClassesOfAUserRow struct {
+	ClassID   int32
+	Role      string
+	ClassName string
+}
+
+func (q *Queries) ListClassesOfAUser(ctx context.Context, userID int32) ([]ListClassesOfAUserRow, error) {
+	rows, err := q.db.Query(ctx, listClassesOfAUser, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListClassesOfAUserRow
+	for rows.Next() {
+		var i ListClassesOfAUserRow
+		if err := rows.Scan(&i.ClassID, &i.Role, &i.ClassName); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listMembersOfAClass = `-- name: ListMembersOfAClass :many
+SELECT user_id, class_id, role, first_name, last_name FROM class_user JOIN users ON class_user.user_id = users.id WHERE class_id = $1
+`
+
+type ListMembersOfAClassRow struct {
+	UserID    int32
+	ClassID   int32
+	Role      string
+	FirstName string
+	LastName  string
+}
+
+func (q *Queries) ListMembersOfAClass(ctx context.Context, classID int32) ([]ListMembersOfAClassRow, error) {
+	rows, err := q.db.Query(ctx, listMembersOfAClass, classID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListMembersOfAClassRow
+	for rows.Next() {
+		var i ListMembersOfAClassRow
+		if err := rows.Scan(
+			&i.UserID,
+			&i.ClassID,
+			&i.Role,
+			&i.FirstName,
+			&i.LastName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

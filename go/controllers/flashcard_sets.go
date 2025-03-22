@@ -9,27 +9,27 @@ import (
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 )
 
-// func (h *Handler) ListFlashcardsets(w http.ResponseWriter, r *http.Request) {
-// 	// curl http://localhost:8000/api/flashcards/list | jq
+func (h *Handler) ListFlashcardSets(w http.ResponseWriter, r *http.Request) {
+	// curl http://localhost:8000/api/flashcards/sets/list | jq
 
-// 	query, ctx, conn, err := getQueryConnAndContext(r, h)
-// 	if err != nil {
-// 		logAndSendError(w, err, "Database connection error", http.StatusInternalServerError)
-// 		return
-// 	}
-// 	defer conn.Release()
+	query, ctx, conn, err := getQueryConnAndContext(r, h)
+	if err != nil {
+		logAndSendError(w, err, "Database connection error", http.StatusInternalServerError)
+		return
+	}
+	defer conn.Release()
 
-// 	classes, err := query.ListClasses(ctx)
-// 	if err != nil {
-// 		logAndSendError(w, err, "Error getting classes from DB", http.StatusInternalServerError)
-// 		return
-// 	}
+	flashcard_sets, err := query.ListFlashcardSets(ctx)
+	if err != nil {
+		logAndSendError(w, err, "Error getting flashcard sets from DB", http.StatusInternalServerError)
+		return
+	}
 
-// 	// w.Header().Set("Content-Type", "application/json")
-// 	if err := json.NewEncoder(w).Encode(classes); err != nil {
-// 		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
-// 	}
-// }
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(flashcard_sets); err != nil {
+		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
+	}
+}
 
 func (h *Handler) GetFlashcardSetById(w http.ResponseWriter, r *http.Request) {
 	// curl http://localhost:8000/api/flashcards/sets/ -H "id: 1"
@@ -74,23 +74,24 @@ func (h *Handler) CreateFlashcardSet(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Release()
 
-	headerVals, err := getHeaderVals(r, "name", "description")
+	headerVals, err := getHeaderVals(r, "set_name", "set_description")
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
 		return
 	}
 
-	err = query.CreateFlashcardSet(ctx, db.CreateFlashcardSetParams{
-		SetName:        headerVals["name"],
-		SetDescription: headerVals["description"],
+	flashcard_set, err := query.CreateFlashcardSet(ctx, db.CreateFlashcardSetParams{
+		SetName:        headerVals["set_name"],
+		SetDescription: headerVals["set_description"],
 	})
 	if err != nil {
 		logAndSendError(w, err, "Failed to create flashcard set", http.StatusInternalServerError)
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	if err := json.NewEncoder(w).Encode("Flashcard Set created"); err != nil {
+	if err := json.NewEncoder(w).Encode(flashcard_set); err != nil {
 		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
 	}
 }
@@ -123,12 +124,12 @@ func (h *Handler) UpdateFlashcardSet(w http.ResponseWriter, r *http.Request) {
 
 	var res string
 	switch route {
-	case "name":
+	case "set_name":
 		res, err = query.UpdateFlashcardSetName(ctx, db.UpdateFlashcardSetNameParams{
 			SetName: val,
 			ID:      id,
 		})
-	case "description":
+	case "set_description":
 		res, err = query.UpdateFlashcardSetDescription(ctx, db.UpdateFlashcardSetDescriptionParams{
 			SetDescription: val,
 			ID:             id,
