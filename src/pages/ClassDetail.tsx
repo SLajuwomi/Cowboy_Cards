@@ -33,6 +33,14 @@ type Class = {
   UpdatedAt: string;
 };
 
+type FlashcardSet = {
+  ID: number;
+  SetName: string;
+  SetDescription: string;
+  CreatedAt: string;
+  UpdatedAt: string;
+};
+
 const ClassDetail = () => {
   const { id } = useParams();
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -41,6 +49,7 @@ const ClassDetail = () => {
   const [tab, setTab] = useState('leaderboard');
   const [isTeacher, setIsTeacher] = useState(false);
   const [classData, setClassData] = useState<Class>();
+  const [flashcardSets, setFlashcardSets] = useState<FlashcardSet[]>([]);
 
   useEffect(() => {
     async function fetchClass() {
@@ -48,14 +57,24 @@ const ClassDetail = () => {
         `https://cowboy-cards.dsouth.org/api/classes/`,
         {
           headers: {
-            id: 1,
+            id: id,
           },
         }
       );
       console.log('data', data);
       setClassData(data);
     }
+
+    async function fetchFlashcardSets() {
+      const sets = await api.get<FlashcardSet[]>(
+        `https://cowboy-cards.dsouth.org/api/flashcards/sets/list`
+      );
+      console.log('sets', sets);
+      setFlashcardSets(Array.isArray(sets) ? sets : [sets]);
+    }
+
     fetchClass();
+    fetchFlashcardSets();
   }, []);
 
   // TODO: get the user role from the backend, this code is currently not functional
@@ -209,7 +228,8 @@ const ClassDetail = () => {
         {/* TODO: should link to the flashcard set detail page where the carousel should also be */}
         {tab === 'flashcards' && (
           <FlashcardCarousel
-            classData={classData}
+            // classData={classData}
+            flashcardSets={flashcardSets}
             selectedSet={selectedSet}
             setSelectedSet={setSelectedSet}
             currentCardIndex={currentCardIndex}

@@ -26,24 +26,24 @@ const FlashcardCarousel = (props) => {
       {props.selectedSet === null ? (
         <IonGrid>
           <IonRow>
-            {props.classData.flashcardSets.map((set) => (
-              <IonCol size="12" sizeMd="6" sizeLg="4" key={set.id}>
+            {props.flashcardSets.map((set) => (
+              <IonCol size="12" sizeMd="6" sizeLg="4" key={set.ID}>
                 <IonCard
                   className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-200 rounded-lg border shadow-sm"
-                  onClick={() => props.setSelectedSet(set.id)}
+                  onClick={() => props.setSelectedSet(set.ID)}
                 >
                   <IonCardHeader>
                     <IonCardTitle className="text-lg font-semibold">
-                      {set.name}
+                      {set.SetName}
                     </IonCardTitle>
                   </IonCardHeader>
                   <IonCardContent>
                     <p className="text-muted-foreground mb-2">
-                      {set.description}
+                      {set.SetDescription}
                     </p>
-                    <p className="text-muted-foreground">
+                    {/* <p className="text-muted-foreground">
                       {set.cards.length} cards
-                    </p>
+                    </p> */}
                   </IonCardContent>
                 </IonCard>
               </IonCol>
