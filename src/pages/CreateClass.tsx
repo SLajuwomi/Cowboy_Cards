@@ -9,6 +9,7 @@ import {
   IonRadioGroup,
   IonRadio,
   IonToast,
+  IonCheckbox,
 } from '@ionic/react';
 
 import { useState, useEffect } from 'react';
@@ -17,24 +18,25 @@ const CreateClass = () => {
   const [buttonClicked, setButtonClicked] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [lastJoinCode, setLastJoinCode] = useState('');
+  // const [lastJoinCode, setLastJoinCode] = useState('');
   const [formData, setFormData] = useState({
     className: '',
     description: '',
     joinCode: '',
   });
-  const [isPrivate, setIsPrivate] = useState(false);
-  const [textToCopy, setTextToCopy] = useState('This is the text to be copied');
-  const [showToast, setShowToast] = useState(false);
+  // const [isPrivate, setIsPrivate] = useState(false);
+  // const [textToCopy, setTextToCopy] = useState('This is the text to be copied');
+  // const [showToast, setShowToast] = useState(false);
+  // const [showSuccess, setShowSuccess] = useState(false);
 
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(textToCopy);
-      setShowToast(true);
-    } catch (err) {
-      console.error('Failed to copy text', err);
-    }
-  };
+  // const copyToClipboard = async () => {
+  //   try {
+  //     await navigator.clipboard.writeText(textToCopy);
+  //     setShowToast(true);
+  //   } catch (err) {
+  //     console.error('Failed to copy text', err);
+  //   }
+  // };
 
   useEffect(() => {
     async function submitForm() {
@@ -48,10 +50,14 @@ const CreateClass = () => {
           'https://cowboy-cards.dsouth.org/api/classes',
           {
             method: 'POST',
+            // Will need to add a public/private header to the backend, then also here
+            // Join code will be fetched from the backend at some point
+            // Join code will be null if the private header is false, and a random UUID if it is true
+            // Teacher ID will be removed, replaced with type of user, left for now to not break the backend request
             headers: {
               name: formData.className,
               description: formData.description,
-              joincode: formData.joinCode,
+              // joincode: formData.joinCode,
               teacherid: '12',
             },
           }
@@ -64,14 +70,17 @@ const CreateClass = () => {
         const data = await response.json();
         console.log('Class created successfully:', data);
 
-        setLastJoinCode(formData.joinCode);
+        // setLastJoinCode(formData.joinCode);
 
         setButtonClicked(false);
+
         setFormData({
           className: '',
           description: '',
           joinCode: '',
         });
+
+        // setShowSuccess(true);
       } catch (error) {
         console.error('Error creating class:', error);
         setError(`Failed to create class: ${error.message}`);
@@ -80,16 +89,18 @@ const CreateClass = () => {
       }
     }
 
-    submitForm();
+    if (buttonClicked) {
+      submitForm();
+    }
   }, [buttonClicked, formData]);
 
-  useEffect(() => {
-    if (lastJoinCode) {
-      setTextToCopy(lastJoinCode); // Update textToCopy when lastJoinCode changes
-    } else {
-      setTextToCopy(''); //reset the text to copy, if there is no join code.
-    }
-  }, [lastJoinCode]);
+  // useEffect(() => {
+  //   if (lastJoinCode) {
+  //     setTextToCopy(lastJoinCode); // Update textToCopy when lastJoinCode changes
+  //   } else {
+  //     setTextToCopy(''); //reset the text to copy, if there is no join code.
+  //   }
+  // }, [lastJoinCode]);
 
   return (
     <IonContent>
@@ -139,7 +150,20 @@ const CreateClass = () => {
                 }
               />
             </IonItem>
-            <IonItem>
+            {/* <IonItem>
+              
+              Public/Private will not be in MVP
+
+              <IonCheckbox
+                labelPlacement="start"
+                justify="start"
+                checked={isPrivate}
+                onIonChange={(e) => {
+                  setIsPrivate(e.detail.checked);
+                }}
+              >
+                Private
+              </IonCheckbox>
               <IonRadioGroup
                 onIonChange={(e) => {
                   const value = e.detail.value;
@@ -153,7 +177,7 @@ const CreateClass = () => {
                 <IonRadio value="public">Public</IonRadio>
                 <IonRadio value="private">Private</IonRadio>
               </IonRadioGroup>
-            </IonItem>
+            </IonItem> */}
             <IonButton
               disabled={loading}
               onClick={() => setButtonClicked(true)}
@@ -161,23 +185,25 @@ const CreateClass = () => {
               {loading ? 'Creating...' : 'Submit'}
             </IonButton>
           </IonList>
-          <IonText>
-            {isPrivate && (
-              <p>
-                Class created successfully! Please save this join code: <br />
-                <b>{lastJoinCode}</b>
-              </p>
-            )}
-            {!isPrivate && <p>Class created successfully!</p>}
-            <IonButton onClick={copyToClipboard}>Copy to Clipboard</IonButton>
-
-            <IonToast
-              isOpen={showToast}
-              onDidDismiss={() => setShowToast(false)}
-              message="Text copied to clipboard!"
-              duration={2000}
-            />
-          </IonText>
+          {/* 
+          {showSuccess && (
+            <IonText>
+              {isPrivate && (
+                <p>
+                  Class created successfully! Please save this join code: <br />
+                  <b>{lastJoinCode}</b>
+                </p>
+              )}
+              {!isPrivate && <p>Class created successfully!</p>}
+              <IonButton onClick={copyToClipboard}>Copy to Clipboard</IonButton>
+              <IonToast
+                isOpen={showToast}
+                onDidDismiss={() => setShowToast(false)}
+                message="Text copied to clipboard!"
+                duration={2000}
+              />
+            </IonText>
+          )} */}
         </form>
       </div>
     </IonContent>

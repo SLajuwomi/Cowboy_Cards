@@ -13,20 +13,37 @@ import {
   createOutline,
   trophyOutline,
   bookOutline,
-  peopleOutline,
   arrowBackOutline,
 } from 'ionicons/icons';
 import Leaderboard from '@/components/ui/Leaderboard';
 import FlashcardCarousel from '@/components/flashcards/FlashcardCarousel';
-import StudentList from '@/components/ui/StudentList';
-import { Navbar, NavbarTitle, NavbarButton } from '@/components/navbar';
+import { Navbar, NavbarTitle } from '@/components/navbar';
+import { api } from '@/utils/api';
+
+type User = {
+  Type: string;
+};
 
 const ClassDetail = () => {
   const { id } = useParams();
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const [api, setApi] = useState<CarouselApi>();
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [selectedSet, setSelectedSet] = useState<number | null>(null);
   const [tab, setTab] = useState('leaderboard');
+  const [isTeacher, setIsTeacher] = useState(false);
+
+  // TODO: get the user type from the backend
+  useEffect(() => {
+    async function fetchUser() {
+      const user = await api.get<User>(
+        'https://cowboy-cards.dsouth.org/api/user'
+      );
+      if (user.Type === 'teacher') {
+        setIsTeacher(true);
+      }
+    }
+    fetchUser();
+  }, []);
 
   // Mock data - in a real app this would come from an API based on the class ID
   const classData = {
@@ -93,14 +110,14 @@ const ClassDetail = () => {
   // Update current card index when the carousel changes
   // TODO: get the current card index from the backend
   useEffect(() => {
-    if (!api) {
+    if (!carouselApi) {
       return;
     }
 
-    api.on('select', () => {
-      setCurrentCardIndex(api.selectedScrollSnap());
+    carouselApi.on('select', () => {
+      setCurrentCardIndex(carouselApi.selectedScrollSnap());
     });
-  }, [api]);
+  }, [carouselApi]);
 
   return (
     <IonContent className="ion-padding">
@@ -118,7 +135,6 @@ const ClassDetail = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">{classData.name}</h1>
           <p className="text-gray-600">Teacher: {classData.teacher}</p>
-          <p className="text-gray-600">Class ID: {id}</p>
         </div>
 
         <div className="flex flex-row justify-between mb-6">
@@ -126,12 +142,15 @@ const ClassDetail = () => {
             <IonIcon slot="start" icon={arrowBackOutline} />
             Back
           </IonButton>
-          <IonIcon
-            icon={createOutline}
-            size="large"
-            color="primary"
-            className="hover:transform hover:scale-110 cursor-pointer"
-          ></IonIcon>
+          {/* TODO: should only show for teachers */}
+          {isTeacher && (
+            <IonIcon
+              icon={createOutline}
+              size="large"
+              color="primary"
+              className="hover:transform hover:scale-110 cursor-pointer"
+            ></IonIcon>
+          )}
         </div>
 
         <IonSegment
@@ -139,24 +158,26 @@ const ClassDetail = () => {
           onIonChange={(e) => setTab(e.detail.value as string)}
           className="w-full mb-6"
         >
-          <IonSegmentButton value="leaderboard">
-            <IonIcon icon={trophyOutline} className="mr-2" />
-            <IonLabel>Leaderboard</IonLabel>
-          </IonSegmentButton>
           <IonSegmentButton value="flashcards">
             <IonIcon icon={bookOutline} className="mr-2" />
             <IonLabel>Flashcard Sets</IonLabel>
           </IonSegmentButton>
-          <IonSegmentButton value="students">
+          <IonSegmentButton value="leaderboard">
+            <IonIcon icon={trophyOutline} className="mr-2" />
+            <IonLabel>Leaderboard</IonLabel>
+          </IonSegmentButton>
+
+          {/* <IonSegmentButton value="students">
             <IonIcon icon={peopleOutline} className="mr-2" />
             <IonLabel>Students</IonLabel>
-          </IonSegmentButton>
+          </IonSegmentButton> */}
         </IonSegment>
 
         {tab === 'leaderboard' && (
           <Leaderboard leaderboard={classData.leaderboard} />
         )}
 
+        {/* TODO: should link to the flashcard set detail page where the carousel should also be */}
         {tab === 'flashcards' && (
           <FlashcardCarousel
             classData={classData}
@@ -166,7 +187,8 @@ const ClassDetail = () => {
           />
         )}
 
-        {tab === 'students' && <StudentList students={classData.students} />}
+        {/* remove this, teachers won't be adding students in the MVP */}
+        {/* {tab === 'students' && <StudentList students={classData.students} />} */}
       </div>
     </IonContent>
   );

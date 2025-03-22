@@ -1,30 +1,43 @@
 import { AuthForm } from '@/components/auth/AuthForm';
+import { api } from '@/utils/api';
 import { IonContent } from '@ionic/react';
 import { useEffect, useState } from 'react';
 
 type Class = {
   ID: string;
-  Name: string;
-  Description: string;
+  ClassName: string;
+  ClassDescription: string;
   JoinCode: string;
-  TeacherID: string;
   CreatedAt: string;
   UpdatedAt: string;
 };
 
-async function fetchClasses(url: string): Promise<Class[]> {
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error fetching classes:', error);
-    throw error;
-  }
-}
+// type User = {
+//   ID: number;
+//   Username: string;
+//   Email: string;
+//   FirstName: string;
+//   LastName: string;
+//   Password: string;
+//   CreatedAt: string;
+//   UpdatedAt: string;
+// };
+
+// Don't spend too much time making it polymorphic
+// We can just use any for the MVP
+// async function fetchClasses(url: string): Promise<Class[]> {
+//   try {
+//     const response = await fetch(url);
+//     if (!response.ok) {
+//       throw new Error(`HTTP error! Status: ${response.status}`);
+//     }
+//     const data = await response.json();
+//     return data;
+//   } catch (error) {
+//     console.error('Error fetching classes:', error);
+//     throw error;
+//   }
+// }
 
 const Index = () => {
   const [buttonClicked, setButtonClicked] = useState(false);
@@ -37,10 +50,18 @@ const Index = () => {
       setLoading(true);
       setError(null);
       try {
-        const data = await fetchClasses(
-          'https://cowboy-cards.dsouth.org/api/classes/list'
+        const data = await api.get<Class[]>(
+          'https://cowboy-cards.dsouth.org/api/classes/',
+          {
+            headers: {
+              id: '1',
+            },
+          }
         );
-        setClasses(data);
+
+        console.log('data', data);
+        setClasses(Array.isArray(data) ? data : [data]);
+        console.log('classes', classes);
       } catch (error) {
         setError(`Failed to fetch classes: ${error.message}`);
       } finally {
@@ -100,11 +121,18 @@ const Index = () => {
         {loading && <div>Loading...</div>}
         {error && <div className="text-red-500 mt-2">{error}</div>}
         <div>
-          {classes.map((cls) => (
-            <div key={cls.ID}>
-              <p>{cls.Name}</p>
-            </div>
-          ))}
+          {classes.map(
+            (cls) => (
+              console.log('cls', cls),
+              console.log('cls.ID', cls.ID),
+              console.log('cls.Name', cls.ClassName),
+              (
+                <div key={cls.ID}>
+                  <p>{cls.ClassName}</p>
+                </div>
+              )
+            )
+          )}
         </div>
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-primary mb-2">CowboyCards</h1>
