@@ -32,7 +32,7 @@ const ClassDetail = () => {
   const [tab, setTab] = useState('leaderboard');
   const [isTeacher, setIsTeacher] = useState(false);
 
-  // TODO: get the user role from the backend
+  // TODO: get the user role from the backend, this code is currently not functional
   // need a way to get the user role from the backend, maybe through auth, RLS, or a query
   useEffect(() => {
     async function fetchUser() {
