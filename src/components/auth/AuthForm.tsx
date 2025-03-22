@@ -39,7 +39,6 @@ export const AuthForm = () => {
   const [username, setUsername] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [role, setRole] = useState('regular');
 
   // Form validation
   const [errors, setErrors] = useState<{
@@ -128,7 +127,6 @@ export const AuthForm = () => {
             password,
             first_name: firstName,
             last_name: lastName,
-            role: role || 'regular', // Default to regular if not selected
           }),
         });
       }
@@ -195,7 +193,6 @@ export const AuthForm = () => {
       setUsername('');
       setFirstName('');
       setLastName('');
-      setRole('regular');
     } else {
       setEmail('');
       setPassword('');
@@ -259,23 +256,6 @@ export const AuthForm = () => {
                   onChange={(e) => setLastName(e.target.value)}
                   required
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="role">Role</Label>
-                <Select value={role} onValueChange={setRole}>
-                  <SelectTrigger id="role">
-                    <SelectValue placeholder="Select your role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="regular">Regular User</SelectItem>
-                    <SelectItem value="student">Student</SelectItem>
-                    <SelectItem value="teacher">Teacher</SelectItem>
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-gray-500 mt-1">
-                  Select your role in the system. This affects what features you
-                  can access.
-                </p>
               </div>
             </>
           )}
