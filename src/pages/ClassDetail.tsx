@@ -21,7 +21,7 @@ import { Navbar } from '@/components/navbar';
 import { api } from '@/utils/api';
 
 type User = {
-  Type: string;
+  role: string;
 };
 
 const ClassDetail = () => {
@@ -32,13 +32,19 @@ const ClassDetail = () => {
   const [tab, setTab] = useState('leaderboard');
   const [isTeacher, setIsTeacher] = useState(false);
 
-  // TODO: get the user type from the backend
+  // TODO: get the user role from the backend
+  // need a way to get the user role from the backend, maybe through auth, RLS, or a query
   useEffect(() => {
     async function fetchUser() {
       const user = await api.get<User>(
-        'https://cowboy-cards.dsouth.org/api/user'
+        'https://cowboy-cards.dsouth.org/api/class_user/',
+        {
+          headers: {
+            user_id: id,
+          },
+        }
       );
-      if (user.Type === 'teacher') {
+      if (user.role === 'teacher') {
         setIsTeacher(true);
       }
     }

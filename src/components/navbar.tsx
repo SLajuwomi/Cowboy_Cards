@@ -124,7 +124,7 @@ const Navbar = () => {
                     button
                     onClick={() => {
                       closePopover();
-                      router.push('#');
+                      router.push('/class/create');
                     }}
                   >
                     Create Class
