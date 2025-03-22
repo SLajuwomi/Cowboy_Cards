@@ -80,12 +80,12 @@ export async function fetchData<T>(url: string, options: FetchOptions = {}): Pro
   get: <T>(url: string, options: Omit<FetchOptions, 'method'> = {}) => 
     fetchData<T>(url, { ...options, method: 'GET' }),
     
-  // POST request helper - requires a body
-  post: <T>(url: string, body: any, options: Omit<FetchOptions, 'method' | 'body'> = {}) => 
+  // POST request helper
+  post: <T>(url: string, options: Omit<FetchOptions, 'method' | 'body'> = {}) => 
     fetchData<T>(url, { ...options, method: 'POST'  }),
     
-  // PUT request helper - requires a body
-  put: <T>(url: string, body: any, options: Omit<FetchOptions, 'method' | 'body'> = {}) => 
+  // PUT request helper
+  put: <T>(url: string, options: Omit<FetchOptions, 'method' | 'body'> = {}) => 
     fetchData<T>(url, { ...options, method: 'PUT'  }),
     
   // DELETE request helper

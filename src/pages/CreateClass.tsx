@@ -1,4 +1,5 @@
 import { Navbar } from '@/components/navbar';
+import { api } from '@/utils/api';
 import {
   IonContent,
   IonItem,
@@ -22,7 +23,6 @@ const CreateClass = () => {
   const [formData, setFormData] = useState({
     className: '',
     description: '',
-    joinCode: '',
   });
   // const [isPrivate, setIsPrivate] = useState(false);
   // const [textToCopy, setTextToCopy] = useState('This is the text to be copied');
@@ -45,48 +45,30 @@ const CreateClass = () => {
       setLoading(true);
       setError(null);
 
-      try {
-        const response = await fetch(
-          'https://cowboy-cards.dsouth.org/api/classes',
-          {
-            method: 'POST',
-            // Will need to add a public/private header to the backend, then also here
-            // Join code will be fetched from the backend at some point
-            // Join code will be null if the private header is false, and a random UUID if it is true
-            // Teacher ID will be removed, replaced with type of user, left for now to not break the backend request
-            headers: {
-              name: formData.className,
-              description: formData.description,
-              // joincode: formData.joinCode,
-              teacherid: '12',
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+      const data = await api.post(
+        'https://cowboy-cards.dsouth.org/api/classes',
+        {
+          //For the MVP, all classes are public, so we don't need to pass a join code
+          headers: {
+            class_name: formData.className,
+            class_description: formData.description,
+          },
         }
+      );
 
-        const data = await response.json();
-        console.log('Class created successfully:', data);
+      console.log('Class created successfully:', data);
 
-        // setLastJoinCode(formData.joinCode);
+      // setLastJoinCode(formData.joinCode);
 
-        setButtonClicked(false);
+      setButtonClicked(false);
 
-        setFormData({
-          className: '',
-          description: '',
-          joinCode: '',
-        });
+      setFormData({
+        className: '',
+        description: '',
+      });
 
-        // setShowSuccess(true);
-      } catch (error) {
-        console.error('Error creating class:', error);
-        setError(`Failed to create class: ${error.message}`);
-      } finally {
-        setLoading(false);
-      }
+      // setShowSuccess(true);
+      setLoading(false);
     }
 
     if (buttonClicked) {
