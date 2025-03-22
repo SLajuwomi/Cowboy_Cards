@@ -48,26 +48,28 @@ const Index = () => {
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
-      setError(null);
-      try {
-        const data = await api.get<Class[]>(
-          'https://cowboy-cards.dsouth.org/api/classes/',
-          {
-            headers: {
-              id: '1',
-            },
-          }
-        );
+      // setError(null);
+      // try {
+      const data = await api.get<Class[]>(
+        'https://cowboy-cards.dsouth.org/api/classes/',
+        {
+          headers: {
+            id: '1',
+          },
+        }
+      );
 
-        console.log('data', data);
-        setClasses(Array.isArray(data) ? data : [data]);
-        console.log('classes', classes);
-      } catch (error) {
-        setError(`Failed to fetch classes: ${error.message}`);
-      } finally {
-        setLoading(false);
-      }
+      console.log('data', data);
+      setClasses(Array.isArray(data) ? data : [data]);
+      console.log('classes', classes);
+      setLoading(false);
+      // } catch (error) {
+      //   setError(`Failed to fetch classes: ${error.message}`);
+      // } finally {
+      //   setLoading(false);
+      // }
     }
+
     if (buttonClicked) {
       fetchData();
     }
