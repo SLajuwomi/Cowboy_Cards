@@ -20,7 +20,6 @@ import { Navbar } from '@/components/navbar';
 import { useTheme } from '@/contexts/ThemeContext';
 
 const Home = () => {
-  const { theme, setTheme } = useTheme();
   const [tab, setTab] = useState('classes');
 
   const classes = [
@@ -54,6 +53,7 @@ const Home = () => {
               color="primary"
               className="rounded-lg"
               style={{ '--border-radius': '0.5rem' }}
+              href="/class/create"
             >
               <IonIcon slot="start" icon={addOutline} /> Add Class
             </IonButton>
