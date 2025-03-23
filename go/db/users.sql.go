@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createUser = `-- name: CreateUser :one
@@ -73,19 +75,28 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 }
 
 const getUserById = `-- name: GetUserById :one
-SELECT id, username, first_name, last_name, email, password, created_at, updated_at FROM users WHERE id = $1
+SELECT id, username, first_name, last_name, email, created_at, updated_at FROM users WHERE id = $1
 `
 
-func (q *Queries) GetUserById(ctx context.Context, id int32) (User, error) {
+type GetUserByIdRow struct {
+	ID        int32
+	Username  string
+	FirstName string
+	LastName  string
+	Email     string
+	CreatedAt pgtype.Timestamp
+	UpdatedAt pgtype.Timestamp
+}
+
+func (q *Queries) GetUserById(ctx context.Context, id int32) (GetUserByIdRow, error) {
 	row := q.db.QueryRow(ctx, getUserById, id)
-	var i User
+	var i GetUserByIdRow
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
 		&i.FirstName,
 		&i.LastName,
 		&i.Email,
-		&i.Password,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -93,19 +104,28 @@ func (q *Queries) GetUserById(ctx context.Context, id int32) (User, error) {
 }
 
 const getUserByUsername = `-- name: GetUserByUsername :one
-SELECT id, username, first_name, last_name, email, password, created_at, updated_at FROM users WHERE username = $1
+SELECT id, username, first_name, last_name, email, created_at, updated_at FROM users WHERE username = $1
 `
 
-func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User, error) {
+type GetUserByUsernameRow struct {
+	ID        int32
+	Username  string
+	FirstName string
+	LastName  string
+	Email     string
+	CreatedAt pgtype.Timestamp
+	UpdatedAt pgtype.Timestamp
+}
+
+func (q *Queries) GetUserByUsername(ctx context.Context, username string) (GetUserByUsernameRow, error) {
 	row := q.db.QueryRow(ctx, getUserByUsername, username)
-	var i User
+	var i GetUserByUsernameRow
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
 		&i.FirstName,
 		&i.LastName,
 		&i.Email,
-		&i.Password,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -113,25 +133,34 @@ func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User,
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT id, username, first_name, last_name, email, password, created_at, updated_at FROM users ORDER BY last_name, first_name
+SELECT id, username, first_name, last_name, email, created_at, updated_at FROM users ORDER BY last_name, first_name
 `
 
-func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
+type ListUsersRow struct {
+	ID        int32
+	Username  string
+	FirstName string
+	LastName  string
+	Email     string
+	CreatedAt pgtype.Timestamp
+	UpdatedAt pgtype.Timestamp
+}
+
+func (q *Queries) ListUsers(ctx context.Context) ([]ListUsersRow, error) {
 	rows, err := q.db.Query(ctx, listUsers)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []User
+	var items []ListUsersRow
 	for rows.Next() {
-		var i User
+		var i ListUsersRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Username,
 			&i.FirstName,
 			&i.LastName,
 			&i.Email,
-			&i.Password,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {

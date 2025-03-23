@@ -7,11 +7,10 @@ import (
 	"path"
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
-func (h *Handler) ListClasses(w http.ResponseWriter, r *http.Request) {
-	// curl http://localhost:8000/api/classes/list | jq
+func (h *Handler) ListFlashcardSets(w http.ResponseWriter, r *http.Request) {
+	// curl http://localhost:8000/api/flashcards/sets/list | jq
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -20,20 +19,20 @@ func (h *Handler) ListClasses(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Release()
 
-	classes, err := query.ListClasses(ctx)
+	flashcard_sets, err := query.ListFlashcardSets(ctx)
 	if err != nil {
-		logAndSendError(w, err, "Error getting classes from DB", http.StatusInternalServerError)
+		logAndSendError(w, err, "Error getting flashcard sets from DB", http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(classes); err != nil {
+	if err := json.NewEncoder(w).Encode(flashcard_sets); err != nil {
 		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
 	}
 }
 
-func (h *Handler) GetClassById(w http.ResponseWriter, r *http.Request) {
-	// curl http://localhost:8000/api/classes/ -H "id: 1"
+func (h *Handler) GetFlashcardSetById(w http.ResponseWriter, r *http.Request) {
+	// curl http://localhost:8000/api/flashcards/sets/ -H "id: 1"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -54,21 +53,20 @@ func (h *Handler) GetClassById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	class, err := query.GetClassById(ctx, id)
+	flashcard, err := query.GetFlashcardSetById(ctx, id)
 	if err != nil {
-		logAndSendError(w, err, "Failed to get class", http.StatusInternalServerError)
+		logAndSendError(w, err, "Failed to get flashcard set", http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(class); err != nil {
+	if err := json.NewEncoder(w).Encode(flashcard); err != nil {
 		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
 	}
 }
 
-func (h *Handler) CreateClass(w http.ResponseWriter, r *http.Request) {
-	// curl -X POST localhost:8000/api/classes -H "name: class name" -H "description: class description" -H "private t/f
-
+func (h *Handler) CreateFlashcardSet(w http.ResponseWriter, r *http.Request) {
+	// curl -X POST localhost:8000/api/flashcards/sets -H "name: Knights Errant" -H "description: collection of famous knights"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
 		logAndSendError(w, err, "Database connection error", http.StatusInternalServerError)
@@ -76,32 +74,30 @@ func (h *Handler) CreateClass(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Release()
 
-	// "private"
-	headerVals, err := getHeaderVals(r, "class_name", "class_description")
+	headerVals, err := getHeaderVals(r, "set_name", "set_description")
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
 		return
 	}
 
-	class, err := query.CreateClass(ctx, db.CreateClassParams{
-		ClassName:        headerVals["class_name"],
-		ClassDescription: headerVals["class_description"],
-		JoinCode:         pgtype.Text{String: "123", Valid: false},
+	flashcard_set, err := query.CreateFlashcardSet(ctx, db.CreateFlashcardSetParams{
+		SetName:        headerVals["set_name"],
+		SetDescription: headerVals["set_description"],
 	})
 	if err != nil {
-		logAndSendError(w, err, "Failed to create class", http.StatusInternalServerError)
+		logAndSendError(w, err, "Failed to create flashcard set", http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	if err := json.NewEncoder(w).Encode(class); err != nil {
+	if err := json.NewEncoder(w).Encode(flashcard_set); err != nil {
 		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
 	}
 }
 
-func (h *Handler) UpdateClass(w http.ResponseWriter, r *http.Request) {
-	// curl -X PUT http://localhost:8000/api/classes/description -H "id: 1" -H "description: 1st german"
+func (h *Handler) UpdateFlashcardSet(w http.ResponseWriter, r *http.Request) {
+	// curl -X PUT localhost:8000/api/flashcards/sets/name -H "id: 1" -H "name: Dad Jokes"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -128,15 +124,15 @@ func (h *Handler) UpdateClass(w http.ResponseWriter, r *http.Request) {
 
 	var res string
 	switch route {
-	case "class_name":
-		res, err = query.UpdateClassName(ctx, db.UpdateClassNameParams{
-			ClassName: val,
-			ID:        id,
+	case "set_name":
+		res, err = query.UpdateFlashcardSetName(ctx, db.UpdateFlashcardSetNameParams{
+			SetName: val,
+			ID:      id,
 		})
-	case "class_description":
-		res, err = query.UpdateClassDescription(ctx, db.UpdateClassDescriptionParams{
-			ClassDescription: val,
-			ID:               id,
+	case "set_description":
+		res, err = query.UpdateFlashcardSetDescription(ctx, db.UpdateFlashcardSetDescriptionParams{
+			SetDescription: val,
+			ID:             id,
 		})
 	default:
 		logAndSendError(w, errors.New("invalid column"), "Improper header", http.StatusBadRequest)
@@ -144,7 +140,7 @@ func (h *Handler) UpdateClass(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		logAndSendError(w, err, "Failed to update class", http.StatusInternalServerError)
+		logAndSendError(w, err, "Failed to update flashcard set", http.StatusInternalServerError)
 		return
 	}
 	if err := json.NewEncoder(w).Encode(res); err != nil {
@@ -152,8 +148,8 @@ func (h *Handler) UpdateClass(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) DeleteClass(w http.ResponseWriter, r *http.Request) {
-	// curl -X DELETE http://localhost:8000/api/classes/ -H "id: 2"
+func (h *Handler) DeleteFlashcardSet(w http.ResponseWriter, r *http.Request) {
+	// curl -X DELETE http://localhost:8000/api/flashcards/sets -H "id: 1"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -174,9 +170,9 @@ func (h *Handler) DeleteClass(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = query.DeleteClass(ctx, id)
+	err = query.DeleteFlashcardSet(ctx, id)
 	if err != nil {
-		logAndSendError(w, err, "Failed to delete class", http.StatusInternalServerError)
+		logAndSendError(w, err, "Failed to delete flashcard set", http.StatusInternalServerError)
 		return
 	}
 

@@ -25,8 +25,8 @@ INSERT INTO users VALUES (12, 'ikeknight','Ike', 'Knight',	'iknight@mail', 'thgi
 
 CREATE TABLE flashcard_sets (
 	id SERIAL, 
-	name TEXT NOT NULL,
-	description TEXT NOT NULL,
+	set_name TEXT NOT NULL,
+	set_description TEXT NOT NULL,
 	created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_DATE,
 	updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_DATE,
 	PRIMARY KEY (id)
@@ -60,44 +60,56 @@ INSERT INTO flashcards VALUES (DEFAULT, '7 + 2 =', '9', 1, DEFAULT,DEFAULT);
 
 CREATE TABLE classes (
 	id SERIAL, 
-	name TEXT NOT NULL,
-	description TEXT NOT NULL,
-	join_code TEXT NOT NULL,
-	teacher_id INTEGER,
+	class_name TEXT NOT NULL,
+	class_description TEXT NOT NULL,
+	join_code TEXT,
 	created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_DATE,
 	updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_DATE,
-	PRIMARY KEY (id),
-	FOREIGN KEY (teacher_id) REFERENCES users(id),
-	UNIQUE (join_code)
+	PRIMARY KEY (id)
 ) TABLESPACE pg_default;
 
 
-INSERT INTO classes VALUES (DEFAULT, '3rd Grade Math', 'Elementary math, 3rd grade', 'lemmein1', 12,DEFAULT,DEFAULT);
-INSERT INTO classes VALUES (DEFAULT, '1st Grade Math', 'Elementary math, 1st grade', 'lemmein2', 12,DEFAULT,DEFAULT);
-INSERT INTO classes VALUES (DEFAULT, '2nd Grade Math', 'Elementary math, 2nd grade', 'lemmein3', 12,DEFAULT,DEFAULT);
-INSERT INTO classes VALUES (DEFAULT, '4th Grade Math', 'Elementary math, 4th grade', 'lemmein4', 12,DEFAULT,DEFAULT);
-INSERT INTO classes VALUES (DEFAULT, '5th Grade Math', 'Elementary math, 5th grade', 'lemmein5', 12,DEFAULT,DEFAULT);
+INSERT INTO classes VALUES (DEFAULT, '3rd Grade Math', 'Elementary math, 3rd grade', 'lemmein1',DEFAULT,DEFAULT);
+INSERT INTO classes VALUES (DEFAULT, '1st Grade Math', 'Elementary math, 1st grade', 'lemmein2',DEFAULT,DEFAULT);
+INSERT INTO classes VALUES (DEFAULT, '2nd Grade Math', 'Elementary math, 2nd grade', 'lemmein3',DEFAULT,DEFAULT);
+INSERT INTO classes VALUES (DEFAULT, '4th Grade Math', 'Elementary math, 4th grade', 'lemmein4',DEFAULT,DEFAULT);
+INSERT INTO classes VALUES (DEFAULT, '5th Grade Math', 'Elementary math, 5th grade', 'lemmein5',DEFAULT,DEFAULT);
 
 
-CREATE TABLE user_card_history (
+CREATE TABLE card_history (
 	user_id INTEGER NOT NULL,
 	card_id INTEGER NOT NULL,
-	created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_DATE,
-	times_seen INTEGER DEFAULT 0, 
+	score INTEGER DEFAULT 0 NOT NULL,
+	times_attempted INTEGER DEFAULT 1 NOT NULL,
 	is_mastered BOOLEAN NOT NULL DEFAULT FALSE,
+	created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_DATE,
 	PRIMARY KEY (user_id,card_id),
 	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (card_id) REFERENCES flashcards(id) ON DELETE CASCADE ON UPDATE CASCADE
 ) TABLESPACE pg_default;
 
+INSERT INTO card_history VALUES (1,1,DEFAULT,DEFAULT,DEFAULT,DEFAULT);
+INSERT INTO card_history VALUES (1,2,DEFAULT,DEFAULT,DEFAULT,DEFAULT);
+INSERT INTO card_history VALUES (1,3,DEFAULT,DEFAULT,DEFAULT,DEFAULT);
+INSERT INTO card_history VALUES (2,1,DEFAULT,DEFAULT,DEFAULT,DEFAULT);
+INSERT INTO card_history VALUES (2,2,DEFAULT,DEFAULT,DEFAULT,DEFAULT);
+
+
 CREATE TABLE class_user (
 	user_id INTEGER NOT NULL,
 	class_id INTEGER NOT NULL, 
-	role TEXT NOT NULL,
+	role TEXT NOT NULL CHECK (role IN ('student', 'teacher')) DEFAULT 'student',
 	PRIMARY KEY(user_id, class_id),
 	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE ON UPDATE CASCADE
 ) TABLESPACE pg_default;
+
+INSERT INTO class_user VALUES (1,1,DEFAULT);
+INSERT INTO class_user VALUES (1,2,DEFAULT);
+INSERT INTO class_user VALUES (2,1,'teacher');
+INSERT INTO class_user VALUES (2,2,DEFAULT);
+INSERT INTO class_user VALUES (3,1,DEFAULT);
+
 
 CREATE TABLE class_set (
 	class_id INTEGER,
@@ -106,3 +118,9 @@ CREATE TABLE class_set (
 	FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (set_id) REFERENCES flashcard_sets(id) ON DELETE CASCADE ON UPDATE CASCADE
 ) TABLESPACE pg_default;
+
+INSERT INTO class_set VALUES (3,1);
+INSERT INTO class_set VALUES (1,1);
+INSERT INTO class_set VALUES (2,1);
+INSERT INTO class_set VALUES (3,3);
+INSERT INTO class_set VALUES (3,2);

@@ -3,7 +3,7 @@ sql:
   - name: 'cowboy_cards'
     engine: 'postgresql'
     schema: 'schema.sql'
-    queries: 'queries/simple'
+    queries: ['queries/simple', 'queries/complex']
     gen:
       go:
         package: 'db'

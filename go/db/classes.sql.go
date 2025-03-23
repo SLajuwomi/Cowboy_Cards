@@ -11,25 +11,28 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const createClass = `-- name: CreateClass :exec
-INSERT INTO classes (name, description, join_code, teacher_id) VALUES ($1, $2, $3, $4)
+const createClass = `-- name: CreateClass :one
+INSERT INTO classes (class_name, class_description, join_code) VALUES ($1, $2, $3) RETURNING id, class_name, class_description, join_code, created_at, updated_at
 `
 
 type CreateClassParams struct {
-	Name        string
-	Description string
-	JoinCode    string
-	TeacherID   pgtype.Int4
+	ClassName        string
+	ClassDescription string
+	JoinCode         pgtype.Text
 }
 
-func (q *Queries) CreateClass(ctx context.Context, arg CreateClassParams) error {
-	_, err := q.db.Exec(ctx, createClass,
-		arg.Name,
-		arg.Description,
-		arg.JoinCode,
-		arg.TeacherID,
+func (q *Queries) CreateClass(ctx context.Context, arg CreateClassParams) (Class, error) {
+	row := q.db.QueryRow(ctx, createClass, arg.ClassName, arg.ClassDescription, arg.JoinCode)
+	var i Class
+	err := row.Scan(
+		&i.ID,
+		&i.ClassName,
+		&i.ClassDescription,
+		&i.JoinCode,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
-	return err
+	return i, err
 }
 
 const deleteClass = `-- name: DeleteClass :exec
@@ -42,7 +45,7 @@ func (q *Queries) DeleteClass(ctx context.Context, id int32) error {
 }
 
 const getClassById = `-- name: GetClassById :one
-SELECT id, name, description, join_code, teacher_id, created_at, updated_at FROM classes WHERE id = $1
+SELECT id, class_name, class_description, join_code, created_at, updated_at FROM classes WHERE id = $1
 `
 
 func (q *Queries) GetClassById(ctx context.Context, id int32) (Class, error) {
@@ -50,10 +53,9 @@ func (q *Queries) GetClassById(ctx context.Context, id int32) (Class, error) {
 	var i Class
 	err := row.Scan(
 		&i.ID,
-		&i.Name,
-		&i.Description,
+		&i.ClassName,
+		&i.ClassDescription,
 		&i.JoinCode,
-		&i.TeacherID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -61,7 +63,7 @@ func (q *Queries) GetClassById(ctx context.Context, id int32) (Class, error) {
 }
 
 const listClasses = `-- name: ListClasses :many
-SELECT id, name, description, join_code, teacher_id, created_at, updated_at FROM classes ORDER BY name
+SELECT id, class_name, class_description, join_code, created_at, updated_at FROM classes ORDER BY class_name
 `
 
 func (q *Queries) ListClasses(ctx context.Context) ([]Class, error) {
@@ -75,10 +77,9 @@ func (q *Queries) ListClasses(ctx context.Context) ([]Class, error) {
 		var i Class
 		if err := rows.Scan(
 			&i.ID,
-			&i.Name,
-			&i.Description,
+			&i.ClassName,
+			&i.ClassDescription,
 			&i.JoinCode,
-			&i.TeacherID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -93,49 +94,33 @@ func (q *Queries) ListClasses(ctx context.Context) ([]Class, error) {
 }
 
 const updateClassDescription = `-- name: UpdateClassDescription :one
-UPDATE classes SET description = $1, updated_at = NOW() WHERE id = $2 RETURNING description
+UPDATE classes SET class_description = $1, updated_at = NOW() WHERE id = $2 RETURNING class_description
 `
 
 type UpdateClassDescriptionParams struct {
-	Description string
-	ID          int32
+	ClassDescription string
+	ID               int32
 }
 
 func (q *Queries) UpdateClassDescription(ctx context.Context, arg UpdateClassDescriptionParams) (string, error) {
-	row := q.db.QueryRow(ctx, updateClassDescription, arg.Description, arg.ID)
-	var description string
-	err := row.Scan(&description)
-	return description, err
+	row := q.db.QueryRow(ctx, updateClassDescription, arg.ClassDescription, arg.ID)
+	var class_description string
+	err := row.Scan(&class_description)
+	return class_description, err
 }
 
 const updateClassName = `-- name: UpdateClassName :one
-UPDATE classes SET name = $1, updated_at = NOW() WHERE id = $2 RETURNING name
+UPDATE classes SET class_name = $1, updated_at = NOW() WHERE id = $2 RETURNING class_name
 `
 
 type UpdateClassNameParams struct {
-	Name string
-	ID   int32
-}
-
-func (q *Queries) UpdateClassName(ctx context.Context, arg UpdateClassNameParams) (string, error) {
-	row := q.db.QueryRow(ctx, updateClassName, arg.Name, arg.ID)
-	var name string
-	err := row.Scan(&name)
-	return name, err
-}
-
-const updateClassTeacherId = `-- name: UpdateClassTeacherId :one
-UPDATE classes SET teacher_id = $1, updated_at = NOW() WHERE id = $2 RETURNING teacher_id
-`
-
-type UpdateClassTeacherIdParams struct {
-	TeacherID pgtype.Int4
+	ClassName string
 	ID        int32
 }
 
-func (q *Queries) UpdateClassTeacherId(ctx context.Context, arg UpdateClassTeacherIdParams) (pgtype.Int4, error) {
-	row := q.db.QueryRow(ctx, updateClassTeacherId, arg.TeacherID, arg.ID)
-	var teacher_id pgtype.Int4
-	err := row.Scan(&teacher_id)
-	return teacher_id, err
+func (q *Queries) UpdateClassName(ctx context.Context, arg UpdateClassNameParams) (string, error) {
+	row := q.db.QueryRow(ctx, updateClassName, arg.ClassName, arg.ID)
+	var class_name string
+	err := row.Scan(&class_name)
+	return class_name, err
 }
