@@ -104,7 +104,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 }
 
 const getClasses = `-- name: GetClasses :many
-SELECT id, name, description, join_code, teacher_id, created_at, updated_at FROM classes
+SELECT id, class_name, class_description, join_code, created_at, updated_at FROM classes
 `
 
 func (q *Queries) GetClasses(ctx context.Context) ([]Class, error) {
@@ -118,10 +118,9 @@ func (q *Queries) GetClasses(ctx context.Context) ([]Class, error) {
 		var i Class
 		if err := rows.Scan(
 			&i.ID,
-			&i.Name,
-			&i.Description,
+			&i.ClassName,
+			&i.ClassDescription,
 			&i.JoinCode,
-			&i.TeacherID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -154,7 +153,7 @@ func (q *Queries) GetFlashCard(ctx context.Context, id int32) (Flashcard, error)
 }
 
 const getFlashCardSet = `-- name: GetFlashCardSet :one
-SELECT id, name, description, user_id, created_at, updated_at FROM flashcard_sets WHERE id = $1
+SELECT id, set_name, set_description, created_at, updated_at FROM flashcard_sets WHERE id = $1
 `
 
 func (q *Queries) GetFlashCardSet(ctx context.Context, id int32) (FlashcardSet, error) {
@@ -162,9 +161,8 @@ func (q *Queries) GetFlashCardSet(ctx context.Context, id int32) (FlashcardSet, 
 	var i FlashcardSet
 	err := row.Scan(
 		&i.ID,
-		&i.Name,
-		&i.Description,
-		&i.UserID,
+		&i.SetName,
+		&i.SetDescription,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

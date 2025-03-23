@@ -44,7 +44,6 @@ const Index = () => {
   const [classes, setClasses] = useState<Class[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function fetchData() {

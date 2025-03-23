@@ -11,68 +11,68 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const createUser = `-- name: CreateUser :one
-INSERT INTO users (username, first_name, last_name, email, password) VALUES ($1, $2, $3, $4, $5) RETURNING id, username, first_name, last_name, email, password, created_at, updated_at
-`
+// const createUser = `-- name: CreateUser :one
+// INSERT INTO users (username, first_name, last_name, email, password) VALUES ($1, $2, $3, $4, $5) RETURNING id, username, first_name, last_name, email, password, created_at, updated_at
+// `
 
-type CreateUserParams struct {
-	Username  string
-	FirstName string
-	LastName  string
-	Email     string
-	Password  string
-}
+// type CreateUserParams struct {
+// 	Username  string
+// 	FirstName string
+// 	LastName  string
+// 	Email     string
+// 	Password  string
+// }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRow(ctx, createUser,
-		arg.Username,
-		arg.FirstName,
-		arg.LastName,
-		arg.Email,
-		arg.Password,
-	)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.Username,
-		&i.FirstName,
-		&i.LastName,
-		&i.Email,
-		&i.Password,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
+// func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
+// 	row := q.db.QueryRow(ctx, createUser,
+// 		arg.Username,
+// 		arg.FirstName,
+// 		arg.LastName,
+// 		arg.Email,
+// 		arg.Password,
+// 	)
+// 	var i User
+// 	err := row.Scan(
+// 		&i.ID,
+// 		&i.Username,
+// 		&i.FirstName,
+// 		&i.LastName,
+// 		&i.Email,
+// 		&i.Password,
+// 		&i.CreatedAt,
+// 		&i.UpdatedAt,
+// 	)
+// 	return i, err
+// }
 
-const deleteUser = `-- name: DeleteUser :exec
-DELETE FROM users WHERE id = $1
-`
+// const deleteUser = `-- name: DeleteUser :exec
+// DELETE FROM users WHERE id = $1
+// `
 
-func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
-	_, err := q.db.Exec(ctx, deleteUser, id)
-	return err
-}
+// func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
+// 	_, err := q.db.Exec(ctx, deleteUser, id)
+// 	return err
+// }
 
-const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, username, first_name, last_name, email, password, created_at, updated_at FROM users WHERE email = $1
-`
+// const getUserByEmail = `-- name: GetUserByEmail :one
+// SELECT id, username, first_name, last_name, email, password, created_at, updated_at FROM users WHERE email = $1
+// `
 
-func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
-	row := q.db.QueryRow(ctx, getUserByEmail, email)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.Username,
-		&i.FirstName,
-		&i.LastName,
-		&i.Email,
-		&i.Password,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
+// func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+// 	row := q.db.QueryRow(ctx, getUserByEmail, email)
+// 	var i User
+// 	err := row.Scan(
+// 		&i.ID,
+// 		&i.Username,
+// 		&i.FirstName,
+// 		&i.LastName,
+// 		&i.Email,
+// 		&i.Password,
+// 		&i.CreatedAt,
+// 		&i.UpdatedAt,
+// 	)
+// 	return i, err
+// }
 
 const getUserById = `-- name: GetUserById :one
 SELECT id, username, first_name, last_name, email, created_at, updated_at FROM users WHERE id = $1
@@ -103,9 +103,9 @@ func (q *Queries) GetUserById(ctx context.Context, id int32) (GetUserByIdRow, er
 	return i, err
 }
 
-const getUserByUsername = `-- name: GetUserByUsername :one
-SELECT id, username, first_name, last_name, email, created_at, updated_at FROM users WHERE username = $1
-`
+// const getUserByUsername = `-- name: GetUserByUsername :one
+// SELECT id, username, first_name, last_name, email, created_at, updated_at FROM users WHERE username = $1
+// `
 
 type GetUserByUsernameRow struct {
 	ID        int32
@@ -117,20 +117,20 @@ type GetUserByUsernameRow struct {
 	UpdatedAt pgtype.Timestamp
 }
 
-func (q *Queries) GetUserByUsername(ctx context.Context, username string) (GetUserByUsernameRow, error) {
-	row := q.db.QueryRow(ctx, getUserByUsername, username)
-	var i GetUserByUsernameRow
-	err := row.Scan(
-		&i.ID,
-		&i.Username,
-		&i.FirstName,
-		&i.LastName,
-		&i.Email,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
+// func (q *Queries) GetUserByUsername(ctx context.Context, username string) (GetUserByUsernameRow, error) {
+// 	row := q.db.QueryRow(ctx, getUserByUsername, username)
+// 	var i GetUserByUsernameRow
+// 	err := row.Scan(
+// 		&i.ID,
+// 		&i.Username,
+// 		&i.FirstName,
+// 		&i.LastName,
+// 		&i.Email,
+// 		&i.CreatedAt,
+// 		&i.UpdatedAt,
+// 	)
+// 	return i, err
+// }
 
 const listUsers = `-- name: ListUsers :many
 SELECT id, username, first_name, last_name, email, created_at, updated_at FROM users ORDER BY last_name, first_name

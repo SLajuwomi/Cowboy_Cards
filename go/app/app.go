@@ -2,10 +2,12 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"time"
+	
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/controllers"
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/middleware"
@@ -16,14 +18,16 @@ import (
 	"github.com/urfave/negroni/v3"
 )
 
-func LoadPoolConfig() (config *pgxpool.Config) {
+func LoadPoolConfig() (*pgxpool.Config, error) {
 	var (
 		dburl  = os.Getenv("DATABASE_URL")
-		dbuser = os.Getenv("DBUSER")
-		dbhost = os.Getenv("DBHOST")
+		dbuser = os.Getenv("DB_USER")
+		dbhost = os.Getenv("DB_HOST")
+		dbport = os.Getenv("DB_PORT")
+		dbname = os.Getenv("DB_NAME")
 	)
 
-	if dburl == "" || dbuser == "" || dbhost == "" {
+	if dburl == "" || dbuser == "" || dbhost == "" || dbport == "" || dbname == "" {
 		log.Fatalf("db env vars not loaded")
 	}
 
@@ -32,47 +36,45 @@ func LoadPoolConfig() (config *pgxpool.Config) {
 		return nil, fmt.Errorf("error creating connection pool: %v", err)
 	}
 
-	// Test the connection
-	if err := pool.Ping(ctx); err != nil {
-		return nil, fmt.Errorf("error connecting to database: %v", err)
-	}
-
-	log.Printf("Successfully connected to database")
-
-
 	config.ConnConfig.User = dbuser
 	config.ConnConfig.Host = dbhost
 
-	return
+	return config, nil
 }
 
-func CreatePool(config *pgxpool.Config) (h *controllers.Handler) {
+func CreatePool(config *pgxpool.Config) (*controllers.Handler, error) {
 	ctx := context.Background()
 
 	pgpool, err := pgxpool.NewWithConfig(ctx, config)
 	if err != nil {
-		log.Fatalf("error creating connection pool: %v", err)
+		return nil, fmt.Errorf("error creating connection pool: %v", err)
 	}
 
 	if err := pgpool.Ping(ctx); err != nil {
-		log.Fatalf("error connecting to database: %v", err)
+		return nil, fmt.Errorf("error connecting to database: %v", err)
 	}
 
 	log.Println("Successfully connected to database")
 
-	h = &controllers.Handler{DB: pgpool}
+	h := &controllers.Handler{DB: pgpool}
 
 	// Enable SSL for Supabase
 	// conn.TLSConfig = &tls.Config{
 	// 	MinVersion: tls.VersionTLS12,
 	// }
 
-	return
+	return h, nil
 }
 
 func Init() {
-	cfg := LoadPoolConfig()
-	h := CreatePool(cfg)
+	cfg, err := LoadPoolConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+	h, err := CreatePool(cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	//mw for protected routes only
 	protectedRoutes := chi.NewRouter()
