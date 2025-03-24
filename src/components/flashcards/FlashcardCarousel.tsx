@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   IonGrid,
   IonRow,
@@ -19,18 +19,48 @@ import {
 } from '../ui/carousel';
 import { arrowBackOutline } from 'ionicons/icons';
 import { FlashCard } from './FlashCard';
+import { api } from '@/utils/api';
+
+type Flashcards = {
+  ID: number;
+  Front: string;
+  Back: string;
+  SetID: number;
+  CreatedAt: string;
+  UpdatedAt: string;
+};
 
 const FlashcardCarousel = (props) => {
+  const [flashcards, setFlashcards] = useState<Flashcards[]>([]);
+  const [selectedSet, setSelectedSet] = useState<number | null>(null);
+
+  useEffect(() => {
+    async function fetchFlashcards() {
+      console.log('selectedSet', selectedSet);
+      const cards = await api.get<Flashcards[]>(
+        ` https://cowboy-cards.dsouth.org/api/flashcards/list`,
+        {
+          headers: {
+            set_id: selectedSet,
+          },
+        }
+      );
+      console.log('cards', cards);
+      setFlashcards(cards);
+    }
+    fetchFlashcards();
+  }, [selectedSet]);
+
   return (
     <div className="mt-6">
-      {props.selectedSet === null ? (
+      {selectedSet === null ? (
         <IonGrid>
           <IonRow>
             {props.flashcardSets.map((set) => (
               <IonCol size="12" sizeMd="6" sizeLg="4" key={set.ID}>
                 <IonCard
                   className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-200 rounded-lg border shadow-sm"
-                  onClick={() => props.setSelectedSet(set.ID)}
+                  onClick={() => setSelectedSet(set.ID)}
                 >
                   <IonCardHeader>
                     <IonCardTitle className="text-lg font-semibold">
@@ -66,22 +96,41 @@ const FlashcardCarousel = (props) => {
               className="w-full"
               setApi={props.setApi}
             >
+                {/* This code creates a carousel of flashcards. Here's how it works:
+                  1. props.flashcardSets contains an array of all flashcard sets
+                  2. .find() searches through that array to find the set whose ID matches props.selectedSet
+                  3. ?.cards safely accesses the cards array of the found set (or returns undefined if no set found)
+                  4. .map() creates a CarouselItem component for each card in that set
+                  5. Each CarouselItem contains a FlashCard component showing the card's front and back
+                  6. The -mt-1 class removes a bit of top margin, and h-[400px] sets a fixed height
+                */}
+                {/* We won't have to find anymore
+                    I'll make the http call to get the flashcards of a particular set in the ClassDetail.tsx page
+                    and then pass the flashcards to this component using props and useState
+                    and then we will map over the flashcards and display them in the carousel
+                    So we can remove the props.flashcardSets and the .find() */}
               <CarouselContent className="-mt-1 h-[400px]">
-                {props.classData.flashcardSets
-                  .find((set) => set.id === props.selectedSet)
-                  ?.cards.map((card) => (
-                    <CarouselItem key={card.id}>
-                      <FlashCard front={card.front} back={card.back} />
-                    </CarouselItem>
-                  ))}
+                {flashcards.map((card) => (
+                  <CarouselItem key={card.ID}>
+                    <FlashCard front={card.Front} back={card.Back} />
+                  </CarouselItem>
+                ))}
               </CarouselContent>
               <CarouselPrevious />
               <CarouselNext />
             </Carousel>
 
+                {/* This code creates dots showing which card is currently displayed:
+                  - Positioned 50px to the right of the carousel
+                  - Centered vertically using top-1/2 and -translate-y-1/2
+                  - Dots are arranged in a vertical column with 8px gaps
+                  - For each flashcard, creates a small circular dot (2px x 2px)
+                  - The current card's dot is highlighted in the primary color
+                  - Other dots are gray
+                  - Dots smoothly transition colors when changing cards */}
             <div className="absolute right-[-50px] top-1/2 transform -translate-y-1/2 flex flex-col gap-2">
-              {props.classData.flashcardSets
-                .find((set) => set.id === props.selectedSet)
+              {props.flashcardSets
+                .find((set) => set.ID === props.selectedSet)
                 ?.cards.map((_, index) => (
                   <div
                     key={index}

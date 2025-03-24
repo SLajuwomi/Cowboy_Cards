@@ -70,12 +70,15 @@ const ClassDetail = () => {
         `https://cowboy-cards.dsouth.org/api/flashcards/sets/list`
       );
       console.log('sets', sets);
-      setFlashcardSets(Array.isArray(sets) ? sets : [sets]);
+      setFlashcardSets(sets);
     }
 
     fetchClass();
     fetchFlashcardSets();
   }, []);
+
+  // have a useEffect on a button click that will list flashcards based on a set id
+  // we are trying to create a http call on a button click (search on Google)
 
   // TODO: get the user role from the backend, this code is currently not functional
   // need a way to get the user role from the backend, maybe through auth, RLS, or a query
@@ -96,67 +99,13 @@ const ClassDetail = () => {
   //   fetchUser();
   // }, []);
 
-  // Mock data - in a real app this would come from an API based on the class ID
-  // const classData = {
-  //   id: id,
-  //   name: 'Biology 101',
-  //   teacher: 'Dr. Smith',
-  //   students: [
-  //     { id: 1, name: 'John Doe', email: 'john.doe@example.com' },
-  //     { id: 2, name: 'Jane Smith', email: 'jane.smith@example.com' },
-  //     { id: 3, name: 'Bob Johnson', email: 'bob.johnson@example.com' },
-  //     { id: 4, name: 'Alice Williams', email: 'alice.williams@example.com' },
-  //     { id: 5, name: 'Charlie Brown', email: 'charlie.brown@example.com' },
-  //   ],
-  //   leaderboard: [
-  //     { name: 'John Doe', cardsMastered: 95 },
-  //     { name: 'Jane Smith', cardsMastered: 90 },
-  //     { name: 'Bob Johnson', cardsMastered: 85 },
-  //     { name: 'Alice Williams', cardsMastered: 82 },
-  //     { name: 'Charlie Brown', cardsMastered: 80 },
-  //   ],
-  //   flashcardSets: [
-  //     {
-  //       id: 1,
-  //       name: 'Cell Biology',
-  //       description: 'Basic concepts of cell biology',
-  //       cards: [
-  //         {
-  //           id: 1,
-  //           front: 'What is a cell?',
-  //           back: 'The basic structural unit of all living organisms',
-  //         },
-  //         {
-  //           id: 2,
-  //           front: 'What is a nucleus?',
-  //           back: 'The control center of the cell containing genetic material',
-  //         },
-  //         {
-  //           id: 3,
-  //           front: 'What is mitochondria?',
-  //           back: 'The powerhouse of the cell',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       id: 2,
-  //       name: 'Plant Biology',
-  //       description: 'Introduction to plant biology concepts',
-  //       cards: [
-  //         {
-  //           id: 1,
-  //           front: 'What is photosynthesis?',
-  //           back: 'The process by which plants convert light energy into chemical energy',
-  //         },
-  //         {
-  //           id: 2,
-  //           front: 'What are chloroplasts?',
-  //           back: 'Organelles where photosynthesis occurs',
-  //         },
-  //       ],
-  //     },
-  //   ],
-  // };
+  const leaderboard = [
+    { name: 'John Doe', cardsMastered: 95 },
+    { name: 'Jane Smith', cardsMastered: 90 },
+    { name: 'Bob Johnson', cardsMastered: 85 },
+    { name: 'Alice Williams', cardsMastered: 82 },
+    { name: 'Charlie Brown', cardsMastered: 80 },
+  ];
 
   // Update current card index when the carousel changes
   // TODO: get the current card index from the backend
@@ -182,7 +131,6 @@ const ClassDetail = () => {
           <p className="text-gray-600">
             {classData?.ClassDescription || 'Loading...'}
           </p>
-          {/* <p className="text-gray-600">Teacher: {classData.teacher}</p> */}
         </div>
 
         <div className="flex flex-row justify-between mb-6">
@@ -210,34 +158,21 @@ const ClassDetail = () => {
             <IonIcon icon={bookOutline} className="mr-2" />
             <IonLabel>Flashcard Sets</IonLabel>
           </IonSegmentButton>
-          {/* <IonSegmentButton value="leaderboard">
+          <IonSegmentButton value="leaderboard">
             <IonIcon icon={trophyOutline} className="mr-2" />
             <IonLabel>Leaderboard</IonLabel>
-          </IonSegmentButton> */}
-
-          {/* <IonSegmentButton value="students">
-            <IonIcon icon={peopleOutline} className="mr-2" />
-            <IonLabel>Students</IonLabel>
-          </IonSegmentButton> */}
+          </IonSegmentButton>
         </IonSegment>
 
-        {/* {tab === 'leaderboard' && (
-          <Leaderboard leaderboard={classData.leaderboard} />
-        )} */}
+        {tab === 'leaderboard' && <Leaderboard leaderboard={leaderboard} />}
 
-        {/* TODO: should link to the flashcard set detail page where the carousel should also be */}
-        {tab === 'flashcards' && (
-          <FlashcardCarousel
-            // classData={classData}
-            flashcardSets={flashcardSets}
-            selectedSet={selectedSet}
-            setSelectedSet={setSelectedSet}
-            currentCardIndex={currentCardIndex}
-          />
-        )}
-
-        {/* remove this, teachers won't be adding students in the MVP */}
-        {/* {tab === 'students' && <StudentList students={classData.students} />} */}
+        <FlashcardCarousel
+          // classData={classData}
+          flashcardSets={flashcardSets}
+          selectedSet={selectedSet}
+          setSelectedSet={setSelectedSet}
+          currentCardIndex={currentCardIndex}
+        />
       </div>
     </IonContent>
   );
