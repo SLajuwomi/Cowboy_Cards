@@ -48,7 +48,9 @@ const FlashcardCarousel = (props) => {
       console.log('cards', cards);
       setFlashcards(cards);
     }
-    fetchFlashcards();
+    if (selectedSet) {
+      fetchFlashcards();
+    }
   }, [selectedSet]);
 
   return (
@@ -84,7 +86,7 @@ const FlashcardCarousel = (props) => {
         <>
           <IonButton
             fill="outline"
-            onClick={() => props.setSelectedSet(null)}
+            onClick={() => setSelectedSet(null)}
             className="mb-6"
           >
             <IonIcon slot="start" icon={arrowBackOutline} />
@@ -120,21 +122,11 @@ const FlashcardCarousel = (props) => {
               <CarouselNext />
             </Carousel>
 
-                {/* This code creates dots showing which card is currently displayed:
-                  - Positioned 50px to the right of the carousel
-                  - Centered vertically using top-1/2 and -translate-y-1/2
-                  - Dots are arranged in a vertical column with 8px gaps
-                  - For each flashcard, creates a small circular dot (2px x 2px)
-                  - The current card's dot is highlighted in the primary color
-                  - Other dots are gray
-                  - Dots smoothly transition colors when changing cards */}
             <div className="absolute right-[-50px] top-1/2 transform -translate-y-1/2 flex flex-col gap-2">
-              {props.flashcardSets
-                .find((set) => set.ID === props.selectedSet)
-                ?.cards.map((_, index) => (
-                  <div
-                    key={index}
-                    className={`w-2 h-2 rounded-full transition-colors ${
+              {flashcards.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-2 h-2 rounded-full transition-colors ${
                       index === props.currentCardIndex
                         ? 'bg-primary'
                         : 'bg-gray-300'

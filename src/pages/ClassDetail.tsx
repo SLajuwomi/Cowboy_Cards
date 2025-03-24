@@ -167,11 +167,9 @@ const ClassDetail = () => {
         {tab === 'leaderboard' && <Leaderboard leaderboard={leaderboard} />}
 
         <FlashcardCarousel
-          // classData={classData}
           flashcardSets={flashcardSets}
-          selectedSet={selectedSet}
-          setSelectedSet={setSelectedSet}
           currentCardIndex={currentCardIndex}
+          setApi={setCarouselApi}
         />
       </div>
     </IonContent>
