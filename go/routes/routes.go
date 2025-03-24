@@ -10,12 +10,11 @@ func Protected(r *chi.Mux, h *controllers.Handler) {
 
 	// -------------------complex-------------------------
 
-	
 	r.Route("/card_history", func(r chi.Router) {
 		// these are upserts, one each for (in)correct
 		r.Post("/incscore", h.UpsertCorrectFlashcardScore)
 		r.Post("/decscore", h.UpsertIncorrectFlashcardScore)
-		
+
 		r.Get("/", h.GetCardScore)
 		r.Get("/set", h.GetScoresInASet)
 	})
