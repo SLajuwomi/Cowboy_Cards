@@ -83,4 +83,5 @@ func Protected(r *chi.Mux, h *controllers.Handler) {
 func Unprotected(r *chi.Mux, h *controllers.Handler) {
 	r.Post("/login", h.Login)
 	r.Post("/signup", h.Signup)
+	r.Post("/logout", h.Logout)
 }

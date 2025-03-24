@@ -76,11 +76,16 @@ func Init() {
 		log.Fatal(err)
 	}
 
+	// Initialize PASETO configuration
+	if err := middleware.InitPaseto(); err != nil {
+		log.Fatal("Failed to initialize PASETO:", err)
+	}
+
 	//mw for protected routes only
 	protectedRoutes := chi.NewRouter()
 	routes.Protected(protectedRoutes, h)
 	protectedRouteHandler := negroni.New()
-	// protectedRouteHandler.Use(negroni.HandlerFunc(middleware.Auth))
+	protectedRouteHandler.Use(negroni.HandlerFunc(middleware.PasetoAuth))
 	protectedRouteHandler.UseHandler(protectedRoutes)
 
 	//mw for every route

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"os"
 	"slices"
 	"strconv"
 	"strings"
@@ -13,8 +12,6 @@ import (
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/middleware"
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -111,30 +108,14 @@ func getQueryConnAndContext(r *http.Request, h *Handler) (query *db.Queries, ctx
 }
 
 func getTokenAndResponse(user db.User) (response AuthResponse, err error) {
-	var (
-		jwtAud = os.Getenv("JWT_AUD")
-		jwtIss = os.Getenv("JWT_ISS")
-		jwtKey = os.Getenv("JWT_SECRET")
-	)
-
-	registeredClaims := jwt.RegisteredClaims{
-		Issuer:    jwtIss,
-		Subject:   strconv.Itoa(int(user.ID)), //recommended, may use later
-		Audience:  jwt.ClaimStrings{jwtAud},
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(2 * time.Hour)),     //should be as short as possible
-		NotBefore: jwt.NewNumericDate(time.Now().Add(-30 * time.Second)), //recommended 30 seconds for clock skew
-		IssuedAt:  jwt.NewNumericDate(time.Now()),
-		ID:        uuid.New().String(),
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, registeredClaims)
-	tokenString, err := token.SignedString([]byte(jwtKey))
+	// Generate PASETO token instead of JWT
+	tokenString, err := middleware.GeneratePasetoToken(user.ID)
 	if err != nil {
 		return AuthResponse{}, err
 	}
 
 	response = AuthResponse{
-		Token:     tokenString,
+		Token:     tokenString, // We'll still return the token in the response for backward compatibility
 		UserID:    user.ID,
 		Username:  user.Username,
 		Email:     user.Email,
@@ -142,7 +123,7 @@ func getTokenAndResponse(user db.User) (response AuthResponse, err error) {
 		LastName:  user.LastName,
 	}
 
-	return
+	return response, nil
 }
 
 // keygen:

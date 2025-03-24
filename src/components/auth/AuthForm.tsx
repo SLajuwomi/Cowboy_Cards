@@ -109,6 +109,7 @@ export const AuthForm = () => {
           headers: {
             'Content-Type': 'application/json',
           },
+          credentials: 'include',
           body: JSON.stringify({
             email,
             password,
@@ -121,6 +122,7 @@ export const AuthForm = () => {
           headers: {
             'Content-Type': 'application/json',
           },
+          credentials: 'include',
           body: JSON.stringify({
             username,
             email,
@@ -151,8 +153,8 @@ export const AuthForm = () => {
 
       const data = await response.json();
 
-      // Store the JWT token in localStorage
-      localStorage.setItem('token', data.token);
+      // The token is now stored in an HTTP-only cookie by the server
+      // We only need to store the user data for the UI
       localStorage.setItem('user', JSON.stringify(data.user));
 
       // Show success message
