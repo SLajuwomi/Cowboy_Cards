@@ -17,12 +17,11 @@ type userIdKey string
 const userKey userIdKey = "userId"
 
 var (
-<<<<<<< HEAD
 	pasetoAud = os.Getenv("PASETO_AUD")
 	pasetoIss = os.Getenv("PASETO_ISS")
 	pasetoKey = os.Getenv("PASETO_SECRET")
 	pasetoImp = os.Getenv("PASETO_IMPLICIT")
-	Cors = cors.New(cors.Options{
+	Cors      = cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000", "http://localhost:5173", "http://localhost:8080", "http://localhost:8100", "http://localhost:8000"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"*"},
@@ -60,7 +59,7 @@ func Auth(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 
 	// ****************************
 	// get token from cookie here
-	// token :=
+	token := "h"
 	// ****************************
 
 	parser := paseto.NewParser()
