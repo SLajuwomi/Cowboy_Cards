@@ -2,12 +2,10 @@ package middleware
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"path"
-	"strings"
 	"time"
 
 	"aidanwoods.dev/go-paseto"
@@ -59,25 +57,14 @@ func FromContext(ctx context.Context) (id int32, ok bool) {
 
 func Auth(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 
-	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
-		http.Error(w, "Missing authorization header", http.StatusUnauthorized)
-		return
-	}
-
-	// Check for Bearer prefix
-	const bearerPrefix = "Bearer "
-	if !strings.HasPrefix(authHeader, bearerPrefix) {
-		http.Error(w, "Invalid authorization header format", http.StatusUnauthorized)
-		return
-	}
-
-	// Extract the token
-	tokenString := strings.TrimPrefix(authHeader, bearerPrefix)
+	// ****************************
+	// get token from cookie here
+	// token :=
+	// ****************************
 
 	parser := paseto.NewParser()
 	parser.AddRule(paseto.ForAudience(pasetoAud))
-	// parser.AddRule(paseto.IdentifiedBy("identifier"))
+	// parser.AddRule(paseto.IdentifiedBy("identifier")) possible later use
 	parser.AddRule(paseto.IssuedBy(pasetoIss))
 	parser.AddRule(paseto.NotBeforeNbf())
 	parser.AddRule(paseto.NotExpired())
@@ -86,15 +73,20 @@ func Auth(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 
 	secretKey, err := paseto.V4SymmetricKeyFromHex(pasetoKey)
 	if err != nil {
-		LogAndSendError(w, err, "Parse error", http.StatusBadRequest)
+		LogAndSendError(w, err, "Key parse error", http.StatusBadRequest)
 		return
 	}
 
-	parsedToken, err := parser.ParseV4Local(secretKey, signed, nil)
+	parsedToken, err := parser.ParseV4Local(secretKey, token, []byte(pasetoImp))
 	if err != nil {
-		fmt.Println("e", err)
+		LogAndSendError(w, err, "Token parse error", http.StatusBadRequest)
 	}
 
-	ctx := context.WithValue(r.Context(), userKey, registeredClaims.Subject)
+	subj, err := parsedToken.GetSubject()
+	if err != nil {
+		LogAndSendError(w, err, "Subject not found or not a string", http.StatusBadRequest)
+	}
+
+	ctx := context.WithValue(r.Context(), userKey, subj)
 	next(w, r.WithContext(ctx))
 }
