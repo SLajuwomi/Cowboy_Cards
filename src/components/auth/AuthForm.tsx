@@ -109,6 +109,7 @@ export const AuthForm = () => {
           headers: {
             'Content-Type': 'application/json',
           },
+          credentials: 'include',
           body: JSON.stringify({
             email,
             password,
@@ -121,6 +122,7 @@ export const AuthForm = () => {
           headers: {
             'Content-Type': 'application/json',
           },
+          credentials: 'include',
           body: JSON.stringify({
             username,
             email,
@@ -150,10 +152,6 @@ export const AuthForm = () => {
       }
 
       const data = await response.json();
-
-      // Store the JWT token in localStorage
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
 
       // Show success message
       toast({

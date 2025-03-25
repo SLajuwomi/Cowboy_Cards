@@ -115,7 +115,7 @@ const Navbar = () => {
                     button
                     onClick={() => {
                       closePopover();
-                      router.push('#');
+                      router.push('/create-set');
                     }}
                   >
                     Create Set
