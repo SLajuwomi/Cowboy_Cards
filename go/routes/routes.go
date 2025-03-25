@@ -37,6 +37,8 @@ func Protected(r *chi.Mux, h *controllers.Handler) {
 
 	// -------------------simple-------------------------
 
+	r.Post("/logout", h.Logout)
+
 	r.Route("/classes", func(r chi.Router) {
 		r.Get("/list", h.ListClasses)
 		r.Get("/", h.GetClassById)
@@ -82,5 +84,4 @@ func Protected(r *chi.Mux, h *controllers.Handler) {
 func Unprotected(r *chi.Mux, h *controllers.Handler) {
 	r.Post("/login", h.Login)
 	r.Post("/signup", h.Signup)
-	r.Post("/logout", h.Logout)
 }

@@ -153,10 +153,6 @@ export const AuthForm = () => {
 
       const data = await response.json();
 
-      // The token is now stored in an HTTP-only cookie by the server
-      // We only need to store the user data for the UI
-      localStorage.setItem('user', JSON.stringify(data.user));
-
       // Show success message
       toast({
         title: isLogin ? 'Welcome back!' : 'Account created',

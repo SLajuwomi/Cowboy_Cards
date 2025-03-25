@@ -2,12 +2,10 @@ package app
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"time"
-	
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/controllers"
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/middleware"
@@ -18,74 +16,61 @@ import (
 	"github.com/urfave/negroni/v3"
 )
 
-func LoadPoolConfig() (*pgxpool.Config, error) {
+func LoadPoolConfig() (config *pgxpool.Config) {
 	var (
 		dburl  = os.Getenv("DATABASE_URL")
-		dbuser = os.Getenv("DB_USER")
-		dbhost = os.Getenv("DB_HOST")
-		dbport = os.Getenv("DB_PORT")
-		dbname = os.Getenv("DB_NAME")
+		dbuser = os.Getenv("DBUSER")
+		dbhost = os.Getenv("DBHOST")
 	)
 
-	if dburl == "" || dbuser == "" || dbhost == "" || dbport == "" || dbname == "" {
+	if dburl == "" || dbuser == "" || dbhost == "" {
 		log.Fatalf("db env vars not loaded")
 	}
 
 	config, err := pgxpool.ParseConfig(dburl)
 	if err != nil {
-		return nil, fmt.Errorf("error creating connection pool: %v", err)
+		log.Fatalf("error parsing config: %v", err)
 	}
 
 	config.ConnConfig.User = dbuser
 	config.ConnConfig.Host = dbhost
 
-	return config, nil
+	return
 }
 
-func CreatePool(config *pgxpool.Config) (*controllers.Handler, error) {
+func CreatePool(config *pgxpool.Config) (h *controllers.Handler) {
 	ctx := context.Background()
 
 	pgpool, err := pgxpool.NewWithConfig(ctx, config)
 	if err != nil {
-		return nil, fmt.Errorf("error creating connection pool: %v", err)
+		log.Fatalf("error creating connection pool: %v", err)
 	}
 
 	if err := pgpool.Ping(ctx); err != nil {
-		return nil, fmt.Errorf("error connecting to database: %v", err)
+		log.Fatalf("error connecting to database: %v", err)
 	}
 
 	log.Println("Successfully connected to database")
 
-	h := &controllers.Handler{DB: pgpool}
+	h = &controllers.Handler{DB: pgpool}
 
 	// Enable SSL for Supabase
 	// conn.TLSConfig = &tls.Config{
 	// 	MinVersion: tls.VersionTLS12,
 	// }
 
-	return h, nil
+	return
 }
 
 func Init() {
-	cfg, err := LoadPoolConfig()
-	if err != nil {
-		log.Fatal(err)
-	}
-	h, err := CreatePool(cfg)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Initialize PASETO configuration
-	if err := middleware.InitPaseto(); err != nil {
-		log.Fatal("Failed to initialize PASETO:", err)
-	}
+	cfg := LoadPoolConfig()
+	h := CreatePool(cfg)
 
 	//mw for protected routes only
 	protectedRoutes := chi.NewRouter()
 	routes.Protected(protectedRoutes, h)
 	protectedRouteHandler := negroni.New()
-	protectedRouteHandler.Use(negroni.HandlerFunc(middleware.PasetoAuth))
+	// protectedRouteHandler.Use(negroni.HandlerFunc(middleware.Auth))
 	protectedRouteHandler.UseHandler(protectedRoutes)
 
 	//mw for every route

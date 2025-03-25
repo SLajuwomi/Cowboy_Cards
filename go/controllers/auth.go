@@ -3,12 +3,10 @@ package controllers
 import (
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 	"strings"
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
-	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/middleware"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -44,27 +42,10 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Debug logging
-	log.Printf("Login successful for user %s (ID: %d). Setting token cookie.", user.Username, user.ID)
-	
-	// Set the PASETO token as a cookie
-	middleware.SetTokenCookie(w, resp.Token)
-
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
 	}
-}
-
-// Logout handles user logout by clearing the authentication cookie
-func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
-	// Clear the authentication cookie
-	middleware.ClearAuthCookie(w)
-
-	// Return a success response
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Logged out successfully"})
 }
 
 // Signup handles user registration
@@ -138,12 +119,6 @@ func (h *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 		logAndSendError(w, err, "Error creating token", http.StatusInternalServerError)
 		return
 	}
-
-	// Debug logging
-	log.Printf("Signup successful for user %s (ID: %d). Setting token cookie.", user.Username, user.ID)
-
-	// Set the PASETO token as a cookie
-	middleware.SetTokenCookie(w, resp.Token)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
