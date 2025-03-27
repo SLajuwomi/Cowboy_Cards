@@ -1,9 +1,20 @@
 package routes
 
 import (
+	"context"
+	"encoding/json"
+	"log"
+	"net/http"
+
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/controllers"
 	"github.com/go-chi/chi/v5"
 )
+
+func dummy(w http.ResponseWriter, r *http.Request) {
+	log.Println("url: ", r.URL)
+
+	json.NewEncoder(w).Encode("here: " + r.URL.Path)
+}
 
 // every protected route is preceded by /api
 func Protected(r *chi.Mux, h *controllers.Handler) {
@@ -80,8 +91,22 @@ func Protected(r *chi.Mux, h *controllers.Handler) {
 	})
 }
 
+func fakeMW(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Println("fake mw")
+
+		ctx := context.WithValue(r.Context(), "article", "article")
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
 // auth
 func Unprotected(r *chi.Mux, h *controllers.Handler) {
 	r.Post("/login", h.Login)
 	r.Post("/signup", h.Signup)
+
+	r.Route("/fake", func(r chi.Router) {
+		r.Use(fakeMW)
+		r.Post("/", dummy)
+	})
 }
