@@ -5,7 +5,8 @@ import {
     IonCardContent,
     IonIcon,
     IonTextarea,
-    IonText
+    IonText,
+    IonAlert
   } from '@ionic/react';
   import { useState } from 'react';
   import { addOutline, trashOutline } from 'ionicons/icons';
@@ -19,6 +20,7 @@ import {
     const [description, setDescription] = useState('');
     const [cards, setCards] = useState([{ front: '', back: '' }]);
     const [errors, setErrors] = useState({ title: '', description: '' });
+    const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   
     const addCard = () => {
       setCards([...cards, { front: '', back: '' }]);
@@ -175,8 +177,17 @@ import {
             </IonButton>
           </div>
   
-          {/* Create button */}
+          
           <div className="flex flex-col md:flex-row justify-center md:justify-end gap-4 mt-8">
+            {/* Delete Set Button */}
+            <IonButton
+              color="danger"
+              onClick={() => setShowDeleteAlert(true)}
+            >
+              Delete Set
+            </IonButton>
+            
+            {/* Create button */}
             <IonButton
               color="success"
               className="rounded-lg shadow-sm w-full md:w-auto"
@@ -185,6 +196,30 @@ import {
               Create Set
             </IonButton>
           </div>
+
+          {/* Delete Set Alert */}
+          <IonAlert
+            isOpen={showDeleteAlert}
+            onDidDismiss={() => setShowDeleteAlert(false)}
+            header="Confirm Set Deletion"
+            message="Are you sure you want to delete this flashcard set? This action cannot be undone."
+            buttons={[
+              {
+                text: 'Cancel',
+                role: 'cancel',
+                handler: () => {
+                  console.log('Cancel clicked');
+                },
+              },
+              {
+                text: 'Delete',
+                handler: () => {
+                  // Add your delete account logic here
+                  deleteSet();
+                },
+              },
+            ]}
+          />
         </div>
       </IonContent>
     );
