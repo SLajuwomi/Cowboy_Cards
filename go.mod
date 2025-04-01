@@ -10,13 +10,16 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/rs/cors v1.11.1
 	github.com/urfave/negroni/v3 v3.1.1
-	golang.org/x/crypto v0.35.0
+	golang.org/x/crypto v0.36.0
 )
 
 require (
+	aidanwoods.dev/go-paseto v1.5.4 // indirect
+	aidanwoods.dev/go-result v0.3.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
-	golang.org/x/sync v0.11.0 // indirect
-	golang.org/x/text v0.22.0 // indirect
+	golang.org/x/sync v0.12.0 // indirect
+	golang.org/x/sys v0.31.0 // indirect
+	golang.org/x/text v0.23.0 // indirect
 )

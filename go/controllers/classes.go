@@ -83,13 +83,37 @@ func (h *Handler) CreateClass(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	class, err := query.CreateClass(ctx, db.CreateClassParams{
+	tx, err := conn.Begin(ctx)
+	if err != nil {
+		logAndSendError(w, err, "Database tx connection error", http.StatusInternalServerError)
+	}
+	defer tx.Rollback(ctx)
+
+	qtx := query.WithTx(tx)
+
+	class, err := qtx.CreateClass(ctx, db.CreateClassParams{
 		ClassName:        headerVals["class_name"],
 		ClassDescription: headerVals["class_description"],
 		JoinCode:         pgtype.Text{String: "123", Valid: false},
 	})
 	if err != nil {
 		logAndSendError(w, err, "Failed to create class", http.StatusInternalServerError)
+		return
+	}
+
+	err = qtx.JoinClass(ctx, db.JoinClassParams{
+		UserID:  int32(1),
+		ClassID: class.ID,
+		Role:    "teacher",
+	})
+	if err != nil {
+		logAndSendError(w, err, "Failed to join class", http.StatusInternalServerError)
+		return
+	}
+
+	err = tx.Commit(ctx)
+	if err != nil {
+		logAndSendError(w, err, "Failed to commit transaction", http.StatusInternalServerError)
 		return
 	}
 
