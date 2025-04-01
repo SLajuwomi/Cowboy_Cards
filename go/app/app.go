@@ -76,7 +76,15 @@ func Init() {
 	//mw for every route
 	unprotectedRoutes := chi.NewRouter()
 	routes.Unprotected(unprotectedRoutes, h)
-	n := negroni.Classic() // serves "./public"
+	// n := negroni.Classic() // serves "./public"
+
+	n := negroni.New()
+	l := negroni.NewLogger()
+	l.SetFormat("---------------[{{.Status}} {{.Hostname}} {{.Method}} {{.Path}}] - {{.Request.Header}}--------------")
+	n.Use(l)
+	n.Use(negroni.NewRecovery())
+	n.Use(negroni.NewStatic(http.Dir("./public")))
+
 	n.Use(middleware.Cors)
 	n.Use(negroni.HandlerFunc(middleware.SetCacheControlHeader))
 	n.UseHandler(unprotectedRoutes)
