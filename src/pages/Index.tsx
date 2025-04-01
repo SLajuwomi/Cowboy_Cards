@@ -37,7 +37,8 @@ const Index = () => {
       setLoading(true);
       setError(null);
       try {
-        const data = await fetchClasses('http://localhost:8000/classes');
+        const data = await fetchClasses('https://cowboy-cards.dsouth.org/api/classes/list');
+        console.log('Fetched classes:', data);
         setClasses(data);
       } catch (error) {
         setError(`Failed to fetch classes: ${error.message}`);

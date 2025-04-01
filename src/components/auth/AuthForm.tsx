@@ -13,6 +13,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { useIonRouter } from '@ionic/react';
 import { LogIn } from 'lucide-react';
 import { useState } from 'react';
+import { IonButton, IonIcon } from '@ionic/react';
 
 import {
   Select,
@@ -360,6 +361,28 @@ export const AuthForm = () => {
               ? 'Need an account? Sign up'
               : 'Already have an account? Sign in'}
           </Button>
+              <IonButton
+              expand="block"
+              fill="outline"
+              className="flex items-center justify-center space-x-2"
+              onClick={() => {
+                // Add your Google sign-in logic here
+                console.log("Sign in with Google clicked");
+              }}
+            >
+            <IonIcon
+              slot="start"
+              src="https://www.gstatic.com/marketing-cms/assets/images/d5/dc/cfe9ce8b4425b410b49b7f2dd3f3/g.webp=s96-fcrop64=1,00000000ffffffff-rw"
+              className="h-5 w-5"
+            />
+            <p></p>
+            Sign in with Google
+            <img
+              slot="start"
+              src="https://www.gstatic.com/marketing-cms/assets/images/d5/dc/cfe9ce8b4425b410b49b7f2dd3f3/g.webp=s96-fcrop64=1,00000000ffffffff-rw"
+              className="h-10 w-10"
+            />
+          </IonButton>  
         </CardFooter>
       </form>
     </Card>
