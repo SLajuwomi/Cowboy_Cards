@@ -46,6 +46,9 @@ func Protected(r *chi.Mux, h *controllers.Handler) {
 		r.Put("/class_name", h.UpdateClass)
 		r.Put("/class_description", h.UpdateClass)
 		// r.Delete("/", h.DeleteClass)
+
+		// ---complex---
+		r.Get("/get_scores", h.GetClassScores)
 	})
 
 	r.Route("/flashcards", func(r chi.Router) {

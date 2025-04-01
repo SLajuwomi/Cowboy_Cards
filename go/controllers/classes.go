@@ -67,7 +67,7 @@ func (h *Handler) GetClassById(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) CreateClass(w http.ResponseWriter, r *http.Request) {
-	// curl -X POST localhost:8000/api/classes -H "name: class name" -H "description: class description" -H "private t/f
+	// curl -X POST localhost:8000/api/classes -H "name: class name" -H "description: class description"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -183,4 +183,38 @@ func (h *Handler) DeleteClass(w http.ResponseWriter, r *http.Request) {
 	// no body is sent with a 204 response
 	w.WriteHeader(http.StatusNoContent)
 	w.Write([]byte{})
+}
+
+func (h *Handler) GetClassScores(w http.ResponseWriter, r *http.Request) {
+	// curl -GET http://localhost:8000/classes/get_scores -H "class_id: 1"
+	query, ctx, conn, err := getQueryConnAndContext(r, h)
+	if err != nil {
+		logAndSendError(w, err, "Error connecting to database", http.StatusInternalServerError)
+		return;
+	}
+	defer conn.Release()
+
+	headerVals, err := getHeaderVals(r, "class_id")
+	if err != nil {
+		logAndSendError(w, err, "Header error", http.StatusBadRequest)
+		return;
+	}
+	
+	cid, err := getInt32Id(headerVals["class_id"])
+	if err != nil {
+		logAndSendError(w, err, "Invalid class id", http.StatusBadRequest)
+		return;
+	}
+
+	scores, err := query.GetClassScores(ctx, cid)
+	if err != nil {
+		logAndSendError(w, err, "Error getting scores", http.StatusInternalServerError)
+		return;
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err = json.NewEncoder(w).Encode(scores); err != nil {
+		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
+	}
+
 }
