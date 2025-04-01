@@ -18,6 +18,7 @@ import {
 import Leaderboard from '@/components/ui/Leaderboard';
 import FlashcardCarousel from '@/components/flashcards/FlashcardCarousel';
 import { Navbar } from '@/components/navbar';
+import { Footer } from '@/components/footer';
 import { api } from '@/utils/api';
 
 type User = {
@@ -171,6 +172,7 @@ const ClassDetail = () => {
                     setApi={setCarouselApi}
                 />
             </div>
+            <Footer />
         </IonContent>
     );
 };
