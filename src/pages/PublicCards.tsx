@@ -1,24 +1,23 @@
+import { Navbar } from '@/components/navbar';
 import {
   IonCard,
-  IonCardContent,
   IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
   IonContent,
-  IonText,
 } from '@ionic/react';
-import { Link } from 'react-router-dom';
-import { Navbar } from '@/components/navbar';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const PublicFlashcards = () => {
-  const API_BASE = import.meta.env.VITE_API_BASE_URL;
   const [flashcardSets, setFlashcardSets] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchSets = async () => {
       try {
-        const res = await fetch(`${API_BASE}/flashcards/sets/list`);
+        const res = await fetch(`${API_BASE}/api/flashcards/sets/list`);
         if (!res.ok) throw new Error('Failed to fetch flashcard sets');
         const data = await res.json();
         setFlashcardSets(data);
@@ -28,7 +27,7 @@ const PublicFlashcards = () => {
     };
 
     fetchSets();
-  }, [API_BASE]);
+  });
 
   return (
     <IonContent>

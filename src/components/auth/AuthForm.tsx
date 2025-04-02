@@ -1,3 +1,4 @@
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -11,21 +12,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { useIonRouter } from '@ionic/react';
-import { LogIn } from 'lucide-react';
+import { AlertCircle, LogIn } from 'lucide-react';
 import { useState } from 'react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-// Backend API URL
-const API_URL = 'https://cowboy-cards.dsouth.org';
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -104,7 +95,7 @@ export const AuthForm = () => {
 
       if (isLogin) {
         // Login request
-        response = await fetch(`${API_URL}/login`, {
+        response = await fetch(`${API_BASE}/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -117,7 +108,7 @@ export const AuthForm = () => {
         });
       } else {
         // Signup request
-        response = await fetch(`${API_URL}/signup`, {
+        response = await fetch(`${API_BASE}/signup`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
