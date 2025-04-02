@@ -30,6 +30,8 @@ const CreateSet = () => {
     const [cards, setCards] = useState([{ front: '', back: '' }]);
     const [errors, setErrors] = useState({ title: '', description: '' });
     const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const addCard = () => {
         setCards([...cards, { front: '', back: '' }]);
@@ -98,9 +100,12 @@ const CreateSet = () => {
 
             // ✅ Navigate instead of alert
             history.push(`/flashcards/${setId}`);
+            setLoading(false);
         } catch (error) {
             console.error('Error saving flashcard set:', error);
-            alert('Failed to save flashcard set.');
+            setError(`Failed to save flashcard set: ${error.message}`);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -116,6 +121,8 @@ const CreateSet = () => {
         <IonContent className="ion-padding">
             <Navbar />
             <div id="main-content" className="container mx-auto px-4 py-8">
+                {loading && <div>Loading...</div>}
+                {error && <div className="text-red-500 mt-2">{error}</div>}
                 <h1 className="text-3xl font-bold mb-6">
                     Create New Flashcard Set
                 </h1>

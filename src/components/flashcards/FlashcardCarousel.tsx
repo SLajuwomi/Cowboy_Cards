@@ -32,6 +32,7 @@ type Flashcards = {
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
+// We probably should make the flashcards have an independent page, so we can show loading states and errors
 const FlashcardCarousel = (props) => {
     const [flashcards, setFlashcards] = useState<Flashcards[]>([]);
     const [selectedSet, setSelectedSet] = useState<number | null>(null);
