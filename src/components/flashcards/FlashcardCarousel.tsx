@@ -36,9 +36,8 @@ const FlashcardCarousel = (props) => {
 
     useEffect(() => {
         async function fetchFlashcards() {
-            console.log('selectedSet', selectedSet);
             const cards = await api.get<Flashcards[]>(
-                ` https://cowboy-cards.dsouth.org/api/flashcards/list`,
+                `https://cowboy-cards.dsouth.org/api/flashcards/list`,
                 {
                     headers: {
                         set_id: selectedSet,
@@ -49,6 +48,7 @@ const FlashcardCarousel = (props) => {
             setFlashcards(cards);
         }
         if (selectedSet) {
+            console.log('selectedSet', selectedSet);
             fetchFlashcards();
         }
     }, [selectedSet]);
@@ -58,33 +58,35 @@ const FlashcardCarousel = (props) => {
             {selectedSet === null ? (
                 <IonGrid>
                     <IonRow>
-                        {props.flashcardSets.map((set) => (
-                            <IonCol
-                                size="12"
-                                sizeMd="6"
-                                sizeLg="4"
-                                key={set.ID}
-                            >
-                                <IonCard
-                                    className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-200 rounded-lg border shadow-sm"
-                                    onClick={() => setSelectedSet(set.ID)}
+                        {props.flashcardSets
+                            .sort((a, b) => a.ID - b.ID)
+                            .map((set) => (
+                                <IonCol
+                                    size="12"
+                                    sizeMd="6"
+                                    sizeLg="4"
+                                    key={set.ID}
                                 >
-                                    <IonCardHeader>
-                                        <IonCardTitle className="text-lg font-semibold">
-                                            {set.SetName}
-                                        </IonCardTitle>
-                                    </IonCardHeader>
-                                    <IonCardContent>
-                                        <p className="text-muted-foreground mb-2">
-                                            {set.SetDescription}
-                                        </p>
-                                        {/* <p className="text-muted-foreground">
+                                    <IonCard
+                                        className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-200 rounded-lg border shadow-sm"
+                                        onClick={() => setSelectedSet(set.ID)}
+                                    >
+                                        <IonCardHeader>
+                                            <IonCardTitle className="text-lg font-semibold">
+                                                {set.SetName}
+                                            </IonCardTitle>
+                                        </IonCardHeader>
+                                        <IonCardContent>
+                                            <p className="text-muted-foreground mb-2">
+                                                {set.SetDescription}
+                                            </p>
+                                            {/* <p className="text-muted-foreground">
                                             {set.cards.length} cards
                                         </p> */}
-                                    </IonCardContent>
-                                </IonCard>
-                            </IonCol>
-                        ))}
+                                        </IonCardContent>
+                                    </IonCard>
+                                </IonCol>
+                            ))}
                     </IonRow>
                 </IonGrid>
             ) : (
