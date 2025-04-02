@@ -1,4 +1,4 @@
-import { api } from '@/utils/api';
+import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
     IonButton,
     IonCard,
@@ -39,9 +39,10 @@ const FlashcardCarousel = (props) => {
     useEffect(() => {
         async function fetchFlashcards() {
             console.log('selectedSet', selectedSet);
-            const cards = await api.get<Flashcards[]>(
+            const cards = await makeHttpCall<Flashcards[]>(
                 `${API_BASE}/api/flashcards/list`,
                 {
+                    method: 'GET',
                     headers: {
                         set_id: selectedSet,
                     },
