@@ -50,6 +50,8 @@ const CreateSet = () => {
     };
 
     const saveSet = async () => {
+        setLoading(true);
+        setError(null);
         const newErrors = { title: '', description: '' };
         let hasError = false;
 
@@ -97,10 +99,9 @@ const CreateSet = () => {
                     },
                 });
             }
-
+            setLoading(false);
             // ✅ Navigate instead of alert
             history.push(`/flashcards/${setId}`);
-            setLoading(false);
         } catch (error) {
             console.error('Error saving flashcard set:', error);
             setError(`Failed to save flashcard set: ${error.message}`);

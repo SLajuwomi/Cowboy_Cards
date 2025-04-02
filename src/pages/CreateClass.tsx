@@ -17,6 +17,12 @@ import {
 } from '@ionic/react';
 import { useEffect, useState } from 'react';
 
+type Class = {
+    ID: number;
+    ClassName: string;
+    ClassDescription: string;
+};
+
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const CreateClass = () => {
@@ -28,6 +34,7 @@ const CreateClass = () => {
         className: '',
         description: '',
     });
+    const [showSuccess, setShowSuccess] = useState(false);
     // const [isPrivate, setIsPrivate] = useState(false);
     // const [textToCopy, setTextToCopy] = useState('This is the text to be copied');
     // const [showToast, setShowToast] = useState(false);
@@ -49,27 +56,36 @@ const CreateClass = () => {
             setLoading(true);
             setError(null);
 
-            const data = await makeHttpCall(`${API_BASE}/api/classes`, {
-                method: 'POST',
-                headers: {
-                    class_name: formData.className,
-                    class_description: formData.description,
-                },
-            });
+            try {
+                const data = await makeHttpCall<Class>(
+                    `${API_BASE}/api/classes`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            class_name: formData.className,
+                            class_description: formData.description,
+                        },
+                    }
+                );
 
-            console.log('Class created successfully:', data);
+                console.log('Class created successfully:', data);
 
-            // setLastJoinCode(formData.joinCode);
+                // setLastJoinCode(formData.joinCode);
 
-            setButtonClicked(false);
+                setButtonClicked(false);
 
-            setFormData({
-                className: '',
-                description: '',
-            });
+                setFormData({
+                    className: '',
+                    description: '',
+                });
 
-            // setShowSuccess(true);
-            setLoading(false);
+                setShowSuccess(true);
+                setLoading(false);
+            } catch (error) {
+                setError(`Failed to create class: ${error.message}`);
+            } finally {
+                setLoading(false);
+            }
         }
 
         if (buttonClicked) {
@@ -96,11 +112,7 @@ const CreateClass = () => {
             passed
           </p>
         </IonText>*/}
-                {error && (
-                    <IonText color="danger">
-                        <p>{error}</p>
-                    </IonText>
-                )}
+                {error && <div className="text-red-500 mt-2">{error}</div>}
                 <form>
                     <IonCard className="mb-6 rounded-lg border shadow-sm">
                         <IonCardContent>
@@ -191,6 +203,11 @@ const CreateClass = () => {
             </IonText>
           )} */}
                 </form>
+                {showSuccess && (
+                    <IonText>
+                        <p>Class created successfully!</p>
+                    </IonText>
+                )}
             </div>
         </IonContent>
     );
