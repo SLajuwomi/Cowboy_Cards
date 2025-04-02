@@ -7,6 +7,13 @@ import {
   IonItem,
   IonList,
   IonText,
+  IonRadioGroup,
+  IonRadio,
+  IonToast,
+  IonCheckbox,
+  IonCard,
+  IonCardContent,
+  IonTextarea,
 } from '@ionic/react';
 import { useEffect, useState } from 'react';
 
@@ -82,24 +89,22 @@ const CreateClass = () => {
     <IonContent>
       <Navbar />
       <div id="main-content" className="container mx-auto px-4 py-8">
-        <IonText color="warning">
+        {/*<IonText color="warning">
           <p>
             Database only accepts a teacher ID of 12. <br />
             So I have not included an input for that, it will automatically be
             passed
           </p>
-        </IonText>
+        </IonText>*/}
         {error && (
           <IonText color="danger">
             <p>{error}</p>
           </IonText>
         )}
         <form>
-          <IonList>
-            <IonItem>
-              <IonInput
-                label="Class Name"
-                type="text"
+          <IonCard className="mb-6 rounded-lg border shadow-sm">
+            <IonCardContent>
+              <IonTextarea
                 placeholder="Enter Class Name"
                 value={formData.className}
                 onIonChange={(e) =>
@@ -108,12 +113,12 @@ const CreateClass = () => {
                     className: e.detail.value || '',
                   }))
                 }
+                rows={1}
+                autoGrow
+                className="w-full text-xl font-bold mb-2"
+                style={{ resize: 'none' }}
               />
-            </IonItem>
-            <IonItem>
-              <IonInput
-                label="Class Description"
-                type="text"
+              <IonTextarea
                 placeholder="Enter Class Description"
                 value={formData.description}
                 onIonChange={(e) =>
@@ -122,8 +127,12 @@ const CreateClass = () => {
                     description: e.detail.value || '',
                   }))
                 }
+                rows={1}
+                autoGrow
+                className="w-full text-base mt-4"
+                style={{ resize: 'none' }}
               />
-            </IonItem>
+            </IonCardContent>
             {/* <IonItem>
               
               Public/Private will not be in MVP
@@ -152,13 +161,16 @@ const CreateClass = () => {
                 <IonRadio value="private">Private</IonRadio>
               </IonRadioGroup>
             </IonItem> */}
+          </IonCard>
+          <div className="flex flex-col md:flex-row justify-center md:justify-end gap-4 mt-8">
             <IonButton
+              color="success"
               disabled={loading}
               onClick={() => setButtonClicked(true)}
             >
-              {loading ? 'Creating...' : 'Submit'}
+              {loading ? 'Creating...' : 'Create Class'}
             </IonButton>
-          </IonList>
+          </div>
           {/* 
           {showSuccess && (
             <IonText>
