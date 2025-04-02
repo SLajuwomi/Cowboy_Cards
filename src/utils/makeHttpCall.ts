@@ -4,6 +4,7 @@ type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 interface FetchOptions {
     method: HttpMethod;
     headers: any;
+    credentials?: 'include' | 'omit' | 'same-origin';
 }
 
 /**

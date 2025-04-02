@@ -20,9 +20,9 @@ import {
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-type User = {
-    role: string;
-};
+// type User = {
+//     role: string;
+// };
 
 type Class = {
     ID: number;
