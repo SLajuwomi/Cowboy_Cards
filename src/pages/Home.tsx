@@ -48,7 +48,7 @@ const Home = () => {
     { id: 3, name: 'World Capitals', cards: 12 },
     { id: 4, name: 'Algebraic Equations', cards: 20 },
     { id: 5, name: 'Shakespearean Plays', cards: 14 },
-    { id: 6, name: 'Ancient Civilizations', cards: 9 }
+    { id: 6, name: 'Ancient Civilizations', cards: 9 },
   ];
 
   return (
