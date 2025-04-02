@@ -68,6 +68,12 @@ const Navbar = () => {
             </IonItem>
             <IonItem
               button
+              onClick={() => handleMenuItemClick('/public-classes')}
+            >
+              Public Classes
+            </IonItem>
+            <IonItem
+              button
               onClick={() => handleMenuItemClick('/user-account')}
             >
               My Account
@@ -133,7 +139,7 @@ const Navbar = () => {
                     button
                     onClick={() => {
                       closePopover();
-                      router.push('#');
+                      router.push('/public-classes');
                     }}
                   >
                     Join Class
