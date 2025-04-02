@@ -1,12 +1,12 @@
 import { Navbar } from '@/components/navbar';
 import { api } from '@/utils/api';
 import {
+  IonButton,
   IonContent,
+  IonInput,
   IonItem,
   IonList,
-  IonInput,
   IonText,
-  IonButton,
   IonRadioGroup,
   IonRadio,
   IonToast,
@@ -15,8 +15,9 @@ import {
   IonCardContent,
   IonTextarea,
 } from '@ionic/react';
+import { useEffect, useState } from 'react';
 
-import { useState, useEffect } from 'react';
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const CreateClass = () => {
   const [buttonClicked, setButtonClicked] = useState(false);
@@ -48,16 +49,13 @@ const CreateClass = () => {
       setLoading(true);
       setError(null);
 
-      const data = await api.post(
-        'https://cowboy-cards.dsouth.org/api/classes',
-        {
-          //For the MVP, all classes are public, so we don't need to pass a join code
-          headers: {
-            class_name: formData.className,
-            class_description: formData.description,
-          },
-        }
-      );
+      const data = await api.post(`${API_BASE}/api/classes`, {
+        //For the MVP, all classes are public, so we don't need to pass a join code
+        headers: {
+          class_name: formData.className,
+          class_description: formData.description,
+        },
+      });
 
       console.log('Class created successfully:', data);
 
