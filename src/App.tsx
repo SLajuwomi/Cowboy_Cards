@@ -18,6 +18,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import CreateClass from './pages/CreateClass';
 import Flashcard from './pages/Flashcard';
 import CreateSet from './pages/CreateSet';
+import PulcicClasses from './pages/PublicClasses';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -61,6 +62,7 @@ function App() {
                 <Route exact path="/flashcards" component={Flashcard} />
                 <Route exact path="/create-set" component={CreateSet} />
                 <Route exact path="/class/create" component={CreateClass} />
+                <Route exact path="/public-classes" component={PulcicClasses} />
                 <Route component={NotFound} />
               </IonRouterOutlet>
             </IonReactRouter>
