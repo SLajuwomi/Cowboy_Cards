@@ -61,6 +61,7 @@ function App() {
                 <Route exact path="/user-account" component={UserAccount} />
                 <Route exact path="/flashcards" component={Flashcard} />
                 <Route exact path="/create-set" component={CreateSet} />
+                <Route exact path="/edit-set/:id" component={CreateSet} />
                 <Route exact path="/class/create" component={CreateClass} />
                 <Route exact path="/public-classes" component={PublicClasses} />
                 <Route component={NotFound} />

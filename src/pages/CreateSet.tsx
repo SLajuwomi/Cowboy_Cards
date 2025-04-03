@@ -11,16 +11,71 @@ import {
   import { useState } from 'react';
   import { addOutline, trashOutline } from 'ionicons/icons';
   import { Navbar } from '@/components/navbar';
-  import { useHistory } from 'react-router-dom'; // 🔥 NEW
+  import { useHistory } from 'react-router-dom';
+  import { useParams } from 'react-router-dom';
+  import { useEffect } from 'react';
   
   const CreateSet = () => {
+    const { id } = useParams<{ id?: string }>();
     const API_BASE = import.meta.env.VITE_API_BASE_URL;
-    const history = useHistory(); // 🔥 NEW
+    const history = useHistory();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [cards, setCards] = useState([{ front: '', back: '' }]);
+    const [cards, setCards] = useState<{ id?: number; front: string; back: string }[]>([{ front: '', back: '' }]);
     const [errors, setErrors] = useState({ title: '', description: '' });
     const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+
+    useEffect(() => {
+      if (id) {
+        const fetchCards = async () => {
+          try {
+            const res = await fetch(`${API_BASE}/api/flashcards/list`, {
+              method: 'GET',
+              headers: {
+                'set_id': id,
+              },
+            });
+            if (!res.ok) throw new Error('Failed to fetch flashcard set');
+            const data = await res.json();
+            console.log(data);
+            const cardsData = Array.isArray(data) ? data : [];
+            if (cardsData.length === 0) {
+              setCards([{ front: '', back: '' }]); // ensure at least one blank card
+            } else {
+              setCards(cardsData.map((card: any) => ({
+                id: card.ID,        // Map the ID from API to the state
+                front: card.Front,  // Map the Front from API to the state
+                back: card.Back,    // Map the Back from API to the state
+              })));
+            }
+          } catch (error) {
+            console.error('Error fetching flashcard set:', error);
+          }
+        };
+        fetchCards();
+
+        const fetchSet = async () => {
+          try {
+            const res = await fetch(`${API_BASE}/api/flashcards/sets/`, {
+              method: 'GET',
+              headers: {
+                'id': id,
+              },
+            });
+            if (!res.ok) throw new Error('Failed to fetch flashcards');
+            const data = await res.json();
+            console.log(data);
+            setTitle(data.SetName);
+        setDescription(data.SetDescription);
+          } catch (error) {
+            console.error('Error fetching flashcards', error);
+          }
+        };
+
+        fetchSet();
+      }
+    }, [id]);
+    
   
     const addCard = () => {
       setCards([...cards, { front: '', back: '' }]);
@@ -55,38 +110,105 @@ import {
       const cleanedCards = cards.filter(
         (card) => card.front.trim() !== '' || card.back.trim() !== ''
       );
-  
-      try {
-        // 1. Create the set
-        const setResponse = await fetch(`${API_BASE}/flashcards/sets/`, {
-          method: 'POST',
+
+      if(id){
+        try {
+          await fetch(`${API_BASE}/api/flashcards/sets/set_name`, {
+            method: 'PUT',
+            headers: {
+              'id': id,
+              'set_name': title,
+            }
+          })
+        } catch(error) {
+          console.error('Error saving flashcard set:', error);
+          alert('Failed to save flashcard set.');
+        }
+        try {
+          await fetch(`${API_BASE}/api/flashcards/sets/set_description`, {
+            method: 'PUT',
+            headers: {
+              'id': id,
+              'set_description': description,
+            }
+          })
+        } catch(error) {
+          console.error('Error saving flashcard set:', error);
+          alert('Failed to save flashcard set.');
+        }
+
+        const res = await fetch(`${API_BASE}/api/flashcards/list`, {
+          method: 'GET',
           headers: {
-            'set_name': title,
-            'set_description': description,
+            'set_id': id,
           },
         });
-  
-        if (!setResponse.ok) throw new Error('Failed to create set');
-        const setData = await setResponse.json();
-        const setId = setData.ID;
-  
-        // 2. Create flashcards
+        let existingCards = await res.json();
+        if (!Array.isArray(existingCards)) {
+          existingCards = [];
+        }
+
         for (const card of cleanedCards) {
-          await fetch(`${API_BASE}/flashcards`, {
+          if(card.id) {
+            await fetch(`${API_BASE}/api/flashcards/front`, {
+              method: 'PUT',
+              headers: {
+                'id': card.id.toString(),
+                'front': card.front,
+              }
+            })
+            await fetch(`${API_BASE}/api/flashcards/back`, {
+              method: 'PUT',
+              headers: {
+                'id': card.id.toString(),
+                'back': card.back,
+              }
+            })
+          } else {
+            await fetch(`${API_BASE}/api/flashcards`, {
+              method: 'POST',
+              headers: {
+                'front': card.front.trim(),
+                'back': card.back.trim(),
+                'set_id': id.toString(),
+              },
+            });
+          }
+        }
+        history.push(`/flashcards/${id}`);
+      } else {
+        try {
+          // 1. Create the set
+          const setResponse = await fetch(`${API_BASE}/flashcards/sets/`, {
             method: 'POST',
             headers: {
-              'front': card.front,
-              'back': card.back,
-              'set_id': setId.toString(),
+              'set_name': title,
+              'set_description': description,
             },
           });
+    
+          if (!setResponse.ok) throw new Error('Failed to create set');
+          const setData = await setResponse.json();
+          const setId = setData.ID;
+    
+          // 2. Create flashcards
+          for (const card of cleanedCards) {
+            await fetch(`${API_BASE}/flashcards`, {
+              method: 'POST',
+              headers: {
+                'front': card.front,
+                'back': card.back,
+                'set_id': setId.toString(),
+              },
+            });
+          }
+    
+          // ✅ Navigate instead of alert
+          history.push(`/flashcards/${setId}`);
+        } catch (error) {
+          console.error('Error saving flashcard set:', error);
+          alert('Failed to save flashcard set.');
         }
-  
-        // ✅ Navigate instead of alert
-        history.push(`/flashcards/${setId}`);
-      } catch (error) {
-        console.error('Error saving flashcard set:', error);
-        alert('Failed to save flashcard set.');
       }
     };
   
@@ -102,7 +224,9 @@ import {
       <IonContent className="ion-padding">
         <Navbar />
         <div id="main-content" className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold mb-6">Create New Flashcard Set</h1>
+          <h1 className="text-3xl font-bold mb-6">
+            {id ? "Edit Flashcard Set" : "Create Flashcard Set"}
+          </h1>
   
           {/* Title & Description inputs */}
           <IonCard className="mb-6 rounded-lg border shadow-sm">
@@ -193,7 +317,7 @@ import {
               className="rounded-lg shadow-sm w-full md:w-auto"
               onClick={saveSet}
             >
-              Create Set
+              {id ? 'Update Set' : 'Create Set'}
             </IonButton>
           </div>
 
