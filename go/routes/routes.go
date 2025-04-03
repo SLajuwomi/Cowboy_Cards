@@ -48,8 +48,6 @@ func Protected(r *chi.Mux, h *controllers.Handler) {
 
 	// -------------------simple-------------------------
 
-	// r.Post("/logout", h.Logout)
-
 	r.Route("/classes", func(r chi.Router) {
 		r.Get("/list", h.ListClasses)
 		r.Get("/", h.GetClassById)
@@ -104,9 +102,5 @@ func fakeMW(next http.Handler) http.Handler {
 func Unprotected(r *chi.Mux, h *controllers.Handler) {
 	r.Post("/login", h.Login)
 	r.Post("/signup", h.Signup)
-
-	r.Route("/fake", func(r chi.Router) {
-		r.Use(fakeMW)
-		r.Post("/", dummy)
-	})
+	r.Post("/logout", h.Logout)
 }

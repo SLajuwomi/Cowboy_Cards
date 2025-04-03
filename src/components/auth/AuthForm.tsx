@@ -25,7 +25,7 @@ import { AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 // Backend API URL
-const API_URL = 'https://cowboy-cards.dsouth.org';
+const API_URL = 'http://localhost:8000';
 
 export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
