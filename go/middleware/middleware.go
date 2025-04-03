@@ -190,7 +190,7 @@ func (h *Handler) VerifyTeacherMW(next http.Handler) http.Handler {
 		log.Println("teacher", teacher)
 
 		if err != nil {
-			LogAndSendError(w, err, "Error checking ID", http.StatusInternalServerError)
+			LogAndSendError(w, err, "Invalid permissions", http.StatusInternalServerError)
 			return
 		}
 		next.ServeHTTP(w, r.WithContext(ctx))
