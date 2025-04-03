@@ -38,7 +38,7 @@ func LoadPoolConfig() (config *pgxpool.Config) {
 	return
 }
 
-func CreatePool(config *pgxpool.Config) (h *controllers.Handler) {
+func CreatePool(config *pgxpool.Config) (h *controllers.Embed) {
 	ctx := context.Background()
 
 	pgpool, err := pgxpool.NewWithConfig(ctx, config)
@@ -52,7 +52,9 @@ func CreatePool(config *pgxpool.Config) (h *controllers.Handler) {
 
 	log.Println("Successfully connected to database")
 
-	h = &controllers.Handler{DB: pgpool}
+	h = &controllers.Embed{
+		Handler: middleware.Handler{DB: pgpool},
+	}
 
 	// Enable SSL for Supabase
 	// conn.TLSConfig = &tls.Config{

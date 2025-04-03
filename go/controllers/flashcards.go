@@ -10,7 +10,7 @@ import (
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 )
 
-func (h *Handler) GetFlashcardById(w http.ResponseWriter, r *http.Request) {
+func (h *Embed) GetFlashcardById(w http.ResponseWriter, r *http.Request) {
 	// curl http://localhost:8000/api/flashcards/ -H "id: 1"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
@@ -44,7 +44,7 @@ func (h *Handler) GetFlashcardById(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) ListFlashcardsOfASet(w http.ResponseWriter, r *http.Request) {
+func (h *Embed) ListFlashcardsOfASet(w http.ResponseWriter, r *http.Request) {
 	// curl http://localhost:8000/api/flashcards/list -H "set_id:1"| jq
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
@@ -78,7 +78,7 @@ func (h *Handler) ListFlashcardsOfASet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) CreateFlashcard(w http.ResponseWriter, r *http.Request) {
+func (h *Embed) CreateFlashcard(w http.ResponseWriter, r *http.Request) {
 	// curl -X POST localhost:8000/api/flashcards -H "front: test front" -H "back: back test" -H "set_id: 1"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -116,7 +116,7 @@ func (h *Handler) CreateFlashcard(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) UpdateFlashcard(w http.ResponseWriter, r *http.Request) {
+func (h *Embed) UpdateFlashcard(w http.ResponseWriter, r *http.Request) {
 	// curl -X PUT localhost:8000/api/flashcards/front -H "id: 1" -H "front: Who is Don Quixote?"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
@@ -196,7 +196,7 @@ func (h *Handler) UpdateFlashcard(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) DeleteFlashcard(w http.ResponseWriter, r *http.Request) {
+func (h *Embed) DeleteFlashcard(w http.ResponseWriter, r *http.Request) {
 	// curl -X DELETE http://localhost:8000/api/flashcards/ -H "id: 1"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
