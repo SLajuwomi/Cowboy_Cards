@@ -10,7 +10,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-func (h *Handler) ListClasses(w http.ResponseWriter, r *http.Request) {
+func (h *Embed) ListClasses(w http.ResponseWriter, r *http.Request) {
 	// curl http://localhost:8000/api/classes/list | jq
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
@@ -32,7 +32,7 @@ func (h *Handler) ListClasses(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) GetClassById(w http.ResponseWriter, r *http.Request) {
+func (h *Embed) GetClassById(w http.ResponseWriter, r *http.Request) {
 	// curl http://localhost:8000/api/classes/ -H "id: 1"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
@@ -66,8 +66,8 @@ func (h *Handler) GetClassById(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) CreateClass(w http.ResponseWriter, r *http.Request) {
-	// curl -X POST localhost:8000/api/classes -H "name: class name" -H "description: class description"
+func (h *Embed) CreateClass(w http.ResponseWriter, r *http.Request) {
+	// curl -X POST localhost:8000/api/classes -H "name: class name" -H "description: class description" -H "private t/f
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -124,8 +124,8 @@ func (h *Handler) CreateClass(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) UpdateClass(w http.ResponseWriter, r *http.Request) {
-	// curl -X PUT http://localhost:8000/api/classes/description -H "id: 1" -H "description: 1st german"
+func (h *Embed) UpdateClass(w http.ResponseWriter, r *http.Request) {
+	// curl -X PUT http://localhost:8000/api/classes/class_description -H "id: 9" -H "class_description: 1st german"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -176,7 +176,7 @@ func (h *Handler) UpdateClass(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) DeleteClass(w http.ResponseWriter, r *http.Request) {
+func (h *Embed) DeleteClass(w http.ResponseWriter, r *http.Request) {
 	// curl -X DELETE http://localhost:8000/api/classes/ -H "id: 2"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
@@ -209,31 +209,31 @@ func (h *Handler) DeleteClass(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte{})
 }
 
-func (h *Handler) GetClassScores(w http.ResponseWriter, r *http.Request) {
+func (h *Embed) GetClassScores(w http.ResponseWriter, r *http.Request) {
 	// curl -GET http://localhost:8000/classes/get_scores -H "class_id: 1"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
 		logAndSendError(w, err, "Error connecting to database", http.StatusInternalServerError)
-		return;
+		return
 	}
 	defer conn.Release()
 
 	headerVals, err := getHeaderVals(r, "class_id")
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
-		return;
+		return
 	}
-	
+
 	cid, err := getInt32Id(headerVals["class_id"])
 	if err != nil {
 		logAndSendError(w, err, "Invalid class id", http.StatusBadRequest)
-		return;
+		return
 	}
 
 	scores, err := query.GetClassScores(ctx, cid)
 	if err != nil {
 		logAndSendError(w, err, "Error getting scores", http.StatusInternalServerError)
-		return;
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")

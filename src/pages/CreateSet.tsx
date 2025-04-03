@@ -1,3 +1,5 @@
+import { Navbar } from '@/components/navbar';
+import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonContent,
   IonButton,
@@ -74,6 +76,7 @@ const CreateSet = () => {
             method: 'GET',
             headers: {
               id: id,
+              id: id,
             },
           });
           if (!res.ok) {
@@ -91,21 +94,29 @@ const CreateSet = () => {
 
       fetchSet();
     }
+  }, [id, history]);
+
   }, [id]);
 
   const addCard = () => {
     setCards([...cards, { front: '', back: '' }]);
   };
 
+
   const removeCard = (index: number) => {
     setCards(cards.filter((_, i) => i !== index));
   };
+
 
   const updateCard = (index: number, field: string, value: string) => {
     setCards(
       cards.map((card, i) => (i === index ? { ...card, [field]: value } : card))
     );
+    setCards(
+      cards.map((card, i) => (i === index ? { ...card, [field]: value } : card))
+    );
   };
+
 
   const saveSet = async () => {
     setLoading(true);
@@ -122,6 +133,7 @@ const CreateSet = () => {
       newErrors.description = 'Description is required';
       hasError = true;
     }
+
 
     setErrors(newErrors);
 
@@ -213,18 +225,25 @@ const CreateSet = () => {
           headers: {
             set_name: title,
             set_description: description,
+            set_name: title,
+            set_description: description,
           },
         });
+
 
         if (!setResponse.ok) throw new Error('Failed to create set');
         const setData = await setResponse.json();
         const setId = setData.ID;
+
 
         // 2. Create flashcards
         for (const card of cleanedCards) {
           await fetch(`${API_BASE}/flashcards`, {
             method: 'POST',
             headers: {
+              front: card.front,
+              back: card.back,
+              set_id: setId.toString(),
               front: card.front,
               back: card.back,
               set_id: setId.toString(),
@@ -242,6 +261,7 @@ const CreateSet = () => {
       }
     }
   };
+
 
   const deleteSet = () => {
     setTitle('');
@@ -331,8 +351,14 @@ const CreateSet = () => {
           </IonCard>
         ))}
 
+
         {/* Add card button */}
         <div className="flex justify-center mb-6">
+          <IonButton
+            color="primary"
+            className="rounded-lg shadow-sm"
+            onClick={addCard}
+          >
           <IonButton
             color="primary"
             className="rounded-lg shadow-sm"
@@ -342,11 +368,14 @@ const CreateSet = () => {
           </IonButton>
         </div>
 
+
         <div className="flex flex-col md:flex-row justify-center md:justify-end gap-4 mt-8">
           {/* Delete Set Button */}
           <IonButton color="danger" onClick={() => setShowDeleteAlert(true)}>
+          <IonButton color="danger" onClick={() => setShowDeleteAlert(true)}>
             Delete Set
           </IonButton>
+
 
           {/* Create button */}
           <IonButton
