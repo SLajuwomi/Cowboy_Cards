@@ -18,6 +18,8 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import CreateClass from './pages/CreateClass';
 import Flashcard from './pages/Flashcard';
 import CreateSet from './pages/CreateSet';
+import PublicClasses from './pages/PublicClasses';
+import SetOverview from './pages/SetOverview';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -58,9 +60,12 @@ function App() {
                 <Route exact path="/reset-password" component={ResetPass} />
                 <Route exact path="/public-cards" component={PublicCards} />
                 <Route exact path="/user-account" component={UserAccount} />
-                <Route exact path="/flashcards" component={Flashcard} />
+                <Route exact path="/flashcards/:id" component={Flashcard} />
                 <Route exact path="/create-set" component={CreateSet} />
+                <Route exact path="/edit-set/:id" component={CreateSet} />
                 <Route exact path="/class/create" component={CreateClass} />
+                <Route exact path="/public-classes" component={PublicClasses} />
+                <Route exact path="/set-overview/:id" component={SetOverview} />
                 <Route component={NotFound} />
               </IonRouterOutlet>
             </IonReactRouter>

@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"context"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -17,7 +16,7 @@ func dummy(w http.ResponseWriter, r *http.Request) {
 }
 
 // every protected route is preceded by /api
-func Protected(r *chi.Mux, h *controllers.Handler) {
+func Protected(r *chi.Mux, h *controllers.Embed) {
 
 	// -------------------complex-------------------------
 
@@ -49,12 +48,17 @@ func Protected(r *chi.Mux, h *controllers.Handler) {
 	// -------------------simple-------------------------
 
 	r.Route("/classes", func(r chi.Router) {
+
+		r.Route("/", func(r chi.Router) {
+			r.Use(h.VerifyTeacherMW)
+			r.Put("/class_name", h.UpdateClass)
+			r.Put("/class_description", h.UpdateClass)
+			// r.Delete("/", h.DeleteClass)
+		})
+
 		r.Get("/list", h.ListClasses)
 		r.Get("/", h.GetClassById)
 		r.Post("/", h.CreateClass)
-		r.Put("/class_name", h.UpdateClass)
-		r.Put("/class_description", h.UpdateClass)
-		// r.Delete("/", h.DeleteClass)
 	})
 
 	r.Route("/flashcards", func(r chi.Router) {
@@ -89,17 +93,8 @@ func Protected(r *chi.Mux, h *controllers.Handler) {
 	})
 }
 
-func fakeMW(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println("fake mw")
-
-		ctx := context.WithValue(r.Context(), "article", "article")
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
-}
-
 // auth
-func Unprotected(r *chi.Mux, h *controllers.Handler) {
+func Unprotected(r *chi.Mux, h *controllers.Embed) {
 	r.Post("/login", h.Login)
 	r.Post("/signup", h.Signup)
 	r.Post("/logout", h.Logout)

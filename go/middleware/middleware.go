@@ -19,6 +19,10 @@ import (
 
 type userIdKey string
 
+type Handler struct {
+	DB *pgxpool.Pool
+}
+
 const userKey userIdKey = "userId"
 const sessionName = "cowboy-cards-session"
 
@@ -62,7 +66,7 @@ var (
 		AllowedHeaders:   []string{"*"},
 		ExposedHeaders:   []string{"Link", "X-CSRF-Token"}, // Expose CSRF token header
 		AllowCredentials: true,
-		Debug:            true,
+		Debug:            false,
 		MaxAge:           300,
 	})
 	
@@ -199,7 +203,7 @@ func LogAndSendError(w http.ResponseWriter, err error, msg string, statusCode in
 func SetCacheControlHeader(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	str := ""
 
-	if path.Clean(r.URL.Path) == "/" {
+	if path.Clean(r.URL.Path) == "/" || strings.Contains(path.Clean(r.URL.Path), "/api/") {
 		str = "no-cache, no-store, must-revalidate"
 	} else {
 		str = "public, max-age=31536000, immutable"
@@ -211,6 +215,54 @@ func SetCacheControlHeader(w http.ResponseWriter, r *http.Request, next http.Han
 
 func FromContext(ctx context.Context) (id int32, ok bool) {
 	id, ok = ctx.Value(userKey).(int32)
+	return
+}
+
+func GetInt32Id(val string) (id int32, err error) {
+	idInt, err := strconv.Atoi(val)
+	if err != nil {
+		return 0, err
+	}
+	if idInt < 1 {
+		return 0, errors.New("invalid id")
+	}
+
+	id = int32(idInt)
+
+	return
+}
+
+func GetHeaderVals(r *http.Request, headers ...string) (map[string]string, error) {
+	reqHeaders := r.Header
+	vals := map[string]string{}
+
+	for k := range reqHeaders {
+		lower := strings.ToLower(k)
+		if slices.Contains(headers, lower) {
+			val := reqHeaders.Get(k)
+			if val == "" {
+				return nil, fmt.Errorf("%v header missing", k)
+			}
+			vals[lower] = val
+		}
+	}
+	if len(vals) != len(headers) {
+		return nil, errors.New("header(s) missing")
+	}
+
+	return vals, nil
+}
+
+func GetQueryConnAndContext(r *http.Request, h *Handler) (query *db.Queries, ctx context.Context, conn *pgxpool.Conn, err error) {
+	ctx = r.Context()
+
+	conn, err = h.DB.Acquire(ctx)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	query = db.New(conn)
+
 	return
 }
 

@@ -12,7 +12,7 @@ import (
 )
 
 // Login handles user authentication
-func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
+func (h *Embed) Login(w http.ResponseWriter, r *http.Request) {
 	var req LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		logAndSendError(w, err, "Invalid request body", http.StatusBadRequest)
@@ -62,7 +62,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 // Signup handles user registration
-func (h *Handler) Signup(w http.ResponseWriter, r *http.Request) {
+func (h *Embed) Signup(w http.ResponseWriter, r *http.Request) {
 	var req SignupRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		logAndSendError(w, err, "Invalid request body", http.StatusBadRequest)

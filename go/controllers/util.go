@@ -2,13 +2,9 @@ package controllers
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"net/http"
 	"os"
-	"slices"
 	"strconv"
-	"strings"
 	"time"
 
 	"aidanwoods.dev/go-paseto"
@@ -18,8 +14,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type Handler struct {
-	DB *pgxpool.Pool
+type Embed struct {
+	middleware.Handler
 }
 
 // User represents the user data that will be sent to the client
@@ -59,46 +55,19 @@ type AuthResponse struct {
 	CSRFToken string `json:"csrf_token,omitempty"`
 }
 
-func getInt32Id(val string) (id int32, err error) {
-	idInt, err := strconv.Atoi(val)
-	if err != nil {
-		return 0, err
-	}
-	if idInt < 1 {
-		return 0, errors.New("invalid id")
-	}
-
-	id = int32(idInt)
-
-	return
-}
-
-func getHeaderVals(r *http.Request, headers ...string) (map[string]string, error) {
-	reqHeaders := r.Header
-	vals := map[string]string{}
-
-	for k := range reqHeaders {
-		lower := strings.ToLower(k)
-		if slices.Contains(headers, lower) {
-			val := reqHeaders.Get(k)
-			if val == "" {
-				return nil, fmt.Errorf("%v header missing", k)
-			}
-			vals[lower] = val
-		}
-	}
-	if len(vals) != len(headers) {
-		return nil, errors.New("header(s) missing")
-	}
-
-	return vals, nil
-}
-
 func logAndSendError(w http.ResponseWriter, err error, msg string, statusCode int) {
 	middleware.LogAndSendError(w, err, msg, statusCode)
 }
 
-func getQueryConnAndContext(r *http.Request, h *Handler) (query *db.Queries, ctx context.Context, conn *pgxpool.Conn, err error) {
+func getInt32Id(val string) (id int32, err error) {
+	return middleware.GetInt32Id(val)
+}
+
+func getHeaderVals(r *http.Request, headers ...string) (map[string]string, error) {
+	return middleware.GetHeaderVals(r, headers...)
+}
+
+func getQueryConnAndContext(r *http.Request, h *Embed) (query *db.Queries, ctx context.Context, conn *pgxpool.Conn, err error) {
 	ctx = r.Context()
 
 	conn, err = h.DB.Acquire(ctx)
