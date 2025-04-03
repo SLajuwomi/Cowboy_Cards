@@ -20,6 +20,6 @@ SELECT user_id, class_id, role, first_name, last_name FROM class_user JOIN users
 -- WHERE class_id = $1 AND role = 'student';
 
 -- name: ListTeachersOfAClass :many
--- SELECT user_id, class_id, role, first_name, last_name
--- FROM class_user JOIN users ON class_user.user_id = users.id
--- WHERE class_id = $1 AND role = 'teacher';
+SELECT user_id, class_id, role, first_name, last_name
+FROM class_user JOIN users ON class_user.user_id = users.id
+WHERE class_id = $1 AND role = 'teacher';

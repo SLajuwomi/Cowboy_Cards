@@ -159,3 +159,19 @@ func (q *Queries) UpdateClassName(ctx context.Context, arg UpdateClassNameParams
 	err := row.Scan(&class_name)
 	return class_name, err
 }
+
+const verifyTeacher = `-- name: VerifyTeacher :one
+SELECT user_id, class_id, role FROM class_user WHERE class_id = $1 AND user_id = $2 AND role = 'teacher'
+`
+
+type VerifyTeacherParams struct {
+	ClassID int32
+	UserID  int32
+}
+
+func (q *Queries) VerifyTeacher(ctx context.Context, arg VerifyTeacherParams) (ClassUser, error) {
+	row := q.db.QueryRow(ctx, verifyTeacher, arg.ClassID, arg.UserID)
+	var i ClassUser
+	err := row.Scan(&i.UserID, &i.ClassID, &i.Role)
+	return i, err
+}
