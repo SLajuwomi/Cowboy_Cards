@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
-    IonGrid,
-    IonRow,
-    IonCol,
+    IonButton,
     IonCard,
     IonCardContent,
     IonCardHeader,
     IonCardTitle,
-    IonButton,
+    IonCol,
+    IonGrid,
     IonIcon,
+    IonRow,
 } from '@ionic/react';
+import { arrowBackOutline } from 'ionicons/icons';
+import { useEffect, useState } from 'react';
 import {
     Carousel,
     CarouselContent,
@@ -17,9 +19,7 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from '../ui/carousel';
-import { arrowBackOutline } from 'ionicons/icons';
 import { FlashCard } from './FlashCard';
-import { api } from '@/utils/api';
 
 type Flashcards = {
     ID: number;
@@ -30,6 +30,9 @@ type Flashcards = {
     UpdatedAt: string;
 };
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
+// We probably should make the flashcards have an independent page, so we can show loading states and errors
 const FlashcardCarousel = (props) => {
     const [flashcards, setFlashcards] = useState<Flashcards[]>([]);
     const [selectedSet, setSelectedSet] = useState<number | null>(null);
@@ -37,9 +40,10 @@ const FlashcardCarousel = (props) => {
     useEffect(() => {
         async function fetchFlashcards() {
             console.log('selectedSet', selectedSet);
-            const cards = await api.get<Flashcards[]>(
-                ` https://cowboy-cards.dsouth.org/api/flashcards/list`,
+            const cards = await makeHttpCall<Flashcards[]>(
+                `${API_BASE}/api/flashcards/list`,
                 {
+                    method: 'GET',
                     headers: {
                         set_id: selectedSet,
                     },
@@ -58,33 +62,35 @@ const FlashcardCarousel = (props) => {
             {selectedSet === null ? (
                 <IonGrid>
                     <IonRow>
-                        {props.flashcardSets.map((set) => (
-                            <IonCol
-                                size="12"
-                                sizeMd="6"
-                                sizeLg="4"
-                                key={set.ID}
-                            >
-                                <IonCard
-                                    className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-200 rounded-lg border shadow-sm"
-                                    onClick={() => setSelectedSet(set.ID)}
+                        {props.flashcardSets
+                            .sort((a, b) => a.ID - b.ID)
+                            .map((set) => (
+                                <IonCol
+                                    size="12"
+                                    sizeMd="6"
+                                    sizeLg="4"
+                                    key={set.ID}
                                 >
-                                    <IonCardHeader>
-                                        <IonCardTitle className="text-lg font-semibold">
-                                            {set.SetName}
-                                        </IonCardTitle>
-                                    </IonCardHeader>
-                                    <IonCardContent>
-                                        <p className="text-muted-foreground mb-2">
-                                            {set.SetDescription}
-                                        </p>
-                                        {/* <p className="text-muted-foreground">
+                                    <IonCard
+                                        className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-200 rounded-lg border shadow-sm"
+                                        onClick={() => setSelectedSet(set.ID)}
+                                    >
+                                        <IonCardHeader>
+                                            <IonCardTitle className="text-lg font-semibold">
+                                                {set.SetName}
+                                            </IonCardTitle>
+                                        </IonCardHeader>
+                                        <IonCardContent>
+                                            <p className="text-muted-foreground mb-2">
+                                                {set.SetDescription}
+                                            </p>
+                                            {/* <p className="text-muted-foreground">
                                             {set.cards.length} cards
                                         </p> */}
-                                    </IonCardContent>
-                                </IonCard>
-                            </IonCol>
-                        ))}
+                                        </IonCardContent>
+                                    </IonCard>
+                                </IonCol>
+                            ))}
                     </IonRow>
                 </IonGrid>
             ) : (
