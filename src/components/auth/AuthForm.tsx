@@ -1,4 +1,4 @@
-import { Alert, AlertDescription } from '@/components/ui/alert';
+/*import { Alert, AlertDescription } from '@/components/ui/alert';*/
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { useIonRouter } from '@ionic/react';
-import { AlertCircle, LogIn } from 'lucide-react';
+import { LogIn } from 'lucide-react';
 import { useState } from 'react';
 import { IonButton, IonIcon } from '@ionic/react';
 
