@@ -219,7 +219,8 @@ const CreateSet = () => {
           },
         });
 
-        if (!setResponse.ok) throw new Error('Failed to create set');
+        if (!setResponse.ok)
+          throw new Error(`HTTP error! Status: ${setResponse.status}`);
         const setData = await setResponse.json();
         const setId = setData.ID;
 
