@@ -22,8 +22,9 @@ type FlashcardSet = {
   UpdatedAt: string;
 };
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
 const CreateSet = () => {
-  const API_BASE = import.meta.env.VITE_API_BASE_URL;
   const history = useHistory(); // 🔥 NEW
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
