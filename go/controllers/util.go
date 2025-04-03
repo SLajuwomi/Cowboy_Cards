@@ -11,9 +11,9 @@ import (
 	"strings"
 	"time"
 
+	"aidanwoods.dev/go-paseto"
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/middleware"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -112,29 +112,30 @@ func getQueryConnAndContext(r *http.Request, h *Handler) (query *db.Queries, ctx
 
 func getTokenAndResponse(user db.User) (response AuthResponse, err error) {
 	var (
-		jwtAud = os.Getenv("JWT_AUD")
-		jwtIss = os.Getenv("JWT_ISS")
-		jwtKey = os.Getenv("JWT_SECRET")
+		pasetoAud = os.Getenv("PASETO_AUD")
+		pasetoIss = os.Getenv("PASETO_ISS")
+		pasetoKey = os.Getenv("PASETO_SECRET")
+		pasetoImp = os.Getenv("PASETO_IMPLICIT")
 	)
 
-	registeredClaims := jwt.RegisteredClaims{
-		Issuer:    jwtIss,
-		Subject:   strconv.Itoa(int(user.ID)), //recommended, may use later
-		Audience:  jwt.ClaimStrings{jwtAud},
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(2 * time.Hour)),     //should be as short as possible
-		NotBefore: jwt.NewNumericDate(time.Now().Add(-30 * time.Second)), //recommended 30 seconds for clock skew
-		IssuedAt:  jwt.NewNumericDate(time.Now()),
-		ID:        uuid.New().String(),
-	}
+	token := paseto.NewToken()
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, registeredClaims)
-	tokenString, err := token.SignedString([]byte(jwtKey))
+	token.SetAudience(pasetoAud)
+	token.SetJti(uuid.New().String())
+	token.SetIssuer(pasetoIss)
+	token.SetSubject(strconv.Itoa(int(user.ID)))
+	token.SetExpiration(time.Now().Add(time.Minute))
+	token.SetNotBefore(time.Now().Add(-3 * time.Second))
+	token.SetIssuedAt(time.Now())
+
+	secretKey, err := paseto.V4SymmetricKeyFromHex(pasetoKey)
 	if err != nil {
 		return AuthResponse{}, err
 	}
+	signed := token.V4Encrypt(secretKey, []byte(pasetoImp))
 
 	response = AuthResponse{
-		Token:     tokenString,
+		Token:     signed,
 		UserID:    user.ID,
 		Username:  user.Username,
 		Email:     user.Email,
@@ -151,3 +152,7 @@ func getTokenAndResponse(user db.User) (response AuthResponse, err error) {
 // dst := make([]byte, base64.StdEncoding.EncodedLen(len(key)))
 // base64.StdEncoding.Encode(dst, key)
 // fmt.Println(string(dst))
+
+// k := paseto.NewV4SymmetricKey()
+// fmt.Println(k.ExportHex())
+// https://go.dev/play/p/bClzAlvZnnq

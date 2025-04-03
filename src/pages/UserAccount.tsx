@@ -1,15 +1,35 @@
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Edit2, ChevronDown, ChevronUp } from 'lucide-react';
+import {
+  IonContent,
+  IonButton,
+  IonIcon,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent,
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonSelect,
+  IonSelectOption,
+  IonList,
+  IonAlert,
+  useIonToast,
+} from '@ionic/react';
+import {
+  arrowBackOutline,
+  createOutline,
+  chevronDownOutline,
+  chevronUpOutline,
+} from 'ionicons/icons';
 import { useTheme } from '@/contexts/ThemeContext';
+import { Navbar } from '@/components/navbar';
 
 const UserAccount = () => {
   const { theme, setTheme } = useTheme();
   const [userInfo, setUserInfo] = useState({
     username: 'john_doe',
     email: 'john.doe@example.com',
-    phoneNumber: '123-456-7890',
     firstname: 'John',
     lastname: 'Doe',
   });
@@ -46,16 +66,15 @@ const UserAccount = () => {
     },
   ]);
 
-  const [expandedClass, setExpandedClass] = useState(null);
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
-
-  const toggleClassDetails = (classId) => {
-    setExpandedClass(expandedClass === classId ? null : classId);
-  };
-
+  const [expandedClass, setExpandedClass] = useState<number | null>(null);
+  const [showPasswordAlert, setShowPasswordAlert] = useState(false);
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [updatedInfo, setUpdatedInfo] = useState(userInfo);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const toggleClassDetails = (classId: number) => {
+    setExpandedClass(expandedClass === classId ? null : classId);
+  };
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -66,8 +85,9 @@ const UserAccount = () => {
     setIsEditing(false);
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const handleChange = (e: any) => {
+    const { name } = e.target;
+    const value = e.detail.value;
     setUpdatedInfo((prev) => ({
       ...prev,
       [name]: value,
@@ -78,303 +98,322 @@ const UserAccount = () => {
     // Mock API call for fetching user stats
   }, []);
 
+  // Hook for showing toast messages, used for password change
+  const [presentToast] = useIonToast();
+
   return (
-    <div className="w-full h-full overflow-y-auto">
-      <div className="container mx-auto px-4 py-8">
+    <IonContent>
+      <Navbar />
+
+      <div id="main-content" className="container mx-auto px-4 py-8">
+        {/* Header Section */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2 text-primary">
-            User Dashboard
-          </h1>
-          <p className="text-gray-600">Welcome back, {userInfo.username}!</p>
+          <p className="text-xl font-semibold text-primary">
+            Welcome back, {userInfo.username}!
+          </p>
         </div>
 
-        <Button
+        {/* Back Button */}
+        <IonButton
           onClick={() => window.history.back()}
-          variant="outline"
-          className="mb-6 transition-transform-shadow duration-200"
+          fill="outline"
+          className="mb-6"
         >
-          ← Back
-        </Button>
+          <IonIcon slot="start" icon={arrowBackOutline} />
+          Back
+        </IonButton>
 
+        {/* First Row: Account Information and Stats */}
         <div className="flex flex-col md:flex-row gap-6">
-          <Card className="p-6 w-full md:w-1/2">
-            <h2 className="text-xl font-semibold mb-4 text-primary">
-              Account Information
-            </h2>
-            {isEditing ? (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium">
-                    First Name
-                  </label>
-                  <input
-                    type="text"
-                    name="firstname"
-                    value={updatedInfo.firstname}
-                    onChange={handleChange}
-                    className="mt-1 p-2 border rounded-lg w-full"
-                  />
+          {/* Account Information Card */}
+          <IonCard className="w-full md:w-1/2 rounded-lg border shadow-sm">
+            <IonCardHeader className="p-6">
+              <IonCardTitle className="text-xl font-semibold text-primary">
+                Account Information
+              </IonCardTitle>
+            </IonCardHeader>
+            <IonCardContent className="p-6 pt-0">
+              {isEditing ? (
+                <div className="space-y-4">
+                  <IonItem>
+                    <IonLabel position="stacked">First Name</IonLabel>
+                    <IonInput
+                      type="text"
+                      name="firstname"
+                      value={updatedInfo.firstname}
+                      onIonChange={handleChange}
+                    />
+                  </IonItem>
+                  <IonItem>
+                    <IonLabel position="stacked">Last Name</IonLabel>
+                    <IonInput
+                      type="text"
+                      name="lastname"
+                      value={updatedInfo.lastname}
+                      onIonChange={handleChange}
+                    />
+                  </IonItem>
+                  <IonItem>
+                    <IonLabel position="stacked">Username</IonLabel>
+                    <IonInput
+                      type="text"
+                      name="username"
+                      value={updatedInfo.username}
+                      onIonChange={handleChange}
+                    />
+                  </IonItem>
+                  <IonItem>
+                    <IonLabel position="stacked">Email</IonLabel>
+                    <IonInput
+                      type="email"
+                      name="email"
+                      value={updatedInfo.email}
+                      onIonChange={handleChange}
+                    />
+                  </IonItem>
+                  <div className="mt-4 flex justify-end">
+                    <IonButton onClick={handleSave}>Save Changes</IonButton>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium">Last Name</label>
-                  <input
-                    type="text"
-                    name="lastname"
-                    value={updatedInfo.lastname}
-                    onChange={handleChange}
-                    className="mt-1 p-2 border rounded-lg w-full"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium">Username</label>
-                  <input
-                    type="text"
-                    name="username"
-                    value={updatedInfo.username}
-                    onChange={handleChange}
-                    className="mt-1 p-2 border rounded-lg w-full"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium">Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={updatedInfo.email}
-                    onChange={handleChange}
-                    className="mt-1 p-2 border rounded-lg w-full"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium">
-                    Phone Number
-                  </label>
-                  <input
-                    type="text"
-                    name="phoneNumber"
-                    value={updatedInfo.phoneNumber}
-                    onChange={handleChange}
-                    className="mt-1 p-2 border rounded-lg w-full"
-                  />
-                </div>
-                <div className="mt-4 flex justify-end">
-                  <Button onClick={handleSave}>Save Changes</Button>
-                </div>
-              </div>
-            ) : (
-              <div>
-                <div className="mb-4">
-                  <span className="font-medium">First Name: </span>
-                  {userInfo.firstname}
-                </div>
-                <div className="mb-4">
-                  <span className="font-medium">Last Name: </span>
-                  {userInfo.lastname}
-                </div>
-                <div className="mb-4">
-                  <span className="font-medium">Username: </span>
-                  {userInfo.username}
-                </div>
-                <div className="mb-4">
-                  <span className="font-medium">Email: </span>
-                  {userInfo.email}
-                </div>
-                <div className="mb-4">
-                  <span className="font-medium">Phone Number: </span>
-                  {userInfo.phoneNumber}
-                </div>
-                <Button
-                  variant="outline"
-                  onClick={handleEdit}
-                  className="mt-4 transition-transform-shadow duration-200"
-                >
-                  <Edit2 className="mr-2 h-4 w-4" /> Edit Info
-                </Button>
-              </div>
-            )}
-          </Card>
-
-          <Card className="p-6 w-full md:w-1/2">
-            <h2 className="text-xl font-semibold mb-4 text-primary">
-              Account Stats
-            </h2>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="font-medium">Account Created:</span>
-                <span>{stats.accountCreated}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="font-medium">Classes Taken:</span>
-                <span>{stats.numClasses}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="font-medium">Cards Shown:</span>
-                <span>{stats.cardsShown}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="font-medium">Cards Mastered:</span>
-                <span>{stats.cardsMastered}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="font-medium">Time in App:</span>
-                <span>{stats.timeInApp}</span>
-              </div>
-            </div>
-          </Card>
-        </div>
-
-        <div className="flex flex-col md:flex-row gap-6 py-6">
-          <Card className="p-6 w-full md:w-1/2">
-            <h2 className="text-xl font-semibold mb-4 text-primary">
-              Class History
-            </h2>
-            <div className="space-y-4">
-              {classHistory.map((cls) => (
-                <div key={cls.id} className="border-b pb-2">
-                  <button
-                    className="w-full flex justify-between items-center text-left text-lg font-medium"
-                    onClick={() => toggleClassDetails(cls.id)}
+              ) : (
+                <div className="space-y-2">
+                  <div>
+                    <span className="font-medium">First Name: </span>
+                    {userInfo.firstname}
+                  </div>
+                  <div>
+                    <span className="font-medium">Last Name: </span>
+                    {userInfo.lastname}
+                  </div>
+                  <div>
+                    <span className="font-medium">Username: </span>
+                    {userInfo.username}
+                  </div>
+                  <div>
+                    <span className="font-medium">Email: </span>
+                    {userInfo.email}
+                  </div>
+                  <IonButton
+                    fill="outline"
+                    onClick={handleEdit}
+                    className="mt-4"
                   >
-                    {cls.title}
-                    {expandedClass === cls.id ? <ChevronUp /> : <ChevronDown />}
-                  </button>
-                  {expandedClass === cls.id && (
-                    <div className="mt-2 pl-4 text-gray-700">
-                      <p>
-                        <span className="font-medium">Date Started:</span>{' '}
-                        {cls.startDate}
-                      </p>
-                      <p>
-                        <span className="font-medium">Date Ended:</span>{' '}
-                        {cls.endDate}
-                      </p>
-                      <a href={cls.link} className="text-primary underline">
-                        Go to Class Page
-                      </a>
-                    </div>
-                  )}
+                    <IonIcon slot="start" icon={createOutline} />
+                    Edit Info
+                  </IonButton>
                 </div>
-              ))}
-            </div>
-          </Card>
-          <Card className="p-6 w-full md:w-1/2">
-            <h2 className="text-xl font-semibold mb-4 text-primary">
-              Account Options
-            </h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium">Theme</label>
-                <select
-                  className="mt-1 p-2 border rounded-lg w-full bg-background text-foreground border-input focus:ring-2 focus:ring-ring focus:outline-none"
-                  value={theme}
-                  onChange={(e) => setTheme(e.target.value as 'light' | 'dark')}
-                >
-                  <option value="light">Light</option>
-                  <option value="dark">Dark</option>
-                </select>
-              </div>
-              <label className="block text-sm font-medium">
-                Account Settings
-              </label>
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-sm font-medium">Change Your Password</p>
-                  <p className="text-xs text-gray-600">
-                    Reset your account password.
-                  </p>
+              )}
+            </IonCardContent>
+          </IonCard>
+
+          {/* Account Stats Card */}
+          <IonCard className="w-full md:w-1/2 rounded-lg border shadow-sm">
+            <IonCardHeader className="p-6">
+              <IonCardTitle className="text-xl font-semibold text-primary">
+                Account Stats
+              </IonCardTitle>
+            </IonCardHeader>
+            <IonCardContent className="p-6 pt-0">
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">Account Created:</span>
+                  <span>{stats.accountCreated}</span>
                 </div>
-                <Button
-                  onClick={() => setShowPasswordModal(true)}
-                  className="transition-transform-shadow duration-200"
-                >
-                  Change Password
-                </Button>
-              </div>
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-sm font-medium">Delete Your Account</p>
-                  <p className="text-xs text-gray-600">
-                    This will delete all account data and can't be undone.
-                  </p>
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">Classes Taken:</span>
+                  <span>{stats.numClasses}</span>
                 </div>
-                <Button
-                  variant="destructive"
-                  onClick={() => setShowDeleteModal(true)}
-                  className="transition-transform-shadow duration-200"
-                >
-                  Delete Account
-                </Button>
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">Cards Shown:</span>
+                  <span>{stats.cardsShown}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">Cards Mastered:</span>
+                  <span>{stats.cardsMastered}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">Time in App:</span>
+                  <span>{stats.timeInApp}</span>
+                </div>
               </div>
-            </div>
-          </Card>
+            </IonCardContent>
+          </IonCard>
         </div>
 
-        {showPasswordModal && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-              <h2 className="text-xl font-semibold mb-4">Change Password</h2>
-              <label className="block text-sm font-medium">Old Password</label>
-              <input
-                type="password"
-                className="mt-1 p-2 border rounded-lg w-full mb-3"
-              />
-              <label className="block text-sm font-medium">New Password</label>
-              <input
-                type="password"
-                className="mt-1 p-2 border rounded-lg w-full mb-3"
-              />
-              <label className="block text-sm font-medium">
-                Confirm New Password
-              </label>
-              <input
-                type="password"
-                className="mt-1 p-2 border rounded-lg w-full mb-4"
-              />
-              <div className="flex justify-end space-x-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowPasswordModal(false)}
-                >
-                  Cancel
-                </Button>
-                <Button onClick={() => setShowPasswordModal(false)}>
-                  Save
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Second Row: Class History and Account Options */}
+        <div className="flex flex-col md:flex-row gap-6 py-6">
+          {/* Class History Card */}
+          <IonCard className="w-full md:w-1/2 rounded-lg border shadow-sm">
+            <IonCardHeader className="p-6">
+              <IonCardTitle className="text-xl font-semibold text-primary">
+                Class History
+              </IonCardTitle>
+            </IonCardHeader>
+            <IonCardContent className="p-6 pt-0">
+              <IonList>
+                {classHistory.map((cls) => (
+                  <div key={cls.id}>
+                    <IonItem button onClick={() => toggleClassDetails(cls.id)}>
+                      <IonLabel>{cls.title}</IonLabel>
+                      <IonIcon
+                        icon={
+                          expandedClass === cls.id
+                            ? chevronUpOutline
+                            : chevronDownOutline
+                        }
+                        slot="end"
+                      />
+                    </IonItem>
+                    {expandedClass === cls.id && (
+                      <IonItem lines="none">
+                        <div className="pl-4 text-gray-700">
+                          <p>
+                            <span className="font-medium">Date Started:</span>{' '}
+                            {cls.startDate}
+                          </p>
+                          <p>
+                            <span className="font-medium">Date Ended:</span>{' '}
+                            {cls.endDate}
+                          </p>
+                          <a href={cls.link} className="text-primary underline">
+                            Go to Class Page
+                          </a>
+                        </div>
+                      </IonItem>
+                    )}
+                  </div>
+                ))}
+              </IonList>
+            </IonCardContent>
+          </IonCard>
 
-        {showDeleteModal && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-              <h2 className="text-xl font-semibold mb-4">Confirm Deletion</h2>
-              <p className="text-gray-700 mb-4">
-                Are you sure you want to delete your account? This action cannot
-                be undone.
-              </p>
-              <div className="flex justify-end space-x-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowDeleteModal(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="destructive"
-                  onClick={() => {
-                    alert('Account Deleted');
-                    setShowDeleteModal(false);
-                  }}
-                >
-                  Delete
-                </Button>
+          {/* Account Options Card */}
+          <IonCard className="w-full md:w-1/2 rounded-lg border shadow-sm">
+            <IonCardHeader className="p-6">
+              <IonCardTitle className="text-xl font-semibold text-primary">
+                Account Options
+              </IonCardTitle>
+            </IonCardHeader>
+            <IonCardContent className="p-6 pt-0">
+              <div className="space-y-4">
+                <IonItem>
+                  <IonLabel>Theme</IonLabel>
+                  <IonSelect
+                    value={theme}
+                    onIonChange={(e) =>
+                      setTheme(e.detail.value as 'light' | 'dark')
+                    }
+                    interface="popover"
+                    placeholder="Select Theme"
+                  >
+                    <IonSelectOption value="light">Light</IonSelectOption>
+                    <IonSelectOption value="dark">Dark</IonSelectOption>
+                  </IonSelect>
+                </IonItem>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="text-sm font-medium">Change Your Password</p>
+                    <p className="text-xs text-gray-600">
+                      Reset your account password.
+                    </p>
+                  </div>
+                  <IonButton onClick={() => setShowPasswordAlert(true)}>
+                    Change Password
+                  </IonButton>
+                </div>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="text-sm font-medium">Delete Your Account</p>
+                    <p className="text-xs text-gray-600">
+                      This will delete all account data and can't be undone.
+                    </p>
+                  </div>
+                  <IonButton
+                    color="danger"
+                    onClick={() => setShowDeleteAlert(true)}
+                  >
+                    Delete Account
+                  </IonButton>
+                </div>
               </div>
-            </div>
-          </div>
-        )}
+            </IonCardContent>
+          </IonCard>
+        </div>
+
+        {/* Change Password Alert */}
+        <IonAlert
+          isOpen={showPasswordAlert}
+          onDidDismiss={() => setShowPasswordAlert(false)}
+          header="Change Password"
+          inputs={[
+            {
+              name: 'oldPassword',
+              type: 'password',
+              placeholder: 'Old Password',
+            },
+            {
+              name: 'newPassword',
+              type: 'password',
+              placeholder: 'New Password',
+            },
+            {
+              name: 'confirmPassword',
+              type: 'password',
+              placeholder: 'Confirm New Password',
+            },
+          ]}
+          buttons={[
+            {
+              text: 'Cancel',
+              role: 'cancel',
+              handler: () => {
+                console.log('Cancel clicked');
+              },
+            },
+            {
+              text: 'Save',
+              handler: (data) => {
+                if (data.newPassword !== data.confirmPassword) {
+                  presentToast({
+                    message: 'Passwords do not match',
+                    duration: 2000,
+                    color: 'danger',
+                  });
+                  return true; // Allow the alert to close
+                }
+                // Add your password change logic here
+                console.log('Password changed');
+                return true;
+              },
+            },
+          ]}
+        />
+
+        {/* Delete Account Alert */}
+        <IonAlert
+          isOpen={showDeleteAlert}
+          onDidDismiss={() => setShowDeleteAlert(false)}
+          header="Confirm Deletion"
+          message="Are you sure you want to delete your account? This action cannot be undone."
+          buttons={[
+            {
+              text: 'Cancel',
+              role: 'cancel',
+              handler: () => {
+                console.log('Cancel clicked');
+              },
+            },
+            {
+              text: 'Delete',
+              handler: () => {
+                // Add your delete account logic here
+                console.log('Account deleted');
+              },
+            },
+          ]}
+        />
       </div>
-    </div>
+    </IonContent>
   );
 };
 

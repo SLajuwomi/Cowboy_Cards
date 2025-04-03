@@ -10,28 +10,6 @@ import (
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 )
 
-// func (h *Handler) ListFlashcards(w http.ResponseWriter, r *http.Request) {
-// 	// curl http://localhost:8000/api/flashcards/list | jq
-
-// 	query, ctx, conn, err := getQueryConnAndContext(r, h)
-// 	if err != nil {
-// 		logAndSendError(w, err, "Database connection error", http.StatusInternalServerError)
-// 		return
-// 	}
-// 	defer conn.Release()
-
-// 	classes, err := query.ListClasses(ctx)
-// 	if err != nil {
-// 		logAndSendError(w, err, "Error getting classes from DB", http.StatusInternalServerError)
-// 		return
-// 	}
-
-// 	// w.Header().Set("Content-Type", "application/json")
-// 	if err := json.NewEncoder(w).Encode(classes); err != nil {
-// 		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
-// 	}
-// }
-
 func (h *Handler) GetFlashcardById(w http.ResponseWriter, r *http.Request) {
 	// curl http://localhost:8000/api/flashcards/ -H "id: 1"
 
@@ -60,13 +38,15 @@ func (h *Handler) GetFlashcardById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(flashcard); err != nil {
 		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
 	}
 }
 
-func (h *Handler) CreateFlashcard(w http.ResponseWriter, r *http.Request) {
-	// curl -X POST localhost:8000/api/flashcards -H "front: test front" -H "back: back test" -H "setid: 1"
+func (h *Handler) ListFlashcardsOfASet(w http.ResponseWriter, r *http.Request) {
+	// curl http://localhost:8000/api/flashcards/list -H "set_id:1"| jq
+
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
 		logAndSendError(w, err, "Database connection error", http.StatusInternalServerError)
@@ -74,19 +54,52 @@ func (h *Handler) CreateFlashcard(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Release()
 
-	headerVals, err := getHeaderVals(r, "front", "back", "setid")
+	headerVals, err := getHeaderVals(r, "set_id")
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
 		return
 	}
 
-	sid, err := getInt32Id(headerVals["setid"])
+	set_id, err := getInt32Id(headerVals["set_id"])
+	if err != nil {
+		logAndSendError(w, err, "Invalid id", http.StatusBadRequest)
+		return
+	}
+
+	flashcards, err := query.ListFlashcardsOfASet(ctx, set_id)
+	if err != nil {
+		logAndSendError(w, err, "Error getting flashcards from DB", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(flashcards); err != nil {
+		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
+	}
+}
+
+func (h *Handler) CreateFlashcard(w http.ResponseWriter, r *http.Request) {
+	// curl -X POST localhost:8000/api/flashcards -H "front: test front" -H "back: back test" -H "set_id: 1"
+	query, ctx, conn, err := getQueryConnAndContext(r, h)
+	if err != nil {
+		logAndSendError(w, err, "Database connection error", http.StatusInternalServerError)
+		return
+	}
+	defer conn.Release()
+
+	headerVals, err := getHeaderVals(r, "front", "back", "set_id")
+	if err != nil {
+		logAndSendError(w, err, "Header error", http.StatusBadRequest)
+		return
+	}
+
+	sid, err := getInt32Id(headerVals["set_id"])
 	if err != nil {
 		logAndSendError(w, err, "Invalid set id", http.StatusBadRequest)
 		return
 	}
 
-	err = query.CreateFlashcard(ctx, db.CreateFlashcardParams{
+	flashcard, err := query.CreateFlashcard(ctx, db.CreateFlashcardParams{
 		Front: headerVals["front"],
 		Back:  headerVals["back"],
 		SetID: sid,
@@ -96,8 +109,9 @@ func (h *Handler) CreateFlashcard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	if err := json.NewEncoder(w).Encode("Flashcard created"); err != nil {
+	if err := json.NewEncoder(w).Encode(flashcard); err != nil {
 		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
 	}
 }
@@ -131,7 +145,7 @@ func (h *Handler) UpdateFlashcard(w http.ResponseWriter, r *http.Request) {
 	if strings.HasSuffix(route, "id") {
 		var res int32
 		switch route {
-		case "setid":
+		case "set_id":
 			sid, err := getInt32Id(val)
 			if err != nil {
 				logAndSendError(w, err, "Invalid set id", http.StatusBadRequest)

@@ -16,11 +16,10 @@ import { addOutline, listOutline, bookOutline } from 'ionicons/icons';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Navbar, NavbarTitle, NavbarButton } from '@/components/navbar';
+import { Navbar } from '@/components/navbar';
 import { useTheme } from '@/contexts/ThemeContext';
 
 const Home = () => {
-  const { theme, setTheme } = useTheme();
   const [tab, setTab] = useState('classes');
   const ionRouter = useIonRouter(); // <-- Added useIonRouter hook
   const [token, setToken] = useState<string | null>(null); // <-- Added state for token
@@ -72,19 +71,7 @@ const Home = () => {
 
   return (
     <IonContent className="ion-padding">
-      <Navbar>
-        <NavbarTitle>
-          <div className="text-xl md:text-2xl lg:text-3xl font-bold">
-            Dashboard
-          </div>
-        </NavbarTitle>
-        <NavbarButton onClick={() => {}}>
-          <div className="flex items-center">
-            <Plus className="h-4 w-4" />
-            <div className="ml-2">Join Class</div>
-          </div>
-        </NavbarButton>
-      </Navbar>
+      <Navbar />
       <div id="main-content" className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-8">
           <h1 className="text-3xl font-bold">
@@ -95,6 +82,7 @@ const Home = () => {
               color="primary"
               className="rounded-lg"
               style={{ '--border-radius': '0.5rem' }}
+              href="/class/create"
             >
               <IonIcon slot="start" icon={addOutline} /> Add Class
             </IonButton>

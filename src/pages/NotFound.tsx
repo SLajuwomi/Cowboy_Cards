@@ -1,7 +1,7 @@
 import { IonContent } from '@ionic/react';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Navbar, NavbarTitle } from '@/components/navbar';
+import { Navbar } from '@/components/navbar';
 
 const NotFound = () => {
   const location = useLocation();
@@ -15,13 +15,7 @@ const NotFound = () => {
 
   return (
     <IonContent>
-      <Navbar>
-        <NavbarTitle>
-          <div className="text-xl md:text-2xl lg:text-3xl font-bold">
-            Page Not Found
-          </div>
-        </NavbarTitle>
-      </Navbar>
+      <Navbar />
 
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="text-center">

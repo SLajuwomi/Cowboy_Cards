@@ -8,7 +8,7 @@ import {
 } from '@ionic/react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Navbar, NavbarTitle } from '@/components/navbar';
+import { Navbar } from '@/components/navbar';
 
 const TeacherDashboard = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -58,13 +58,7 @@ const TeacherDashboard = () => {
 
   return (
     <IonContent>
-      <Navbar>
-        <NavbarTitle>
-          <div className="text-xl md:text-2xl lg:text-3xl font-bold">
-            Teacher Dashboard
-          </div>
-        </NavbarTitle>
-      </Navbar>
+      <Navbar />
 
       <div id="main-content" className="container mx-auto px-4 py-8">
         <h2 className="text-xl font-bold mb-4">Overview</h2>

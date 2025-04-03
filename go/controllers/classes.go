@@ -26,7 +26,7 @@ func (h *Handler) ListClasses(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(classes); err != nil {
 		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
 	}
@@ -60,13 +60,14 @@ func (h *Handler) GetClassById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(class); err != nil {
 		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
 	}
 }
 
 func (h *Handler) CreateClass(w http.ResponseWriter, r *http.Request) {
-	// curl -X POST localhost:8000/class -H "name: class name" -H "description: class description" -H "joincode: join code" -H "teacherid: 1"
+	// curl -X POST localhost:8000/api/classes -H "name: class name" -H "description: class description" -H "private t/f
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -75,24 +76,50 @@ func (h *Handler) CreateClass(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Release()
 
-	headerVals, err := getHeaderVals(r, "name", "description", "joincode", "teacherid")
+	// "private"
+	headerVals, err := getHeaderVals(r, "class_name", "class_description")
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
 		return
 	}
 
-	err = query.CreateClass(ctx, db.CreateClassParams{
-		Name:        headerVals["name"],
-		Description: headerVals["description"],
-		JoinCode:    pgtype.Text{String: headerVals["joincode"], Valid: true},
+	tx, err := conn.Begin(ctx)
+	if err != nil {
+		logAndSendError(w, err, "Database tx connection error", http.StatusInternalServerError)
+	}
+	defer tx.Rollback(ctx)
+
+	qtx := query.WithTx(tx)
+
+	class, err := qtx.CreateClass(ctx, db.CreateClassParams{
+		ClassName:        headerVals["class_name"],
+		ClassDescription: headerVals["class_description"],
+		JoinCode:         pgtype.Text{String: "123", Valid: false},
 	})
 	if err != nil {
 		logAndSendError(w, err, "Failed to create class", http.StatusInternalServerError)
 		return
 	}
 
+	err = qtx.JoinClass(ctx, db.JoinClassParams{
+		UserID:  int32(1),
+		ClassID: class.ID,
+		Role:    "teacher",
+	})
+	if err != nil {
+		logAndSendError(w, err, "Failed to join class", http.StatusInternalServerError)
+		return
+	}
+
+	err = tx.Commit(ctx)
+	if err != nil {
+		logAndSendError(w, err, "Failed to commit transaction", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	if err := json.NewEncoder(w).Encode("Class created"); err != nil {
+	if err := json.NewEncoder(w).Encode(class); err != nil {
 		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
 	}
 }
@@ -125,15 +152,15 @@ func (h *Handler) UpdateClass(w http.ResponseWriter, r *http.Request) {
 
 	var res string
 	switch route {
-	case "name":
+	case "class_name":
 		res, err = query.UpdateClassName(ctx, db.UpdateClassNameParams{
-			Name: val,
-			ID:   id,
+			ClassName: val,
+			ID:        id,
 		})
-	case "description":
+	case "class_description":
 		res, err = query.UpdateClassDescription(ctx, db.UpdateClassDescriptionParams{
-			Description: val,
-			ID:          id,
+			ClassDescription: val,
+			ID:               id,
 		})
 	default:
 		logAndSendError(w, errors.New("invalid column"), "Improper header", http.StatusBadRequest)
