@@ -1,6 +1,7 @@
+import { Navbar } from '@/components/navbar';
+import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonCard,
-  IonCardContent,
   IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
@@ -33,21 +34,6 @@ const PublicFlashcards = () => {
 
   return (
     <IonContent>
-      <Navbar>
-        <NavbarTitle>
-          <div className="text-xl md:text-2xl lg:text-3xl font-bold">
-            Public Flashcards
-          </div>
-        </NavbarTitle>
-        <div className="flex justify-center flex-grow w-full ">
-          <IonSearchbar
-            placeholder="Search public sets"
-            value={searchText} // Bind the searchText state
-            onIonChange={(e) => setSearchText(e.detail.value!)} // Update searchText dynamically
-            className="max-w-lg w-full flex-grow"
-          />
-        </div>
-      </Navbar>
       <Navbar />
       <div id="main-content" className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold pb-8">Public Flashcard Sets</h1>
@@ -58,7 +44,6 @@ const PublicFlashcards = () => {
                 <IonCardHeader className="flex flex-col space-y-1.5 p-6">
                   <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
                     {set.SetName}
-                  {highlightText(set.title, searchText)} 
                   </IonCardTitle>
                   <IonCardSubtitle className="text-sm text-gray-600">
                     {set.SetDescription || 'No description'}

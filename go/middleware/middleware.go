@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"strings"
 	"time"
 
 	"aidanwoods.dev/go-paseto"
@@ -27,7 +28,7 @@ var (
 		AllowedHeaders:   []string{"*"},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: true,
-		Debug:            true,
+		Debug:            false,
 		MaxAge:           300,
 	})
 )
@@ -40,7 +41,7 @@ func LogAndSendError(w http.ResponseWriter, err error, msg string, statusCode in
 func SetCacheControlHeader(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	str := ""
 
-	if path.Clean(r.URL.Path) == "/" {
+	if path.Clean(r.URL.Path) == "/" || strings.Contains(path.Clean(r.URL.Path), "/api/") {
 		str = "no-cache, no-store, must-revalidate"
 	} else {
 		str = "public, max-age=31536000, immutable"
