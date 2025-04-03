@@ -1,5 +1,5 @@
 import { AuthForm } from '@/components/auth/AuthForm';
-import { api } from '@/utils/api';
+import { makeHttpCall } from '@/utils/makeHttpCall';
 import { IonContent } from '@ionic/react';
 import { useEffect, useState } from 'react';
 
@@ -11,21 +11,6 @@ type Class = {
   CreatedAt: string;
   UpdatedAt: string;
 };
-
-// How to fetch data from the backend without using universal fetch utility
-// async function fetchClasses(url: string): Promise<Class[]> {
-//   try {
-//     const response = await fetch(url);
-//     if (!response.ok) {
-//       throw new Error(`HTTP error! Status: ${response.status}`);
-//     }
-//     const data = await response.json();
-//     return data;
-//   } catch (error) {
-//     console.error('Error fetching classes:', error);
-//     throw error;
-//   }
-// }
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
@@ -42,11 +27,9 @@ const Index = () => {
       // This is a nested try catch, but it shows the error message on the page so I left it
       try {
         // How to fetch data from the backend using universal fetch utility
-        const data = await api.get<Class[]>(`${API_BASE}/api/classes/`, {
-          headers: {
-            id: '1',
-          },
-        });
+        const data = await makeHttpCall<Class[]>(
+          `${API_BASE}/api/classes/list`
+        );
 
         console.log('data', data);
         setClasses(Array.isArray(data) ? data : [data]);

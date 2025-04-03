@@ -8,22 +8,32 @@ import {
     IonText,
     IonAlert
   } from '@ionic/react';
-  import { useState } from 'react';
+  import { useEffect, useState } from 'react';
   import { addOutline, trashOutline } from 'ionicons/icons';
   import { Navbar } from '@/components/navbar';
-  import { useHistory } from 'react-router-dom';
-  import { useParams } from 'react-router-dom';
-  import { useEffect } from 'react';
+  import { useHistory, useParams } from 'react-router-dom';
+  import { makeHttpCall } from '@/utils/makeHttpCall';
   
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+        
+  type FlashcardSet = {
+    ID: number;
+    SetName: string;
+    SetDescription: string;
+    CreatedAt: string;
+    UpdatedAt: string;
+  };
+        
   const CreateSet = () => {
     const { id } = useParams<{ id?: string }>();
-    const API_BASE = import.meta.env.VITE_API_BASE_URL;
     const history = useHistory();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [cards, setCards] = useState<{ id?: number; front: string; back: string }[]>([{ front: '', back: '' }]);
     const [errors, setErrors] = useState({ title: '', description: '' });
     const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
       if (id) {
@@ -211,6 +221,67 @@ import {
         }
       }
     };
+      
+    const saveSet2 = async () => {
+    setLoading(true);
+    setError(null);
+    const newErrors = { title: '', description: '' };
+    let hasError = false;
+
+    if (!title.trim()) {
+      newErrors.title = 'Title is required';
+      hasError = true;
+    }
+
+    if (!description.trim()) {
+      newErrors.description = 'Description is required';
+      hasError = true;
+    }
+
+    setErrors(newErrors);
+
+    if (hasError) return;
+
+    const cleanedCards = cards.filter(
+      (card) => card.front.trim() !== '' || card.back.trim() !== ''
+    );
+
+    try {
+      // 1. Create the set
+      const setResponse = await makeHttpCall<FlashcardSet>(
+        `${API_BASE}/api/flashcards/sets/`,
+        {
+          method: 'POST',
+          headers: {
+            set_name: title,
+            set_description: description,
+          },
+        }
+      );
+
+      const setId = setResponse.ID;
+
+      // 2. Create flashcards
+      for (const card of cleanedCards) {
+        await makeHttpCall(`${API_BASE}/api/flashcards`, {
+          method: 'POST',
+          headers: {
+            front: card.front,
+            back: card.back,
+            set_id: setId.toString(),
+          },
+        });
+      }
+      setLoading(false);
+      // ✅ Navigate instead of alert
+      history.push(`/flashcards/${setId}`);
+    } catch (error) {
+      console.error('Error saving flashcard set:', error);
+      setError(`Failed to save flashcard set: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
   
     const deleteSet = () => {
       setTitle('');
@@ -221,47 +292,84 @@ import {
     };
   
     return (
-      <IonContent className="ion-padding">
-        <Navbar />
-        <div id="main-content" className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold mb-6">
-            {id ? "Edit Flashcard Set" : "Create Flashcard Set"}
-          </h1>
-  
-          {/* Title & Description inputs */}
-          <IonCard className="mb-6 rounded-lg border shadow-sm">
+    <IonContent className="ion-padding">
+      <Navbar />
+      <div id="main-content" className="container mx-auto px-4 py-8">
+        {loading && <div>Loading...</div>}
+        {error && <div className="text-red-500 mt-2">{error}</div>}
+        <h1 className="text-3xl font-bold mb-6">Create New Flashcard Set</h1>
+
+        {/* Title & Description inputs */}
+        <IonCard className="mb-6 rounded-lg border shadow-sm">
+          <IonCardContent>
+            <IonTextarea
+              placeholder="Enter set title"
+              value={title}
+              onIonChange={(e) => setTitle(e.detail.value!)}
+              rows={1}
+              autoGrow
+              className="w-full text-xl font-bold mb-2"
+              style={{ resize: 'none' }}
+            />
+            {errors.title && (
+              <IonText color="danger">
+                <p className="text-sm mt-1">{errors.title}</p>
+              </IonText>
+            )}
+
+            <IonTextarea
+              placeholder="Enter set description"
+              value={description}
+              onIonChange={(e) => setDescription(e.detail.value!)}
+              rows={1}
+              autoGrow
+              className="w-full text-base mt-4"
+              style={{ resize: 'none' }}
+            />
+            {errors.description && (
+              <IonText color="danger">
+                <p className="text-sm mt-1">{errors.description}</p>
+              </IonText>
+            )}
+          </IonCardContent>
+        </IonCard>
+
+        {/* Flashcard Inputs */}
+        {cards.map((card, index) => (
+          <IonCard key={index} className="mb-6 rounded-lg border shadow-sm">
             <IonCardContent>
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-base font-semibold">
+                  Card {index + 1}
+                </span>
+                <IonButton
+                  fill="clear"
+                  color="danger"
+                  onClick={() => removeCard(index)}
+                >
+                  <IonIcon icon={trashOutline} />
+                </IonButton>
+              </div>
               <IonTextarea
-                placeholder="Enter set title"
-                value={title}
-                onIonChange={(e) => setTitle(e.detail.value!)}
+                placeholder="Front of card"
+                value={card.front}
+                onIonChange={(e) => updateCard(index, 'front', e.detail.value!)}
                 rows={1}
                 autoGrow
-                className="w-full text-xl font-bold mb-2"
+                className="mb-4"
                 style={{ resize: 'none' }}
               />
-              {errors.title && (
-                <IonText color="danger">
-                  <p className="text-sm mt-1">{errors.title}</p>
-                </IonText>
-              )}
-  
               <IonTextarea
-                placeholder="Enter set description"
-                value={description}
-                onIonChange={(e) => setDescription(e.detail.value!)}
+                placeholder="Back of card"
+                value={card.back}
+                onIonChange={(e) => updateCard(index, 'back', e.detail.value!)}
                 rows={1}
                 autoGrow
-                className="w-full text-base mt-4"
                 style={{ resize: 'none' }}
               />
-              {errors.description && (
-                <IonText color="danger">
-                  <p className="text-sm mt-1">{errors.description}</p>
-                </IonText>
-              )}
             </IonCardContent>
           </IonCard>
+
   
           {/* Flashcard Inputs */}
           {cards.map((card, index) => (
@@ -334,20 +442,21 @@ import {
                 handler: () => {
                   console.log('Cancel clicked');
                 },
+
               },
-              {
-                text: 'Delete',
-                handler: () => {
-                  // Add your delete account logic here
-                  deleteSet();
-                },
+            },
+            {
+              text: 'Delete',
+              handler: () => {
+                // Add your delete account logic here
+                deleteSet();
               },
-            ]}
-          />
-        </div>
-      </IonContent>
-    );
-  };
-  
-  export default CreateSet;
-  
+            },
+          ]}
+        />
+      </div>
+    </IonContent>
+  );
+};
+
+export default CreateSet;
