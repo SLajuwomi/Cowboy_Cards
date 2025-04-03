@@ -1,5 +1,3 @@
-import { Navbar } from '@/components/navbar';
-import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonContent,
   IonButton,
@@ -76,7 +74,6 @@ const CreateSet = () => {
             method: 'GET',
             headers: {
               id: id,
-              id: id,
             },
           });
           if (!res.ok) {
@@ -95,8 +92,6 @@ const CreateSet = () => {
       fetchSet();
     }
   }, [id, history]);
-
-  }, [id]);
 
   const addCard = () => {
     setCards([...cards, { front: '', back: '' }]);
@@ -225,8 +220,6 @@ const CreateSet = () => {
           headers: {
             set_name: title,
             set_description: description,
-            set_name: title,
-            set_description: description,
           },
         });
 
@@ -241,9 +234,6 @@ const CreateSet = () => {
           await fetch(`${API_BASE}/flashcards`, {
             method: 'POST',
             headers: {
-              front: card.front,
-              back: card.back,
-              set_id: setId.toString(),
               front: card.front,
               back: card.back,
               set_id: setId.toString(),
@@ -359,11 +349,6 @@ const CreateSet = () => {
             className="rounded-lg shadow-sm"
             onClick={addCard}
           >
-          <IonButton
-            color="primary"
-            className="rounded-lg shadow-sm"
-            onClick={addCard}
-          >
             <IonIcon slot="start" icon={addOutline} /> Add Card
           </IonButton>
         </div>
@@ -371,7 +356,6 @@ const CreateSet = () => {
 
         <div className="flex flex-col md:flex-row justify-center md:justify-end gap-4 mt-8">
           {/* Delete Set Button */}
-          <IonButton color="danger" onClick={() => setShowDeleteAlert(true)}>
           <IonButton color="danger" onClick={() => setShowDeleteAlert(true)}>
             Delete Set
           </IonButton>
