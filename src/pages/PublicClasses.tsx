@@ -18,7 +18,7 @@ const PublicClasses = () => {
     useEffect(() => {
         const fetchClasses = async () => {
             try {
-                const res = await fetch(`${API_BASE}/classes/list`);
+                const res = await fetch(`${API_BASE}/api/classes/list`);
                 if (!res.ok) throw new Error('Failed to fetch classes');
                 const data = await res.json();
                 console.log(data);
