@@ -6,52 +6,50 @@ import {
   IonCardSubtitle,
   IonCardTitle,
   IonContent,
-  IonSearchbar,
-  IonText
 } from '@ionic/react';
-import { Link } from 'react-router-dom';
-import { Navbar } from '@/components/navbar';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+
+type FlashcardSet = {
+  ID: number;
+  SetName: string;
+  SetDescription: string;
+};
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const PublicFlashcards = () => {
-  const API_BASE = import.meta.env.VITE_API_BASE_URL;
-  const [flashcardSets, setFlashcardSets] = useState<any[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [flashcardSets, setFlashcardSets] = useState<FlashcardSet[]>([]);
 
   useEffect(() => {
-    const fetchSets = async () => {
+    async function fetchSets() {
+      setLoading(true);
+      setError(null);
       try {
-        const res = await fetch(`${API_BASE}/flashcards/sets/list`);
-        if (!res.ok) throw new Error('Failed to fetch flashcard sets');
-        const data = await res.json();
-        setFlashcardSets(data);
+        const res = await makeHttpCall<FlashcardSet[]>(
+          `${API_BASE}/api/flashcards/sets/list`
+        );
+        setFlashcardSets(res);
       } catch (error) {
         console.error('Error fetching flashcard sets:', error);
+        setError(`Error fetching flashcard sets: ${error.message}`);
+      } finally {
+        setLoading(false);
       }
-    };
+    }
 
     fetchSets();
-  }, [API_BASE]);
+  }, []);
 
   return (
     <IonContent>
-      <Navbar>
-        <NavbarTitle>
-          <div className="text-xl md:text-2xl lg:text-3xl font-bold">
-            Public Flashcards
-          </div>
-        </NavbarTitle>
-        <div className="flex justify-center flex-grow w-full ">
-          <IonSearchbar
-            placeholder="Search public sets"
-            value={searchText} // Bind the searchText state
-            onIonChange={(e) => setSearchText(e.detail.value!)} // Update searchText dynamically
-            className="max-w-lg w-full flex-grow"
-          />
-        </div>
-      </Navbar>
       <Navbar />
       <div id="main-content" className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold pb-8">Public Flashcard Sets</h1>
+        {loading && <div>Loading...</div>}
+        {error && <div className="text-red-500 mt-2">{error}</div>}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {flashcardSets.map((set) => (
             <Link key={set.ID} to={`/flashcards/${set.ID}`}>
@@ -59,7 +57,6 @@ const PublicFlashcards = () => {
                 <IonCardHeader className="flex flex-col space-y-1.5 p-6">
                   <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
                     {set.SetName}
-                  {highlightText(set.title, searchText)} 
                   </IonCardTitle>
                   <IonCardSubtitle className="text-sm text-gray-600">
                     {set.SetDescription || 'No description'}
@@ -71,6 +68,7 @@ const PublicFlashcards = () => {
         </div>
       </div>
     </IonContent>
-  );};
-}
+  );
+};
+
 export default PublicFlashcards;
