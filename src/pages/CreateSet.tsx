@@ -1,29 +1,39 @@
 import {
-  IonContent,
-  IonButton,
-  IonCard,
-  IonCardContent,
-  IonIcon,
-  IonTextarea,
-  IonText,
-  IonAlert
-} from '@ionic/react';
-import { useState } from 'react';
-import { addOutline, trashOutline } from 'ionicons/icons';
-import { Navbar } from '@/components/navbar';
-import { useHistory } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
-import { useEffect } from 'react';
+    IonContent,
+    IonButton,
+    IonCard,
+    IonCardContent,
+    IonIcon,
+    IonTextarea,
+    IonText,
+    IonAlert
+  } from '@ionic/react';
+  import { useEffect, useState } from 'react';
+  import { addOutline, trashOutline } from 'ionicons/icons';
+  import { Navbar } from '@/components/navbar';
+  import { useHistory, useParams } from 'react-router-dom';
+  import { makeHttpCall } from '@/utils/makeHttpCall';
   
-const CreateSet = () => {
-  const { id } = useParams<{ id?: string }>();
   const API_BASE = import.meta.env.VITE_API_BASE_URL;
-  const history = useHistory();
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [cards, setCards] = useState<{ id?: number; front: string; back: string }[]>([{ front: '', back: '' }]);
-  const [errors, setErrors] = useState({ title: '', description: '' });
-  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+        
+  type FlashcardSet = {
+    ID: number;
+    SetName: string;
+    SetDescription: string;
+    CreatedAt: string;
+    UpdatedAt: string;
+  };
+        
+  const CreateSet = () => {
+    const { id } = useParams<{ id?: string }>();
+    const history = useHistory();
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [cards, setCards] = useState<{ id?: number; front: string; back: string }[]>([{ front: '', back: '' }]);
+    const [errors, setErrors] = useState({ title: '', description: '' });
+    const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -212,6 +222,7 @@ const CreateSet = () => {
         console.error('Error saving flashcard set:', error);
         alert('Failed to save flashcard set.');
       }
+
     }
   };
   
@@ -222,15 +233,78 @@ const CreateSet = () => {
     setErrors({ title: '', description: '' });
     console.log('Flashcard set deleted');
   };
+
+    };
+      
+    const saveSet2 = async () => {
+    setLoading(true);
+    setError(null);
+    const newErrors = { title: '', description: '' };
+    let hasError = false;
+
+    if (!title.trim()) {
+      newErrors.title = 'Title is required';
+      hasError = true;
+    }
+
+    if (!description.trim()) {
+      newErrors.description = 'Description is required';
+      hasError = true;
+    }
+
+    setErrors(newErrors);
+
+    if (hasError) return;
+
+    const cleanedCards = cards.filter(
+      (card) => card.front.trim() !== '' || card.back.trim() !== ''
+    );
+
+    try {
+      // 1. Create the set
+      const setResponse = await makeHttpCall<FlashcardSet>(
+        `${API_BASE}/api/flashcards/sets/`,
+        {
+          method: 'POST',
+          headers: {
+            set_name: title,
+            set_description: description,
+          },
+        }
+      );
+
+      const setId = setResponse.ID;
+
+      // 2. Create flashcards
+      for (const card of cleanedCards) {
+        await makeHttpCall(`${API_BASE}/api/flashcards`, {
+          method: 'POST',
+          headers: {
+            front: card.front,
+            back: card.back,
+            set_id: setId.toString(),
+          },
+        });
+      }
+      setLoading(false);
+      // ✅ Navigate instead of alert
+      history.push(`/flashcards/${setId}`);
+    } catch (error) {
+      console.error('Error saving flashcard set:', error);
+      setError(`Failed to save flashcard set: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
   
-  return (
+    return (
     <IonContent className="ion-padding">
       <Navbar />
       <div id="main-content" className="container mx-auto px-4 py-8 max-w-4xl">
-        <h1 className="text-3xl font-bold mb-6">
-          {id ? "Edit Flashcard Set" : "Create Flashcard Set"}
-        </h1>
-  
+        {loading && <div>Loading...</div>}
+        {error && <div className="text-red-500 mt-2">{error}</div>}
+        <h1 className="text-3xl font-bold mb-6">Create New Flashcard Set</h1>
+
         {/* Title & Description inputs */}
         <IonCard className="mb-6 rounded-lg border shadow-sm">
           <IonCardContent>
@@ -248,7 +322,8 @@ const CreateSet = () => {
                 <p className="text-sm mt-1">{errors.title}</p>
               </IonText>
             )}
-  
+
+
             <IonTextarea
               placeholder="Enter set description"
               value={description}
@@ -265,14 +340,22 @@ const CreateSet = () => {
             )}
           </IonCardContent>
         </IonCard>
-  
+
         {/* Flashcard Inputs */}
         {cards.map((card, index) => (
           <IonCard key={index} className="mb-6 rounded-lg border shadow-sm">
             <IonCardContent>
               <div className="flex justify-between items-center mb-2">
-                <span className="text-base font-semibold">Card {index + 1}</span>
-                <IonButton fill="clear" color="danger" onClick={() => removeCard(index)}>
+
+                <span className="text-base font-semibold">
+                  Card {index + 1}
+                </span>
+                <IonButton
+                  fill="clear"
+                  color="danger"
+                  onClick={() => removeCard(index)}
+                >
+
                   <IonIcon icon={trashOutline} />
                 </IonButton>
               </div>
@@ -295,7 +378,9 @@ const CreateSet = () => {
               />
             </IonCardContent>
           </IonCard>
+
         ))}
+
   
         {/* Add card button */}
         <div className="flex justify-center mb-6">
@@ -324,6 +409,7 @@ const CreateSet = () => {
           </IonButton>
         </div>
 
+
         {/* Delete Set Alert */}
         <IonAlert
           isOpen={showDeleteAlert}
@@ -336,6 +422,7 @@ const CreateSet = () => {
               role: 'cancel',
               handler: () => {
                 console.log('Cancel clicked');
+
               },
             },
             {
@@ -351,6 +438,6 @@ const CreateSet = () => {
     </IonContent>
   );
 };
-  
+
 export default CreateSet;
-  
+

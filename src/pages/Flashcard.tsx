@@ -4,10 +4,12 @@ import { construct } from "ionicons/icons"; // Importing the wrench (construct) 
 import { useState } from "react";
 import { FlashCard } from "@/components/flashcards/FlashCard";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
+import FlashcardCarousel from '@/components/flashcards/FlashcardCarousel';
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { IonButton } from "@ionic/react";
+
 
 const Flashcard = () => {
   const { id } = useParams<{ id: string }>();

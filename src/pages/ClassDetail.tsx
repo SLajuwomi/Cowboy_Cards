@@ -2,7 +2,7 @@ import FlashcardCarousel from '@/components/flashcards/FlashcardCarousel';
 import { Navbar } from '@/components/navbar';
 import { type CarouselApi } from '@/components/ui/carousel';
 import Leaderboard from '@/components/ui/Leaderboard';
-import { api } from '@/utils/api';
+import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonButton,
   IonContent,
@@ -20,9 +20,9 @@ import {
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-type User = {
-  role: string;
-};
+// type User = {
+//     role: string;
+// };
 
 type Class = {
   ID: number;
@@ -51,20 +51,31 @@ const ClassDetail = () => {
   const [isTeacher, setIsTeacher] = useState(false);
   const [classData, setClassData] = useState<Class>();
   const [flashcardSets, setFlashcardSets] = useState<FlashcardSet[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function fetchClass() {
-      const data = await api.get<Class>(`${API_BASE}/api/classes/`, {
-        headers: {
-          id: id,
-        },
-      });
-      console.log('data', data);
-      setClassData(data);
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await makeHttpCall<Class>(`${API_BASE}/api/classes/`, {
+          method: 'GET',
+          headers: {
+            id: id,
+          },
+        });
+        console.log('data', data);
+        setClassData(data);
+      } catch (error) {
+        setError(`Error fetching class: ${error.message}`);
+      } finally {
+        setLoading(false);
+      }
     }
 
     async function fetchFlashcardSets() {
-      const sets = await api.get<FlashcardSet[]>(
+      const sets = await makeHttpCall<FlashcardSet[]>(
         `${API_BASE}/api/flashcards/sets/list`
       );
       console.log('sets', sets);
@@ -73,7 +84,7 @@ const ClassDetail = () => {
 
     fetchClass();
     fetchFlashcardSets();
-  });
+  }, []);
 
   // TODO: get the user role from the backend, this code is currently not functional
   // need a way to get the user role from the backend, maybe through auth, RLS, or a query
@@ -117,12 +128,13 @@ const ClassDetail = () => {
       <Navbar />
 
       <div id="main-content" className="container mx-auto px-4 py-8">
+        {error && <div className="text-red-500 mt-2">{error}</div>}
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">
-            {classData?.ClassName || 'Loading...'}
+            {loading ? 'Loading...' : classData?.ClassName}
           </h1>
           <p className="text-gray-600">
-            {classData?.ClassDescription || 'Loading...'}
+            {loading ? 'Loading...' : classData?.ClassDescription}
           </p>
         </div>
 
