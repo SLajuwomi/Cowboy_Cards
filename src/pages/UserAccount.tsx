@@ -24,14 +24,19 @@ import {
 } from 'ionicons/icons';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Navbar } from '@/components/navbar';
+import { api } from '@/utils/api';
 
 const UserAccount = () => {
+  // Backend API URL
+  const API_URL = 'http://localhost:8000/api';
+  const userId = '1'; // User ID for fetching user data
+
   const { theme, setTheme } = useTheme();
   const [userInfo, setUserInfo] = useState({
-    username: 'john_doe',
-    email: 'john.doe@example.com',
-    firstname: 'John',
-    lastname: 'Doe',
+    username: '',
+    email: '',
+    firstname: '',
+    lastname: '',
   });
 
   const [stats, setStats] = useState({
@@ -77,13 +82,99 @@ const UserAccount = () => {
   };
 
   const handleEdit = () => {
+    setUpdatedInfo(userInfo);
     setIsEditing(true);
   };
 
-  const handleSave = () => {
-    setUserInfo(updatedInfo);
-    setIsEditing(false);
+  const handleSave = async () => {
+    // Validate form before submission
+    if (!validateForm()) {
+      return;
+    }
+
+    // Define the fields that can be updated
+    const fieldsToUpdate = ['firstname', 'lastname', 'username', 'email'];
+
+    // Identify which fields have changed and create API call promises
+    const updatePromises = fieldsToUpdate
+      .filter((field) => updatedInfo[field] !== userInfo[field]) // Only include modified fields
+      .map((field) =>
+        fetch(`${API_URL}/users/${field}`, {
+          method: 'PUT',
+          headers: {
+            id: userId, // User ID as a string
+            [field]: updatedInfo[field], // New value for the field
+          },
+        }).then((response) => {
+          if (!response.ok) {
+            throw new Error(`Failed to update ${field}`);
+          }
+          return field; // Return the field name for successful updates
+        })
+      );
+
+    try {
+      // Wait for all API calls to complete successfully
+      await Promise.all(updatePromises);
+      // If all updates succeed, update the local state and exit editing mode
+      setUserInfo(updatedInfo);
+      setIsEditing(false);
+    } catch (error) {
+      // Log the error and notify the user if any update fails
+      console.error(error);
+      alert('Failed to update some fields. Please try again.');
+    }
   };
+
+  // Basic validation before submitting
+  const validateForm = () => {
+    const newErrors: {
+      firstname?: string;
+      lastname?: string;
+      email?: string;
+      username?: string;
+    } = {};
+    let isValid = true;
+
+    // First name validation
+    if (!updatedInfo.firstname) {
+      newErrors.firstname = 'First name is required';
+      isValid = false;
+    }
+
+    // Last name validation
+    if (!updatedInfo.lastname) {
+      newErrors.lastname = 'Last name is required';
+      isValid = false;
+    }
+
+    // Email validation
+    if (!updatedInfo.email) {
+      newErrors.email = 'Email is required';
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(updatedInfo.email)) {
+      newErrors.email = 'Email is invalid';
+      isValid = false;
+    }
+
+    // Username validation
+    if (!updatedInfo.username) {
+      newErrors.username = 'Username is required';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  // Form validation
+  const [errors, setErrors] = useState<{
+    firstname?: string;
+    lastname?: string;
+    email?: string;
+    username?: string;
+    general?: string;
+  }>({});
 
   const handleChange = (e: any) => {
     const { name } = e.target;
@@ -95,7 +186,51 @@ const UserAccount = () => {
   };
 
   useEffect(() => {
+    try {
+      // need to fix form validation before submitting
+      (async () => {
+        const data = await api.get<{
+          username: string;
+          email: string;
+          first_name: string;
+          last_name: string;
+        }>(`${API_URL}/users/`, {
+          headers: {
+            id: userId,
+          },
+        });
+        // Convert first_name and last_name to camelCase
+        const { first_name, last_name, ...rest } = data;
+        const formattedData = {
+          ...rest,
+          firstname: first_name,
+          lastname: last_name,
+        };
+        setUserInfo(formattedData);
+      })();
+
+      console.log('data', userInfo);
+    } catch (error) {
+      console.log(`Failed to fetch classes: ${error.message}`);
+    }
     // Mock API call for fetching user stats
+    // fetch(`${API_URL}/user/${userInfo.username}/stats`)
+    //   .then((res) => res.json())
+    //   .then((data) => {
+    //     setStats(data);
+    //   });
+
+    // // Mock API call for fetching class history
+    // fetch(`${API_URL}/user/${userInfo.username}/classes`)
+    //   .then((res) => res.json())
+    //   .then((data) => {
+    //     setClassHistory(data);
+    //   });
+
+    // Cleanup function
+    return () => {
+      console.log('Cleanup:', userInfo);
+    };
   }, []);
 
   // Hook for showing toast messages, used for password change
@@ -144,6 +279,11 @@ const UserAccount = () => {
                       onIonChange={handleChange}
                     />
                   </IonItem>
+                  {errors.firstname && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.firstname}
+                    </p>
+                  )}
                   <IonItem>
                     <IonLabel position="stacked">Last Name</IonLabel>
                     <IonInput
@@ -153,6 +293,11 @@ const UserAccount = () => {
                       onIonChange={handleChange}
                     />
                   </IonItem>
+                  {errors.lastname && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.lastname}
+                    </p>
+                  )}
                   <IonItem>
                     <IonLabel position="stacked">Username</IonLabel>
                     <IonInput
@@ -162,6 +307,11 @@ const UserAccount = () => {
                       onIonChange={handleChange}
                     />
                   </IonItem>
+                  {errors.username && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.username}
+                    </p>
+                  )}
                   <IonItem>
                     <IonLabel position="stacked">Email</IonLabel>
                     <IonInput
@@ -171,6 +321,9 @@ const UserAccount = () => {
                       onIonChange={handleChange}
                     />
                   </IonItem>
+                  {errors.email && (
+                    <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+                  )}
                   <div className="mt-4 flex justify-end">
                     <IonButton onClick={handleSave}>Save Changes</IonButton>
                   </div>
