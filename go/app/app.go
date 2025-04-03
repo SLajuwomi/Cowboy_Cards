@@ -22,18 +22,39 @@ func LoadPoolConfig() (config *pgxpool.Config) {
 		dbuser = os.Getenv("DBUSER")
 		dbhost = os.Getenv("DBHOST")
 	)
+	log.Println("  ")
+	log.Println("Environment variables:")
+	log.Printf("dburl: %q, dbuser: %q, dbhost: %q", dburl, dbuser, dbhost)
 
-	if dburl == "" || dbuser == "" || dbhost == "" {
-		log.Fatalf("db env vars not loaded")
+	// Check if .env file exists and is readable
+	if _, err := os.Stat(".env"); os.IsNotExist(err) {
+		log.Println("WARNING: .env file does not exist in current directory")
+	} else if err != nil {
+		log.Printf("WARNING: Error checking .env file: %v", err)
+	} else {
+		log.Println("INFO: .env file exists in current directory")
 	}
 
-	config, err := pgxpool.ParseConfig(dburl)
+	// Print current working directory to help with troubleshooting
+	cwd, err := os.Getwd()
 	if err != nil {
-		log.Fatalf("error parsing config: %v", err)
+		log.Printf("ERROR: Unable to get current working directory: %v", err)
+	} else {
+		log.Printf("Current working directory: %s", cwd)
+	}
+
+	if dburl == "" || dbuser == "" || dbhost == "" {
+		log.Fatalf("ERROR: Database environment variables not loaded properly")
+	}
+
+	config, parseErr := pgxpool.ParseConfig(dburl)
+	if parseErr != nil {
+		log.Fatalf("ERROR: Error parsing config: %v", parseErr)
 	}
 
 	config.ConnConfig.User = dbuser
 	config.ConnConfig.Host = dbhost
+	log.Println("INFO: Database configuration loaded successfully")
 
 	return
 }
@@ -70,6 +91,9 @@ func Init() {
 	protectedRoutes := chi.NewRouter()
 	routes.Protected(protectedRoutes, h)
 	protectedRouteHandler := negroni.New()
+	// Use either JWT Auth or Session Auth
+	protectedRouteHandler.Use(negroni.HandlerFunc(middleware.SessionAuth))
+	// Uncomment the line below to use JWT Auth instead of or in addition to Session Auth
 	// protectedRouteHandler.Use(negroni.HandlerFunc(middleware.Auth))
 	protectedRouteHandler.UseHandler(protectedRoutes)
 
@@ -79,6 +103,8 @@ func Init() {
 	n := negroni.Classic() // serves "./public"
 	n.Use(middleware.Cors)
 	n.Use(negroni.HandlerFunc(middleware.SetCacheControlHeader))
+	// Add CSRF protection middleware
+	n.Use(negroni.HandlerFunc(middleware.CSRFMiddleware))
 	n.UseHandler(unprotectedRoutes)
 
 	unprotectedRoutes.Mount("/api", protectedRouteHandler)

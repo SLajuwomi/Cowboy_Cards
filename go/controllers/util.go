@@ -56,6 +56,7 @@ type AuthResponse struct {
 	Email     string `json:"email"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
+	CSRFToken string `json:"csrf_token,omitempty"`
 }
 
 func getInt32Id(val string) (id int32, err error) {
@@ -112,15 +113,15 @@ func getQueryConnAndContext(r *http.Request, h *Handler) (query *db.Queries, ctx
 
 func getTokenAndResponse(user db.User) (response AuthResponse, err error) {
 	var (
-		jwtAud = os.Getenv("JWT_AUD")
-		jwtIss = os.Getenv("JWT_ISS")
-		jwtKey = os.Getenv("JWT_SECRET")
+		paseAud = os.Getenv("PASETO_AUD")
+		paseIss = os.Getenv("PASETO_ISS")
+		paseKey = os.Getenv("PASETO_SECRET")
 	)
 
 	registeredClaims := jwt.RegisteredClaims{
-		Issuer:    jwtIss,
+		Issuer:    paseIss,
 		Subject:   strconv.Itoa(int(user.ID)), //recommended, may use later
-		Audience:  jwt.ClaimStrings{jwtAud},
+		Audience:  jwt.ClaimStrings{paseAud},
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(2 * time.Hour)),     //should be as short as possible
 		NotBefore: jwt.NewNumericDate(time.Now().Add(-30 * time.Second)), //recommended 30 seconds for clock skew
 		IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -128,7 +129,7 @@ func getTokenAndResponse(user db.User) (response AuthResponse, err error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, registeredClaims)
-	tokenString, err := token.SignedString([]byte(jwtKey))
+	tokenString, err := token.SignedString([]byte(paseKey))
 	if err != nil {
 		return AuthResponse{}, err
 	}
