@@ -3,16 +3,21 @@ package middleware
 import (
 	"context"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"path"
+	"slices"
+	"strconv"
 	"strings"
 	"time"
 
+	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/sessions"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/o1egl/paseto"
 	"github.com/rs/cors"
 )
@@ -547,4 +552,10 @@ func AutoRefreshMiddleware(w http.ResponseWriter, r *http.Request, next http.Han
 	}
 	
 	next(w, r)
+}
+
+// GetUserIDFromContext retrieves the user ID from the request context
+func GetUserIDFromContext(ctx context.Context) (int32, bool) {
+	userID, ok := ctx.Value(userKey).(int32)
+	return userID, ok
 }

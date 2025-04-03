@@ -153,7 +153,7 @@ func (h *Embed) Signup(w http.ResponseWriter, r *http.Request) {
 }
 
 // Logout handles user logout
-func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
+func (h *Embed) Logout(w http.ResponseWriter, r *http.Request) {
 	// Clear the session
 	if err := middleware.ClearSession(w, r); err != nil {
 		logAndSendError(w, err, "Error clearing session", http.StatusInternalServerError)
