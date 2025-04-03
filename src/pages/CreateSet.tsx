@@ -1,39 +1,41 @@
 import {
-    IonContent,
-    IonButton,
-    IonCard,
-    IonCardContent,
-    IonIcon,
-    IonTextarea,
-    IonText,
-    IonAlert
-  } from '@ionic/react';
-  import { useEffect, useState } from 'react';
-  import { addOutline, trashOutline } from 'ionicons/icons';
-  import { Navbar } from '@/components/navbar';
-  import { useHistory, useParams } from 'react-router-dom';
-  import { makeHttpCall } from '@/utils/makeHttpCall';
-  
-  const API_BASE = import.meta.env.VITE_API_BASE_URL;
-        
-  type FlashcardSet = {
-    ID: number;
-    SetName: string;
-    SetDescription: string;
-    CreatedAt: string;
-    UpdatedAt: string;
-  };
-        
-  const CreateSet = () => {
-    const { id } = useParams<{ id?: string }>();
-    const history = useHistory();
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [cards, setCards] = useState<{ id?: number; front: string; back: string }[]>([{ front: '', back: '' }]);
-    const [errors, setErrors] = useState({ title: '', description: '' });
-    const [showDeleteAlert, setShowDeleteAlert] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+  IonContent,
+  IonButton,
+  IonCard,
+  IonCardContent,
+  IonIcon,
+  IonTextarea,
+  IonText,
+  IonAlert,
+} from '@ionic/react';
+import { useEffect, useState } from 'react';
+import { addOutline, trashOutline } from 'ionicons/icons';
+import { Navbar } from '@/components/navbar';
+import { useHistory, useParams } from 'react-router-dom';
+import { makeHttpCall } from '@/utils/makeHttpCall';
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
+type FlashcardSet = {
+  ID: number;
+  SetName: string;
+  SetDescription: string;
+  CreatedAt: string;
+  UpdatedAt: string;
+};
+
+const CreateSet = () => {
+  const { id } = useParams<{ id?: string }>();
+  const history = useHistory();
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [cards, setCards] = useState<
+    { id?: number; front: string; back: string }[]
+  >([{ front: '', back: '' }]);
+  const [errors, setErrors] = useState({ title: '', description: '' });
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -42,7 +44,7 @@ import {
           const res = await fetch(`${API_BASE}/api/flashcards/list`, {
             method: 'GET',
             headers: {
-              'set_id': id,
+              set_id: id,
             },
           });
           if (!res.ok) throw new Error('Failed to fetch flashcards');
@@ -52,11 +54,13 @@ import {
           if (cardsData.length === 0) {
             setCards([{ front: '', back: '' }]); // ensure at least one blank card
           } else {
-            setCards(cardsData.map((card: any) => ({
-              id: card.ID,        // Map the ID from API to the state
-              front: card.Front,  // Map the Front from API to the state
-              back: card.Back,    // Map the Back from API to the state
-            })));
+            setCards(
+              cardsData.map((card: any) => ({
+                id: card.ID, // Map the ID from API to the state
+                front: card.Front, // Map the Front from API to the state
+                back: card.Back, // Map the Back from API to the state
+              }))
+            );
           }
         } catch (error) {
           console.error('Error fetching flashcards:', error);
@@ -69,7 +73,7 @@ import {
           const res = await fetch(`${API_BASE}/api/flashcards/sets/`, {
             method: 'GET',
             headers: {
-              'id': id,
+              id: id,
             },
           });
           if (!res.ok) {
@@ -88,155 +92,22 @@ import {
       fetchSet();
     }
   }, [id]);
-    
-  
+
   const addCard = () => {
     setCards([...cards, { front: '', back: '' }]);
   };
-  
+
   const removeCard = (index: number) => {
     setCards(cards.filter((_, i) => i !== index));
   };
-  
+
   const updateCard = (index: number, field: string, value: string) => {
-    setCards(cards.map((card, i) => (i === index ? { ...card, [field]: value } : card)));
-  };
-  
-  const saveSet = async () => {
-    const newErrors = { title: '', description: '' };
-    let hasError = false;
-  
-    if (!title.trim()) {
-      newErrors.title = 'Title is required';
-      hasError = true;
-    }
-  
-    if (!description.trim()) {
-      newErrors.description = 'Description is required';
-      hasError = true;
-    }
-  
-    setErrors(newErrors);
-  
-    if (hasError) return;
-  
-    const cleanedCards = cards.filter(
-      (card) => card.front.trim() !== '' || card.back.trim() !== ''
+    setCards(
+      cards.map((card, i) => (i === index ? { ...card, [field]: value } : card))
     );
-
-    if(id){
-      try {
-        await fetch(`${API_BASE}/api/flashcards/sets/set_name`, {
-          method: 'PUT',
-          headers: {
-            'id': id,
-            'set_name': title,
-          }
-        })
-      } catch(error) {
-        console.error('Error saving flashcard set:', error);
-        alert('Failed to save flashcard set.');
-      }
-      try {
-        await fetch(`${API_BASE}/api/flashcards/sets/set_description`, {
-          method: 'PUT',
-          headers: {
-            'id': id,
-            'set_description': description,
-          }
-        })
-      } catch(error) {
-        console.error('Error saving flashcard set:', error);
-        alert('Failed to save flashcard set.');
-      }
-
-      const res = await fetch(`${API_BASE}/api/flashcards/list`, {
-        method: 'GET',
-        headers: {
-          'set_id': id,
-        },
-      });
-      let existingCards = await res.json();
-      if (!Array.isArray(existingCards)) {
-        existingCards = [];
-      }
-
-      for (const card of cleanedCards) {
-        if(card.id) {
-          await fetch(`${API_BASE}/api/flashcards/front`, {
-            method: 'PUT',
-            headers: {
-              'id': card.id.toString(),
-              'front': card.front,
-            }
-          })
-          await fetch(`${API_BASE}/api/flashcards/back`, {
-            method: 'PUT',
-            headers: {
-              'id': card.id.toString(),
-              'back': card.back,
-            }
-          })
-        } else {
-          await fetch(`${API_BASE}/api/flashcards`, {
-            method: 'POST',
-            headers: {
-              'front': card.front.trim(),
-              'back': card.back.trim(),
-              'set_id': id.toString(),
-            },
-          });
-        }
-      }
-      history.push(`/flashcards/${id}`);
-    } else {
-      try {
-        // 1. Create the set
-        const setResponse = await fetch(`${API_BASE}/flashcards/sets/`, {
-          method: 'POST',
-          headers: {
-            'set_name': title,
-            'set_description': description,
-          },
-        });
-    
-        if (!setResponse.ok) throw new Error('Failed to create set');
-        const setData = await setResponse.json();
-        const setId = setData.ID;
-    
-        // 2. Create flashcards
-        for (const card of cleanedCards) {
-          await fetch(`${API_BASE}/flashcards`, {
-            method: 'POST',
-            headers: {
-              'front': card.front,
-              'back': card.back,
-              'set_id': setId.toString(),
-            },
-          });
-        }
-    
-        // ✅ Navigate instead of alert
-        history.push(`/flashcards/${setId}`);
-      } catch (error) {
-        console.error('Error saving flashcard set:', error);
-        alert('Failed to save flashcard set.');
-      }
-
-    }
-  };
-  
-  const deleteSet = () => {
-    setTitle('');
-    setDescription('');
-    setCards([{ front: '', back: '' }]);
-    setErrors({ title: '', description: '' });
-    console.log('Flashcard set deleted');
   };
 
-    };
-      
-    const saveSet2 = async () => {
+  const saveSet = async () => {
     setLoading(true);
     setError(null);
     const newErrors = { title: '', description: '' };
@@ -254,50 +125,133 @@ import {
 
     setErrors(newErrors);
 
-    if (hasError) return;
+    if (hasError) {
+      setLoading(false);
+      return;
+    }
 
     const cleanedCards = cards.filter(
       (card) => card.front.trim() !== '' || card.back.trim() !== ''
     );
 
-    try {
-      // 1. Create the set
-      const setResponse = await makeHttpCall<FlashcardSet>(
-        `${API_BASE}/api/flashcards/sets/`,
-        {
+    // If ID is provided, update the set
+    if (id) {
+      try {
+        // Update the set name
+        await makeHttpCall(`${API_BASE}/api/flashcards/sets/set_name`, {
+          method: 'PUT',
+          headers: {
+            id: id,
+            set_name: title,
+          },
+        });
+
+        // Update the set description
+        await makeHttpCall(`${API_BASE}/api/flashcards/sets/set_description`, {
+          method: 'PUT',
+          headers: {
+            id: id,
+            set_description: description,
+          },
+        });
+
+        // Get existing cards
+        const existingCards = await makeHttpCall<any[]>(
+          `${API_BASE}/api/flashcards/list`,
+          {
+            method: 'GET',
+            headers: {
+              set_id: id,
+            },
+          }
+        );
+
+        for (const card of cleanedCards) {
+          if (card.id) {
+            // Update the front of the card
+            await makeHttpCall(`${API_BASE}/api/flashcards/front`, {
+              method: 'PUT',
+              headers: {
+                id: card.id.toString(),
+                front: card.front,
+              },
+            });
+            // Update the back of the card
+            await makeHttpCall(`${API_BASE}/api/flashcards/back`, {
+              method: 'PUT',
+              headers: {
+                id: card.id.toString(),
+                back: card.back,
+              },
+            });
+          } else {
+            // Create a new card
+            await makeHttpCall(`${API_BASE}/api/flashcards`, {
+              method: 'POST',
+              headers: {
+                front: card.front.trim(),
+                back: card.back.trim(),
+                set_id: id.toString(),
+              },
+            });
+          }
+        }
+
+        history.push(`/flashcards/${id}`);
+      } catch (error) {
+        console.error('Error saving flashcard set:', error);
+        setError(`Failed to save flashcard set: ${error.message}`);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      // If ID is not provided, create a new set
+      try {
+        // 1. Create the set
+        const setResponse = await fetch(`${API_BASE}/flashcards/sets/`, {
           method: 'POST',
           headers: {
             set_name: title,
             set_description: description,
           },
-        }
-      );
-
-      const setId = setResponse.ID;
-
-      // 2. Create flashcards
-      for (const card of cleanedCards) {
-        await makeHttpCall(`${API_BASE}/api/flashcards`, {
-          method: 'POST',
-          headers: {
-            front: card.front,
-            back: card.back,
-            set_id: setId.toString(),
-          },
         });
+
+        if (!setResponse.ok) throw new Error('Failed to create set');
+        const setData = await setResponse.json();
+        const setId = setData.ID;
+
+        // 2. Create flashcards
+        for (const card of cleanedCards) {
+          await fetch(`${API_BASE}/flashcards`, {
+            method: 'POST',
+            headers: {
+              front: card.front,
+              back: card.back,
+              set_id: setId.toString(),
+            },
+          });
+        }
+        setLoading(false);
+        // ✅ Navigate instead of alert
+        history.push(`/flashcards/${setId}`);
+      } catch (error) {
+        console.error('Error saving flashcard set:', error);
+        setError(`Failed to save flashcard set: ${error.message}`);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
-      // ✅ Navigate instead of alert
-      history.push(`/flashcards/${setId}`);
-    } catch (error) {
-      console.error('Error saving flashcard set:', error);
-      setError(`Failed to save flashcard set: ${error.message}`);
-    } finally {
-      setLoading(false);
     }
   };
-  
-    return (
+
+  const deleteSet = () => {
+    setTitle('');
+    setDescription('');
+    setCards([{ front: '', back: '' }]);
+    setErrors({ title: '', description: '' });
+    console.log('Flashcard set deleted');
+  };
+
+  return (
     <IonContent className="ion-padding">
       <Navbar />
       <div id="main-content" className="container mx-auto px-4 py-8 max-w-4xl">
@@ -323,7 +277,6 @@ import {
               </IonText>
             )}
 
-
             <IonTextarea
               placeholder="Enter set description"
               value={description}
@@ -346,7 +299,6 @@ import {
           <IonCard key={index} className="mb-6 rounded-lg border shadow-sm">
             <IonCardContent>
               <div className="flex justify-between items-center mb-2">
-
                 <span className="text-base font-semibold">
                   Card {index + 1}
                 </span>
@@ -355,7 +307,6 @@ import {
                   color="danger"
                   onClick={() => removeCard(index)}
                 >
-
                   <IonIcon icon={trashOutline} />
                 </IonButton>
               </div>
@@ -378,27 +329,25 @@ import {
               />
             </IonCardContent>
           </IonCard>
-
         ))}
 
-  
         {/* Add card button */}
         <div className="flex justify-center mb-6">
-          <IonButton color="primary" className="rounded-lg shadow-sm" onClick={addCard}>
+          <IonButton
+            color="primary"
+            className="rounded-lg shadow-sm"
+            onClick={addCard}
+          >
             <IonIcon slot="start" icon={addOutline} /> Add Card
           </IonButton>
         </div>
-  
-          
+
         <div className="flex flex-col md:flex-row justify-center md:justify-end gap-4 mt-8">
           {/* Delete Set Button */}
-          <IonButton
-            color="danger"
-            onClick={() => setShowDeleteAlert(true)}
-          >
+          <IonButton color="danger" onClick={() => setShowDeleteAlert(true)}>
             Delete Set
           </IonButton>
-            
+
           {/* Create button */}
           <IonButton
             color="success"
@@ -408,7 +357,6 @@ import {
             {id ? 'Update Set' : 'Create Set'}
           </IonButton>
         </div>
-
 
         {/* Delete Set Alert */}
         <IonAlert
@@ -422,7 +370,6 @@ import {
               role: 'cancel',
               handler: () => {
                 console.log('Cancel clicked');
-
               },
             },
             {
@@ -440,4 +387,3 @@ import {
 };
 
 export default CreateSet;
-
