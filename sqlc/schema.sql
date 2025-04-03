@@ -73,6 +73,7 @@ CREATE TABLE class_set (
 CREATE TABLE set_user (
 	user_id INTEGER, 
 	set_id INTEGER, 
+	role TEXT NOT NULL CHECK (role IN ('user', 'owner')) DEFAULT 'user',
 	set_score INTEGER DEFAULT 0,
 	is_private BOOLEAN NOT NULL DEFAULT FALSE,
 	PRIMARY KEY (user_id, set_id),

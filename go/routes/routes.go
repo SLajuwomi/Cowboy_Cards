@@ -55,7 +55,7 @@ func Protected(r *chi.Mux, h *controllers.Embed) {
 			r.Use(h.VerifyTeacherMW)
 			r.Put("/class_name", h.UpdateClass)
 			r.Put("/class_description", h.UpdateClass)
-			// r.Delete("/", h.DeleteClass)
+			r.Delete("/", h.DeleteClass)
 		})
 
 		r.Get("/list", h.ListClasses)
