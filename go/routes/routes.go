@@ -78,9 +78,9 @@ func Protected(r *chi.Mux, h *controllers.Embed) {
 		r.Route("/sets", func(r chi.Router) {
 			r.Get("/list", h.ListFlashcardSets)
 			r.Get("/", h.GetFlashcardSetById)
+			r.Post("/", h.CreateFlashcardSet)
 			r.Route("/", func(r chi.Router) {
 				r.Use(h.VerifySetOwnerMW) // Ensure only the owner can update/delete the set
-				r.Post("/", h.CreateFlashcardSet)
 				r.Put("/set_name", h.UpdateFlashcardSet)
 				r.Put("/set_description", h.UpdateFlashcardSet)
 				r.Delete("/", h.DeleteFlashcardSet)
