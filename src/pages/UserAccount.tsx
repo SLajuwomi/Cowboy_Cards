@@ -162,7 +162,6 @@ const UserAccount = () => {
     updatedInfo.lastname = updatedInfo.lastname.trim();
     updatedInfo.email = updatedInfo.email.trim();
     updatedInfo.username = updatedInfo.username.trim();
-    
 
     setErrors(newErrors);
     return isValid;
