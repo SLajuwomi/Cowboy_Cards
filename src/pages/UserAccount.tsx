@@ -24,11 +24,11 @@ import {
 } from 'ionicons/icons';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Navbar } from '@/components/navbar';
-import { api } from '@/utils/api';
+import { makeHttpCall } from '@/utils/makeHttpCall';
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const UserAccount = () => {
-  // Backend API URL
-  const API_URL = 'http://localhost:8000/api';
   const userId = '1'; // User ID for fetching user data
 
   const { theme, setTheme } = useTheme();
@@ -44,7 +44,6 @@ const UserAccount = () => {
     numClasses: 2,
     cardsShown: 120,
     cardsMastered: 85,
-    timeInApp: '5 hours 30 minutes',
   });
 
   const [classHistory, setClassHistory] = useState([
@@ -95,25 +94,20 @@ const UserAccount = () => {
     // Define the fields that can be updated
     const fieldsToUpdate = ['firstname', 'lastname', 'username', 'email'];
 
-    // Identify which fields have changed and create API call promises
-    const updatePromises = fieldsToUpdate
-      .filter((field) => updatedInfo[field] !== userInfo[field]) // Only include modified fields
-      .map((field) =>
-        fetch(`${API_URL}/users/${field}`, {
-          method: 'PUT',
-          headers: {
-            id: userId, // User ID as a string
-            [field]: updatedInfo[field], // New value for the field
-          },
-        }).then((response) => {
-          if (!response.ok) {
-            throw new Error(`Failed to update ${field}`);
-          }
-          return field; // Return the field name for successful updates
-        })
-      );
-
     try {
+      // Identify which fields have changed and create API call promises
+      const updatePromises = fieldsToUpdate
+        .filter((field) => updatedInfo[field] !== userInfo[field]) // Only include modified fields
+        .map((field) =>
+          makeHttpCall<{}>(`${API_BASE}/api/users/${field}`, {
+            method: 'PUT',
+            headers: {
+              id: userId, // User ID as a string
+              [field]: updatedInfo[field], // New value for the field
+            },
+          })
+        );
+
       // Wait for all API calls to complete successfully
       await Promise.all(updatePromises);
       // If all updates succeed, update the local state and exit editing mode
@@ -163,6 +157,13 @@ const UserAccount = () => {
       isValid = false;
     }
 
+    // Trim whitespace from the input values
+    updatedInfo.firstname = updatedInfo.firstname.trim();
+    updatedInfo.lastname = updatedInfo.lastname.trim();
+    updatedInfo.email = updatedInfo.email.trim();
+    updatedInfo.username = updatedInfo.username.trim();
+    
+
     setErrors(newErrors);
     return isValid;
   };
@@ -187,18 +188,19 @@ const UserAccount = () => {
 
   useEffect(() => {
     try {
-      // need to fix form validation before submitting
       (async () => {
-        const data = await api.get<{
+        const data = await makeHttpCall<{
           username: string;
           email: string;
           first_name: string;
           last_name: string;
-        }>(`${API_URL}/users/`, {
+        }>(`${API_BASE}/api/users/`, {
+          method: 'GET',
           headers: {
             id: userId,
           },
         });
+
         // Convert first_name and last_name to camelCase
         const { first_name, last_name, ...rest } = data;
         const formattedData = {
@@ -211,25 +213,17 @@ const UserAccount = () => {
 
       console.log('data', userInfo);
     } catch (error) {
-      console.log(`Failed to fetch classes: ${error.message}`);
+      console.log(`Failed to fetch User Data: ${error.message}`);
     }
-    // Mock API call for fetching user stats
-    // fetch(`${API_URL}/user/${userInfo.username}/stats`)
-    //   .then((res) => res.json())
-    //   .then((data) => {
-    //     setStats(data);
-    //   });
-
-    // // Mock API call for fetching class history
-    // fetch(`${API_URL}/user/${userInfo.username}/classes`)
-    //   .then((res) => res.json())
-    //   .then((data) => {
-    //     setClassHistory(data);
-    //   });
 
     // Cleanup function
     return () => {
-      console.log('Cleanup:', userInfo);
+      setUserInfo({
+        username: '',
+        email: '',
+        firstname: '',
+        lastname: '',
+      });
     };
   }, []);
 
@@ -383,10 +377,6 @@ const UserAccount = () => {
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Cards Mastered:</span>
                   <span>{stats.cardsMastered}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="font-medium">Time in App:</span>
-                  <span>{stats.timeInApp}</span>
                 </div>
               </div>
             </IonCardContent>
