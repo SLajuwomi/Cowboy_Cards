@@ -136,6 +136,12 @@ CREATE TABLE set_user (
 	FOREIGN KEY (set_id) REFERENCES flashcard_sets(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+INSERT INTO set_user VALUES (1,1,'owner');
+INSERT INTO set_user VALUES (1,2,DEFAULT);
+INSERT INTO set_user VALUES (2,1,DEFAULT);
+INSERT INTO set_user VALUES (2,2,'owner');
+INSERT INTO set_user VALUES (3,1,DEFAULT);
+
 CREATE FUNCTION update_set_score() RETURNS TRIGGER AS $$
 BEGIN
 	INSERT INTO set_user (user_id, set_id, set_score, is_private) VALUES (NEW.user_id, (SELECT set_id FROM flashcards WHERE id = NEW.card_id), NEW.score, DEFAULT)

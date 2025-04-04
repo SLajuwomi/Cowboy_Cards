@@ -52,7 +52,7 @@ func Protected(r *chi.Mux, h *controllers.Embed) {
 	r.Route("/classes", func(r chi.Router) {
 
 		r.Route("/", func(r chi.Router) {
-			r.Use(h.VerifyTeacherMW)
+			r.Use(h.VerifyTeacherMW) // Ensure only teachers can update/delete
 			r.Put("/class_name", h.UpdateClass)
 			r.Put("/class_description", h.UpdateClass)
 			r.Delete("/", h.DeleteClass)
@@ -67,18 +67,24 @@ func Protected(r *chi.Mux, h *controllers.Embed) {
 		r.Get("/", h.GetFlashcardById)
 		r.Get("/list", h.ListFlashcardsOfASet)
 		r.Post("/", h.CreateFlashcard)
-		r.Put("/front", h.UpdateFlashcard)
-		r.Put("/back", h.UpdateFlashcard)
-		r.Put("/set_id", h.UpdateFlashcard)
-		// r.Delete("/", h.DeleteFlashcard)
+		r.Route("/", func(r chi.Router) {
+			r.Use(h.VerifyFlashCardOwnerMW) // Ensure only the owner can update/delete
+			r.Put("/front", h.UpdateFlashcard)
+			r.Put("/back", h.UpdateFlashcard)
+			r.Put("/set_id", h.UpdateFlashcard)
+			r.Delete("/", h.DeleteFlashcard)
+		})
 
 		r.Route("/sets", func(r chi.Router) {
 			r.Get("/list", h.ListFlashcardSets)
 			r.Get("/", h.GetFlashcardSetById)
-			r.Post("/", h.CreateFlashcardSet)
-			r.Put("/set_name", h.UpdateFlashcardSet)
-			r.Put("/set_description", h.UpdateFlashcardSet)
-			// r.Delete("/", h.DeleteFlashcardSet)
+			r.Route("/", func(r chi.Router) {
+				r.Use(h.VerifySetOwnerMW) // Ensure only the owner can update/delete the set
+				r.Post("/", h.CreateFlashcardSet)
+				r.Put("/set_name", h.UpdateFlashcardSet)
+				r.Put("/set_description", h.UpdateFlashcardSet)
+				r.Delete("/", h.DeleteFlashcardSet)
+			})
 		})
 	})
 

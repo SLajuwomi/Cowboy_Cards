@@ -245,3 +245,51 @@ func (h *Handler) VerifyFlashCardOwnerMW(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
+
+func (h *Handler) VerifySetOwnerMW(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		query, ctx, conn, err := GetQueryConnAndContext(r, h)
+		if err != nil {
+			LogAndSendError(w, err, "Database connection error", http.StatusInternalServerError)
+			return
+		}
+		defer conn.Release()
+		// Get user_id from context (set by AuthMiddleware)
+		// id, ok := FromContext(ctx)
+		// if !ok {
+		// 	LogAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
+		// 	return
+		// }
+
+		// THIS IS FOR TESTING
+		headerVals, err := GetHeaderVals(r, "id", "user_id")
+		if err != nil {
+			LogAndSendError(w, err, "Header error", http.StatusBadRequest)
+			return
+		}
+
+		id, err := GetInt32Id(headerVals["user_id"])
+		if err != nil {
+			LogAndSendError(w, err, "Invalid id", http.StatusBadRequest)
+			return
+		}
+
+		sid, err := GetInt32Id(headerVals["id"])
+		if err != nil {
+			LogAndSendError(w, err, "Invalid class id", http.StatusBadRequest)
+			return
+		}
+
+		owner, err := query.VerifySetOwner(ctx, db.VerifySetOwnerParams{
+			UserID: id,
+			SetID:  sid,
+		})
+		log.Println("owner", owner)
+
+		if err != nil {
+			LogAndSendError(w, err, "Invalid permissions", http.StatusInternalServerError)
+			return
+		}
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
