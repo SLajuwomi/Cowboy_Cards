@@ -2,12 +2,15 @@ package controllers
 
 import (
 	"context"
-	"log"
 	"net/http"
+	"os"
+	"strconv"
 	"time"
 
+	"aidanwoods.dev/go-paseto"
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/middleware"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -103,6 +106,7 @@ func getTokenAndResponse(user db.User) (response AuthResponse, err error) {
 	if err != nil {
 		return AuthResponse{}, err
 	}
+	signed := token.V4Encrypt(secretKey, []byte(pasetoImp))
 
 	response = AuthResponse{
 		Token:     signed,
@@ -115,8 +119,6 @@ func getTokenAndResponse(user db.User) (response AuthResponse, err error) {
 
 	return
 }
-
-
 
 // keygen:
 // key := make([]byte, num)
