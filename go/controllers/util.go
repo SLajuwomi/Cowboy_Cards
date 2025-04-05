@@ -49,7 +49,7 @@ type AuthResponse struct {
 	Email     string `json:"email"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
-	CSRFToken string `json:"csrf_token,omitempty"`
+	// CSRFToken string `json:"csrf_token,omitempty"`
 }
 
 func logAndSendError(w http.ResponseWriter, err error, msg string, statusCode int) {
@@ -78,8 +78,28 @@ func getQueryConnAndContext(r *http.Request, h *Embed) (query *db.Queries, ctx c
 }
 
 func getTokenAndResponse(user db.User) (response AuthResponse, err error) {
+
 	// Generate PASETO token
-	token, err := middleware.GeneratePasetoToken(user.ID)
+	//token, err := middleware.GeneratePasetoToken(user.ID)
+
+	var (
+		pasetoAud = os.Getenv("PASETO_AUD")
+		pasetoIss = os.Getenv("PASETO_ISS")
+		pasetoKey = os.Getenv("PASETO_SECRET")
+		pasetoImp = os.Getenv("PASETO_IMPLICIT")
+	)
+
+	token := paseto.NewToken()
+
+	token.SetAudience(pasetoAud)
+	token.SetJti(uuid.New().String())
+	token.SetIssuer(pasetoIss)
+	token.SetSubject(strconv.Itoa(int(user.ID)))
+	token.SetExpiration(time.Now().Add(time.Minute))
+	token.SetNotBefore(time.Now().Add(-3 * time.Second))
+	token.SetIssuedAt(time.Now())
+
+	secretKey, err := paseto.V4SymmetricKeyFromHex(pasetoKey)
 	if err != nil {
 		return AuthResponse{}, err
 	}

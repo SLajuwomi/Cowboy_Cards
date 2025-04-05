@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
-	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/middleware"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -38,10 +37,10 @@ func (h *Embed) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create session cookie
-	if err := middleware.CreateSession(w, r, user.ID); err != nil {
-		logAndSendError(w, err, "Error creating session", http.StatusInternalServerError)
-		return
-	}
+	// if err := middleware.CreateSession(w, r, user.ID); err != nil {
+	// 	logAndSendError(w, err, "Error creating session", http.StatusInternalServerError)
+	// 	return
+	// }
 
 	resp, err := getTokenAndResponse(user)
 	if err != nil {
@@ -50,10 +49,10 @@ func (h *Embed) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Add CSRF token to response if this is a browser request
-	if strings.Contains(r.Header.Get("Accept"), "text/html") || 
-	   strings.Contains(r.Header.Get("Accept"), "application/json") {
-		resp.CSRFToken = middleware.GetCSRFToken(r)
-	}
+	// if strings.Contains(r.Header.Get("Accept"), "text/html") ||
+	//    strings.Contains(r.Header.Get("Accept"), "application/json") {
+	// 	resp.CSRFToken = middleware.GetCSRFToken(r)
+	// }
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
@@ -128,10 +127,10 @@ func (h *Embed) Signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create session cookie
-	if err := middleware.CreateSession(w, r, user.ID); err != nil {
-		logAndSendError(w, err, "Error creating session", http.StatusInternalServerError)
-		return
-	}
+	// if err := middleware.CreateSession(w, r, user.ID); err != nil {
+	// 	logAndSendError(w, err, "Error creating session", http.StatusInternalServerError)
+	// 	return
+	// }
 
 	resp, err := getTokenAndResponse(user)
 	if err != nil {
@@ -140,10 +139,10 @@ func (h *Embed) Signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Add CSRF token to response if this is a browser request
-	if strings.Contains(r.Header.Get("Accept"), "text/html") || 
-	   strings.Contains(r.Header.Get("Accept"), "application/json") {
-		resp.CSRFToken = middleware.GetCSRFToken(r)
-	}
+	// if strings.Contains(r.Header.Get("Accept"), "text/html") ||
+	//    strings.Contains(r.Header.Get("Accept"), "application/json") {
+	// 	resp.CSRFToken = middleware.GetCSRFToken(r)
+	// }
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -153,13 +152,13 @@ func (h *Embed) Signup(w http.ResponseWriter, r *http.Request) {
 }
 
 // Logout handles user logout
-func (h *Embed) Logout(w http.ResponseWriter, r *http.Request) {
-	// Clear the session
-	if err := middleware.ClearSession(w, r); err != nil {
-		logAndSendError(w, err, "Error clearing session", http.StatusInternalServerError)
-		return
-	}
+// func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
+// 	// Clear the session
+// 	if err := middleware.ClearSession(w, r); err != nil {
+// 		logAndSendError(w, err, "Error clearing session", http.StatusInternalServerError)
+// 		return
+// 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Successfully logged out"})
-}
+// 	w.WriteHeader(http.StatusOK)
+// 	json.NewEncoder(w).Encode(map[string]string{"message": "Successfully logged out"})
+// }
