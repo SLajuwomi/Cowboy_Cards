@@ -105,7 +105,7 @@ func getTokenAndResponse(user db.User) (response AuthResponse, err error) {
 	}
 
 	response = AuthResponse{
-		Token:     token,
+		Token:     signed,
 		UserID:    user.ID,
 		Username:  user.Username,
 		Email:     user.Email,
@@ -116,39 +116,7 @@ func getTokenAndResponse(user db.User) (response AuthResponse, err error) {
 	return
 }
 
-// VerifyTeacherMW is a middleware that verifies if the user is a teacher
-func (h *Embed) VerifyTeacherMW(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Get user ID from context
-		userID, ok := middleware.GetUserIDFromContext(r.Context())
-		if !ok {
-			logAndSendError(w, nil, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
 
-		// Get database connection
-		query, ctx, conn, err := getQueryConnAndContext(r, h)
-		if err != nil {
-			logAndSendError(w, err, "Database connection error", http.StatusInternalServerError)
-			return
-		}
-		defer conn.Release()
-
-		// Check if user is a teacher (placeholder implementation)
-		// In a real implementation, you would query the database to check if the user is a teacher
-		// For demonstration purposes, let's log some information
-		log.Printf("Teacher verification for user ID: %d", userID)
-		
-		// Use the query and ctx variables to avoid unused variable errors
-		// This is just a placeholder - in a real implementation, you would query the database
-		if query != nil && ctx != nil {
-			log.Printf("Database connection and context are available for user verification")
-		}
-		
-		// Call the next handler
-		next.ServeHTTP(w, r)
-	})
-}
 
 // keygen:
 // key := make([]byte, num)
