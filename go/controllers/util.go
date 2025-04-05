@@ -81,6 +81,10 @@ func getQueryConnAndContext(r *http.Request, h *Embed) (query *db.Queries, ctx c
 }
 
 func getTokenAndResponse(user db.User) (response AuthResponse, err error) {
+
+	// Generate PASETO token
+	//token, err := middleware.GeneratePasetoToken(user.ID)
+
 	var (
 		pasetoAud = os.Getenv("PASETO_AUD")
 		pasetoIss = os.Getenv("PASETO_ISS")
