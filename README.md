@@ -1,7 +1,7 @@
 # Cowboy Cards
 
 This is a flashcard app for Hardin-Simmons University made by the Computer Science Senior Project class of 2025.
-
+a
 ### Built With
 
  -	![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
