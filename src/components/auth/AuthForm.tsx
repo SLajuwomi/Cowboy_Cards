@@ -16,8 +16,7 @@ import { AlertCircle, LogIn } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-// Backend API URL
-const API_URL = 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);

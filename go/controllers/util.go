@@ -52,7 +52,7 @@ type AuthResponse struct {
 	Email     string `json:"email"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
-	CSRFToken string `json:"csrf_token,omitempty"`
+	// CSRFToken string `json:"csrf_token,omitempty"`
 }
 
 func logAndSendError(w http.ResponseWriter, err error, msg string, statusCode int) {
@@ -82,23 +82,23 @@ func getQueryConnAndContext(r *http.Request, h *Embed) (query *db.Queries, ctx c
 
 func getTokenAndResponse(user db.User) (response AuthResponse, err error) {
 	var (
-		paseAud = os.Getenv("PASETO_AUD")
-		paseIss = os.Getenv("PASETO_ISS")
-		paseKey = os.Getenv("PASETO_SECRET")
+		pasetoAud = os.Getenv("PASETO_AUD")
+		pasetoIss = os.Getenv("PASETO_ISS")
+		pasetoKey = os.Getenv("PASETO_SECRET")
+		pasetoImp = os.Getenv("PASETO_IMPLICIT")
 	)
 
-	registeredClaims := jwt.RegisteredClaims{
-		Issuer:    paseIss,
-		Subject:   strconv.Itoa(int(user.ID)), //recommended, may use later
-		Audience:  jwt.ClaimStrings{paseAud},
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(2 * time.Hour)),     //should be as short as possible
-		NotBefore: jwt.NewNumericDate(time.Now().Add(-30 * time.Second)), //recommended 30 seconds for clock skew
-		IssuedAt:  jwt.NewNumericDate(time.Now()),
-		ID:        uuid.New().String(),
-	}
+	token := paseto.NewToken()
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, registeredClaims)
-	tokenString, err := token.SignedString([]byte(paseKey))
+	token.SetAudience(pasetoAud)
+	token.SetJti(uuid.New().String())
+	token.SetIssuer(pasetoIss)
+	token.SetSubject(strconv.Itoa(int(user.ID)))
+	token.SetExpiration(time.Now().Add(time.Minute))
+	token.SetNotBefore(time.Now().Add(-3 * time.Second))
+	token.SetIssuedAt(time.Now())
+
+	secretKey, err := paseto.V4SymmetricKeyFromHex(pasetoKey)
 	if err != nil {
 		return AuthResponse{}, err
 	}

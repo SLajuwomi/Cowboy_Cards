@@ -84,7 +84,7 @@ const ClassDetail = () => {
 
     fetchClass();
     fetchFlashcardSets();
-  }, []);
+  });
 
   // TODO: get the user role from the backend, this code is currently not functional
   // need a way to get the user role from the backend, maybe through auth, RLS, or a query

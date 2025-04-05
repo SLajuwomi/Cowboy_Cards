@@ -47,10 +47,12 @@ func Protected(r *chi.Mux, h *controllers.Embed) {
 
 	// -------------------simple-------------------------
 
+	// r.Post("/logout", h.Logout)
+
 	r.Route("/classes", func(r chi.Router) {
 
 		r.Route("/", func(r chi.Router) {
-			r.Use(h.VerifyTeacherMW)
+			// r.Use(h.VerifyTeacherMW)
 			r.Put("/class_name", h.UpdateClass)
 			r.Put("/class_description", h.UpdateClass)
 			// r.Delete("/", h.DeleteClass)
@@ -97,5 +99,4 @@ func Protected(r *chi.Mux, h *controllers.Embed) {
 func Unprotected(r *chi.Mux, h *controllers.Embed) {
 	r.Post("/login", h.Login)
 	r.Post("/signup", h.Signup)
-	r.Post("/logout", h.Logout)
 }
