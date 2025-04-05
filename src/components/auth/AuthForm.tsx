@@ -95,7 +95,7 @@ export const AuthForm = () => {
 
       if (isLogin) {
         // Login request
-        response = await fetch(`${API_URL}/login`, {
+        response = await fetch(`${API_BASE}/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -108,7 +108,7 @@ export const AuthForm = () => {
         });
       } else {
         // Signup request
-        response = await fetch(`${API_URL}/signup`, {
+        response = await fetch(`${API_BASE}/signup`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
