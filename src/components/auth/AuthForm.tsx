@@ -53,10 +53,6 @@ export const AuthForm = () => {
   const ionRouter = useIonRouter();
   const { toast } = useToast();
 
-  const generateToken = () => {
-    return Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2);
-  };
-
   // Basic validation before submitting
   const validateForm = () => {
     const newErrors: {
@@ -79,8 +75,8 @@ export const AuthForm = () => {
     if (!password) {
       newErrors.password = 'Password is required';
       isValid = false;
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+    } else if (password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
       isValid = false;
     }
 
@@ -293,7 +289,7 @@ export const AuthForm = () => {
             )}
             {!isLogin && (
               <p className="text-xs text-gray-500 mt-1">
-                Password must be at least 6 characters long
+                Password must be at least 8 characters long
               </p>
             )}
           </div>
