@@ -57,6 +57,7 @@ type FlashcardSet struct {
 type SetUser struct {
 	UserID    int32
 	SetID     int32
+	Role      string
 	SetScore  pgtype.Int4
 	IsPrivate bool
 }

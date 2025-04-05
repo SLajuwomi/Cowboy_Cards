@@ -118,3 +118,25 @@ func (q *Queries) UpdateFlashcardSetName(ctx context.Context, arg UpdateFlashcar
 	err := row.Scan(&set_name)
 	return set_name, err
 }
+
+const verifySetOwner = `-- name: VerifySetOwner :one
+SELECT user_id, set_id, role, set_score, is_private from set_user WHERE user_id = $1 AND set_id = $2 AND role = 'owner'
+`
+
+type VerifySetOwnerParams struct {
+	UserID int32
+	SetID  int32
+}
+
+func (q *Queries) VerifySetOwner(ctx context.Context, arg VerifySetOwnerParams) (SetUser, error) {
+	row := q.db.QueryRow(ctx, verifySetOwner, arg.UserID, arg.SetID)
+	var i SetUser
+	err := row.Scan(
+		&i.UserID,
+		&i.SetID,
+		&i.Role,
+		&i.SetScore,
+		&i.IsPrivate,
+	)
+	return i, err
+}

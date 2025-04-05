@@ -97,7 +97,7 @@ func (h *Embed) CreateFlashcardSet(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Embed) UpdateFlashcardSet(w http.ResponseWriter, r *http.Request) {
-	// curl -X PUT localhost:8000/api/flashcards/sets/name -H "id: 1" -H "name: Dad Jokes"
+	// curl -X PUT localhost:8000/api/flashcards/sets/set_name -H "id: 1" -H "set_name: Knights Errant"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
