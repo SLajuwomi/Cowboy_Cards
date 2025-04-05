@@ -26,7 +26,6 @@ const PublicClasses = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-
   useEffect(() => {
     const fetchClasses = async () => {
       setLoading(true);
@@ -44,7 +43,6 @@ const PublicClasses = () => {
 
     fetchClasses();
   }, []);
-
 
   return (
     <IonContent>

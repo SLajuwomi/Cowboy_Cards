@@ -1,18 +1,18 @@
+import { Navbar } from '@/components/navbar';
+import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
-  IonContent,
+  IonAlert,
   IonButton,
   IonCard,
   IonCardContent,
+  IonContent,
   IonIcon,
-  IonTextarea,
   IonText,
-  IonAlert,
+  IonTextarea,
 } from '@ionic/react';
-import { useEffect, useState } from 'react';
 import { addOutline, trashOutline } from 'ionicons/icons';
-import { Navbar } from '@/components/navbar';
+import { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { makeHttpCall } from '@/utils/makeHttpCall';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 

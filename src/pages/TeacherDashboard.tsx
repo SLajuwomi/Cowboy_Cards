@@ -1,14 +1,14 @@
+import { Navbar } from '@/components/navbar';
 import {
-  IonContent,
   IonCard,
+  IonCardContent,
   IonCardHeader,
   IonCardTitle,
-  IonCardContent,
+  IonContent,
   IonText,
 } from '@ionic/react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Navbar } from '@/components/navbar';
 
 const TeacherDashboard = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);

@@ -1,19 +1,20 @@
-import { IonContent, IonIcon } from "@ionic/react";
-import { Navbar } from "@/components/navbar";
-import { construct } from "ionicons/icons"; // Importing the wrench (construct) icon
-import { useState } from "react";
-import { FlashCard } from "@/components/flashcards/FlashCard";
-import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
-import FlashcardCarousel from '@/components/flashcards/FlashcardCarousel';
-import { useParams } from "react-router-dom";
-import { useEffect } from "react";
-import { useHistory } from "react-router-dom";
-import { IonButton } from "@ionic/react";
+import { FlashCard } from '@/components/flashcards/FlashCard';
+import { Navbar } from '@/components/navbar';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
+import { IonButton, IonContent } from '@ionic/react';
+import { useEffect, useState } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const Flashcard = () => {
   const { id } = useParams<{ id: string }>();
-  const API_BASE = import.meta.env.VITE_API_BASE_URL;
   const history = useHistory();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -36,18 +37,19 @@ const Flashcard = () => {
 
     const fetchCards = async () => {
       try {
-      const res = await fetch(`${API_BASE}/api/flashcards/list`, {
+        const res = await fetch(`${API_BASE}/api/flashcards/list`, {
           method: 'GET',
           headers: { set_id: id },
-      });
-      const data = await res.json();
-      setCards(Array.isArray(data)
-          ? data.map((card: any) => ({
-              front: card.Front,
-              back: card.Back,
-          }))
-          : []
-      );
+        });
+        const data = await res.json();
+        setCards(
+          Array.isArray(data)
+            ? data.map((card: any) => ({
+                front: card.Front,
+                back: card.Back,
+              }))
+            : []
+        );
       } catch (error) {
         console.error('Failed to fetch cards', error);
       }
@@ -58,7 +60,6 @@ const Flashcard = () => {
       fetchCards();
     }
   }, [id]);
-
 
   return (
     <IonContent className="ion-padding">

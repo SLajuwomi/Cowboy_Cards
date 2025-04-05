@@ -6,7 +6,7 @@ import {
   IonCardSubtitle,
   IonCardTitle,
   IonContent,
-  IonSearchbar
+  IonSearchbar,
 } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -51,17 +51,18 @@ const PublicFlashcards = () => {
     <IonContent>
       <Navbar />
       <div id="main-content" className="container mx-auto px-4 py-8 w-1/2">
-      <div className="flex items-center justify-between mb-4">
-      <h1 className="text-3xl font-bold pb-8">Public Flashcard Sets</h1>
-        {loading && <div>Loading...</div>}
-        {error && <div className="text-red-500 mt-2">{error}</div>}
-        <IonSearchbar
-          value={searchText}
-          onIonChange={(e) => setSearchText(e.detail.value!)} // Update search text dynamically
-          placeholder="Search flashcard sets"
-          className="mb-4 w-1/2"
-          debounce={500} // Debounce for 500ms
-        /></div>
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-3xl font-bold pb-8">Public Flashcard Sets</h1>
+          {loading && <div>Loading...</div>}
+          {error && <div className="text-red-500 mt-2">{error}</div>}
+          <IonSearchbar
+            value={searchText}
+            onIonChange={(e) => setSearchText(e.detail.value!)} // Update search text dynamically
+            placeholder="Search flashcard sets"
+            className="mb-4 w-1/2"
+            debounce={500} // Debounce for 500ms
+          />
+        </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filteredFlashcardSets.map((set) => (
             <Link key={set.ID} to={`/flashcards/${set.ID}`}>

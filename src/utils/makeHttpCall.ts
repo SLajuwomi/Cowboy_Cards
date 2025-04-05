@@ -2,9 +2,9 @@ type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
 // Interface defining the structure of options that can be passed to fetch requests
 interface FetchOptions {
-    method: HttpMethod;
-    headers: any;
-    credentials?: 'include' | 'omit' | 'same-origin';
+  method: HttpMethod;
+  headers: any;
+  credentials?: 'include' | 'omit' | 'same-origin';
 }
 
 /**
@@ -18,26 +18,26 @@ interface FetchOptions {
  * @returns Promise with the parsed response data
  */
 export async function makeHttpCall<T>(
-    url: string,
-    options: FetchOptions = {
-        method: 'GET',
-        headers: {},
-    }
+  url: string,
+  options: FetchOptions = {
+    method: 'GET',
+    headers: {},
+  }
 ): Promise<T> {
-    try {
-        // Make the actual HTTP request
-        const response = await fetch(url, { ...options });
+  try {
+    // Make the actual HTTP request
+    const response = await fetch(url, { ...options });
 
-        // Check if the response was successful (status 200-299)
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        // all responses should be json now
-        const data = await response.json();
-        return data as T;
-    } catch (error) {
-        console.error('API request failed:', error);
-        throw error;
+    // Check if the response was successful (status 200-299)
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
     }
+
+    // all responses should be json now
+    const data = await response.json();
+    return data as T;
+  } catch (error) {
+    console.error('API request failed:', error);
+    throw error;
+  }
 }

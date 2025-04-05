@@ -1,7 +1,7 @@
+import { Navbar } from '@/components/navbar';
 import { IonContent } from '@ionic/react';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Navbar } from '@/components/navbar';
 
 const NotFound = () => {
   const location = useLocation();

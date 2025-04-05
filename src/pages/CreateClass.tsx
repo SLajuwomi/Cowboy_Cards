@@ -2,17 +2,10 @@ import { Navbar } from '@/components/navbar';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonButton,
-  IonContent,
-  IonInput,
-  IonItem,
-  IonList,
-  IonText,
-  IonRadioGroup,
-  IonRadio,
-  IonToast,
-  IonCheckbox,
   IonCard,
   IonCardContent,
+  IonContent,
+  IonText,
   IonTextarea,
 } from '@ionic/react';
 import { useEffect, useState } from 'react';

@@ -1,25 +1,23 @@
+import { Navbar } from '@/components/navbar';
 import {
-  IonContent,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardSubtitle,
-  IonCardContent,
-  IonIcon,
   IonButton,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardSubtitle,
+  IonCardTitle,
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonLabel,
   IonSegment,
   IonSegmentButton,
-  IonLabel,
   IonText,
-  IonHeader,
   IonTitle,
 } from '@ionic/react';
-import { addOutline, listOutline, bookOutline } from 'ionicons/icons';
-import { Plus } from 'lucide-react';
+import { addOutline, bookOutline, listOutline } from 'ionicons/icons';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Navbar } from '@/components/navbar';
-import { useTheme } from '@/contexts/ThemeContext';
 
 const Home = () => {
   const [tab, setTab] = useState('classes');

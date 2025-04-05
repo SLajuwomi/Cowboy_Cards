@@ -1,37 +1,37 @@
-import { useState, useEffect } from 'react';
+import { Navbar } from '@/components/navbar';
+import { useTheme } from '@/contexts/ThemeContext';
+import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
-  IonContent,
+  IonAlert,
   IonButton,
-  IonIcon,
   IonCard,
+  IonCardContent,
   IonCardHeader,
   IonCardTitle,
-  IonCardContent,
+  IonContent,
+  IonIcon,
+  IonInput,
   IonItem,
   IonLabel,
-  IonInput,
+  IonList,
   IonSelect,
   IonSelectOption,
-  IonList,
-  IonAlert,
   useIonToast,
 } from '@ionic/react';
 import {
   arrowBackOutline,
-  createOutline,
   chevronDownOutline,
   chevronUpOutline,
+  createOutline,
 } from 'ionicons/icons';
-import { useTheme } from '@/contexts/ThemeContext';
-import { Navbar } from '@/components/navbar';
-import { makeHttpCall } from '@/utils/makeHttpCall';
+import { useEffect, useState } from 'react';
 
 type User = {
   username: string;
   email: string;
   firstname: string;
   lastname: string;
-}
+};
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
@@ -101,7 +101,7 @@ const UserAccount = () => {
       const updatePromises = fieldsToUpdate
         .filter((field) => updatedInfo[field] !== userInfo[field]) // Only include modified fields
         .map((field) =>
-          makeHttpCall<{}>(`${API_BASE}/api/users/${field}`, {
+          makeHttpCall<User>(`${API_BASE}/api/users/${field}`, {
             method: 'PUT',
             headers: {
               id: userId, // User ID as a string
@@ -189,26 +189,25 @@ const UserAccount = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-            try {
-              const data = await makeHttpCall<User>(`${API_BASE}/api/users/`, {
+      try {
+        const data = await makeHttpCall<User>(`${API_BASE}/api/users/`, {
           method: 'GET',
           headers: {
             id: userId,
           },
         });
         setUserInfo(data);
-                setUpdatedInfo(data);
-                console.log('data', data);
-              } catch (error) {
-                console.log(`Failed to fetch User Data: ${error.message}`);
-              }
-            };
+        setUpdatedInfo(data);
+        console.log('data', data);
+      } catch (error) {
+        console.log(`Failed to fetch User Data: ${error.message}`);
+      }
+    };
 
-            fetchUserData();
+    fetchUserData();
 
-// cleanup func not necessary here
-// https://blog.logrocket.com/understanding-react-useeffect-cleanup-function/
-  
+    // cleanup func not necessary here
+    // https://blog.logrocket.com/understanding-react-useeffect-cleanup-function/
   }, []);
 
   // Hook for showing toast messages, used for password change

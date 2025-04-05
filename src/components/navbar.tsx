@@ -1,24 +1,21 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { menu, close, personCircle, moon, sunny, add } from 'ionicons/icons';
-import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import {
-  IonHeader,
-  IonToolbar,
-  IonButtons,
   IonButton,
-  IonMenu,
+  IonButtons,
   IonContent,
-  IonList,
-  IonItem,
+  IonHeader,
   IonIcon,
-  IonTitle,
-  IonMenuButton,
+  IonItem,
+  IonList,
+  IonMenu,
   IonMenuToggle,
-  useIonRouter,
   IonPopover,
+  IonTitle,
+  IonToolbar,
+  useIonRouter,
 } from '@ionic/react';
+import { add, close, menu, moon, personCircle, sunny } from 'ionicons/icons';
+import { useState } from 'react';
 
 const Navbar = () => {
   const [popoverEvent, setPopoverEvent] = useState(null);
