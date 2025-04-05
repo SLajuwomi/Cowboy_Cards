@@ -23,35 +23,6 @@ import { useTheme } from '@/contexts/ThemeContext';
 
 const Home = () => {
   const [tab, setTab] = useState('classes');
-  const ionRouter = useIonRouter(); // <-- Added useIonRouter hook
-  const [token, setToken] = useState<string | null>(null); // <-- Added state for token
-
-  useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    //print this token
-    //console.log(token);
-    if (!token) {
-      ionRouter.push('/');
-    } else {
-      setToken(token);
-    }
-
-    const handleBeforeUnload = () => {
-      localStorage.removeItem('authToken');
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [ionRouter]);
-  
-  {token && (
-    <div className="mt-4">
-      <p className="text-sm text-gray-600">Logged in with token: {token}</p>
-    </div>
-  )} // <-- Added token display
 
   const classes = [
     { id: 1, name: 'Biology 101', teacher: 'Dr. Smith', sets: 5 },
