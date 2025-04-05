@@ -81,6 +81,8 @@ func Init() {
 	n := negroni.Classic() // serves "./public"
 	n.Use(middleware.Cors)
 	n.Use(negroni.HandlerFunc(middleware.SetCacheControlHeader))
+	// Add CSRF protection middleware
+	// n.Use(negroni.HandlerFunc(middleware.CSRFMiddleware))
 	n.UseHandler(unprotectedRoutes)
 
 	unprotectedRoutes.Mount("/api", protectedRouteHandler)

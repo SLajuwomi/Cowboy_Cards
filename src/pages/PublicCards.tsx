@@ -52,7 +52,7 @@ const PublicFlashcards = () => {
         {error && <div className="text-red-500 mt-2">{error}</div>}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {flashcardSets.map((set) => (
-            <Link key={set.ID} to={`/flashcards/${set.ID}`}>
+            <Link key={set.ID} to={`/set-overview/${set.ID}`}>
               <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-transform-shadow duration-200 rounded-lg border shadow-sm">
                 <IonCardHeader className="flex flex-col space-y-1.5 p-6">
                   <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
