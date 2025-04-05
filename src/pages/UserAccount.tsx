@@ -26,18 +26,20 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { Navbar } from '@/components/navbar';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 
+type User = {
+  username: string;
+  email: string;
+  firstname: string;
+  lastname: string;
+}
+
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const UserAccount = () => {
   const userId = '1'; // User ID for fetching user data
 
   const { theme, setTheme } = useTheme();
-  const [userInfo, setUserInfo] = useState({
-    username: '',
-    email: '',
-    firstname: '',
-    lastname: '',
-  });
+  const [userInfo, setUserInfo] = useState<User>();
 
   const [stats, setStats] = useState({
     accountCreated: '1-01-2022',
@@ -186,44 +188,27 @@ const UserAccount = () => {
   };
 
   useEffect(() => {
-    try {
-      (async () => {
-        const data = await makeHttpCall<{
-          username: string;
-          email: string;
-          first_name: string;
-          last_name: string;
-        }>(`${API_BASE}/api/users/`, {
+    const fetchUserData = async () => {
+            try {
+              const data = await makeHttpCall<User>(`${API_BASE}/api/users/`, {
           method: 'GET',
           headers: {
             id: userId,
           },
         });
+        setUserInfo(data);
+                setUpdatedInfo(data);
+                console.log('data', data);
+              } catch (error) {
+                console.log(`Failed to fetch User Data: ${error.message}`);
+              }
+            };
 
-        // Convert first_name and last_name to camelCase
-        const { first_name, last_name, ...rest } = data;
-        const formattedData = {
-          ...rest,
-          firstname: first_name,
-          lastname: last_name,
-        };
-        setUserInfo(formattedData);
-      })();
+            fetchUserData();
 
-      console.log('data', userInfo);
-    } catch (error) {
-      console.log(`Failed to fetch User Data: ${error.message}`);
-    }
-
-    // Cleanup function
-    return () => {
-      setUserInfo({
-        username: '',
-        email: '',
-        firstname: '',
-        lastname: '',
-      });
-    };
+// cleanup func not necessary here
+// https://blog.logrocket.com/understanding-react-useeffect-cleanup-function/
+  
   }, []);
 
   // Hook for showing toast messages, used for password change
@@ -237,7 +222,7 @@ const UserAccount = () => {
         {/* Header Section */}
         <div className="mb-8">
           <p className="text-xl font-semibold text-primary">
-            Welcome back, {userInfo.username}!
+            Welcome back, {userInfo?.username || 'Auth Failed'}!
           </p>
         </div>
 
@@ -268,7 +253,7 @@ const UserAccount = () => {
                     <IonInput
                       type="text"
                       name="firstname"
-                      value={updatedInfo.firstname}
+                      value={updatedInfo?.firstname || 'Auth Failed'}
                       onIonChange={handleChange}
                     />
                   </IonItem>
@@ -282,7 +267,7 @@ const UserAccount = () => {
                     <IonInput
                       type="text"
                       name="lastname"
-                      value={updatedInfo.lastname}
+                      value={updatedInfo?.lastname || 'Auth Failed'}
                       onIonChange={handleChange}
                     />
                   </IonItem>
@@ -296,7 +281,7 @@ const UserAccount = () => {
                     <IonInput
                       type="text"
                       name="username"
-                      value={updatedInfo.username}
+                      value={updatedInfo?.username || 'Auth Failed'}
                       onIonChange={handleChange}
                     />
                   </IonItem>
@@ -310,7 +295,7 @@ const UserAccount = () => {
                     <IonInput
                       type="email"
                       name="email"
-                      value={updatedInfo.email}
+                      value={updatedInfo?.email || 'Auth Failed'}
                       onIonChange={handleChange}
                     />
                   </IonItem>
@@ -325,19 +310,19 @@ const UserAccount = () => {
                 <div className="space-y-2">
                   <div>
                     <span className="font-medium">First Name: </span>
-                    {userInfo.firstname}
+                    {userInfo?.firstname || 'Auth Failed'}
                   </div>
                   <div>
                     <span className="font-medium">Last Name: </span>
-                    {userInfo.lastname}
+                    {userInfo?.lastname || 'Auth Failed'}
                   </div>
                   <div>
                     <span className="font-medium">Username: </span>
-                    {userInfo.username}
+                    {userInfo?.username || 'Auth Failed'}
                   </div>
                   <div>
                     <span className="font-medium">Email: </span>
-                    {userInfo.email}
+                    {userInfo?.email || 'Auth Failed'}
                   </div>
                   <IonButton
                     fill="outline"
