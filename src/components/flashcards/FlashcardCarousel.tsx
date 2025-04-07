@@ -20,6 +20,7 @@ import {
   CarouselPrevious,
 } from '../ui/carousel';
 import { FlashCard } from './FlashCard';
+import { useHistory } from 'react-router-dom';
 
 type Flashcards = {
   ID: number;
@@ -34,6 +35,7 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 // We probably should make the flashcards have an independent page, so we can show loading states and errors
 const FlashcardCarousel = (props) => {
+  const history = useHistory();
   const [flashcards, setFlashcards] = useState<Flashcards[]>([]);
   const [selectedSet, setSelectedSet] = useState<number | null>(null);
 
@@ -58,25 +60,25 @@ const FlashcardCarousel = (props) => {
   }, [selectedSet]);
 
   return (
-    <div className="mt-6">
+    <div className='mt-6'>
       {selectedSet === null ? (
         <IonGrid>
           <IonRow>
             {props.flashcardSets
               .sort((a, b) => a.ID - b.ID)
               .map((set) => (
-                <IonCol size="12" sizeMd="6" sizeLg="4" key={set.ID}>
+                <IonCol size='12' sizeMd='6' sizeLg='4' key={set.ID}>
                   <IonCard
-                    className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-200 rounded-lg border shadow-sm"
-                    onClick={() => setSelectedSet(set.ID)}
+                    className='cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-200 rounded-lg border shadow-sm'
+                    onClick={() => history.push(`/set-overview/${set.ID}`)}
                   >
                     <IonCardHeader>
-                      <IonCardTitle className="text-lg font-semibold">
+                      <IonCardTitle className='text-lg font-semibold'>
                         {set.SetName}
                       </IonCardTitle>
                     </IonCardHeader>
                     <IonCardContent>
-                      <p className="text-muted-foreground mb-2">
+                      <p className='text-muted-foreground mb-2'>
                         {set.SetDescription}
                       </p>
                       {/* <p className="text-muted-foreground">
@@ -91,20 +93,20 @@ const FlashcardCarousel = (props) => {
       ) : (
         <>
           <IonButton
-            fill="outline"
+            fill='outline'
             onClick={() => setSelectedSet(null)}
-            className="mb-6"
+            className='mb-6'
           >
-            <IonIcon slot="start" icon={arrowBackOutline} />
+            <IonIcon slot='start' icon={arrowBackOutline} />
             Back to Sets
           </IonButton>
-          <div className="w-full max-w-2xl mx-auto relative">
+          <div className='w-full max-w-2xl mx-auto relative'>
             <Carousel
-              orientation="vertical"
-              className="w-full"
+              orientation='vertical'
+              className='w-full'
               setApi={props.setApi}
             >
-              <CarouselContent className="-mt-1 h-[400px]">
+              <CarouselContent className='-mt-1 h-[400px]'>
                 {flashcards.map((card) => (
                   <CarouselItem key={card.ID}>
                     <FlashCard front={card.Front} back={card.Back} />
@@ -115,7 +117,7 @@ const FlashcardCarousel = (props) => {
               <CarouselNext />
             </Carousel>
 
-            <div className="absolute right-[-50px] top-1/2 transform -translate-y-1/2 flex flex-col gap-2">
+            <div className='absolute right-[-50px] top-1/2 transform -translate-y-1/2 flex flex-col gap-2'>
               {flashcards.map((_, index) => (
                 <div
                   key={index}

@@ -84,7 +84,7 @@ const ClassDetail = () => {
 
     fetchClass();
     fetchFlashcardSets();
-  });
+  }, []);
 
   // TODO: get the user role from the backend, this code is currently not functional
   // need a way to get the user role from the backend, maybe through auth, RLS, or a query
@@ -124,32 +124,32 @@ const ClassDetail = () => {
   }, [carouselApi]);
 
   return (
-    <IonContent className="ion-padding">
+    <IonContent className='ion-padding'>
       <Navbar />
 
-      <div id="main-content" className="container mx-auto px-4 py-8">
-        {error && <div className="text-red-500 mt-2">{error}</div>}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">
+      <div id='main-content' className='container mx-auto px-4 py-8'>
+        {error && <div className='text-red-500 mt-2'>{error}</div>}
+        <div className='mb-8'>
+          <h1 className='text-3xl font-bold mb-2'>
             {loading ? 'Loading...' : classData?.ClassName}
           </h1>
-          <p className="text-gray-600">
+          <p className='text-gray-600'>
             {loading ? 'Loading...' : classData?.ClassDescription}
           </p>
         </div>
 
-        <div className="flex flex-row justify-between mb-6">
-          <IonButton onClick={() => window.history.back()} fill="outline">
-            <IonIcon slot="start" icon={arrowBackOutline} />
+        <div className='flex flex-row justify-between mb-6'>
+          <IonButton onClick={() => window.history.back()} fill='outline'>
+            <IonIcon slot='start' icon={arrowBackOutline} />
             Back
           </IonButton>
           {/* TODO: should only show for teachers */}
           {isTeacher && (
             <IonIcon
               icon={createOutline}
-              size="large"
-              color="primary"
-              className="hover:transform hover:scale-110 cursor-pointer"
+              size='large'
+              color='primary'
+              className='hover:transform hover:scale-110 cursor-pointer'
             ></IonIcon>
           )}
         </div>
@@ -157,14 +157,14 @@ const ClassDetail = () => {
         <IonSegment
           value={tab}
           onIonChange={(e) => setTab(e.detail.value as string)}
-          className="w-full mb-6"
+          className='w-full mb-6'
         >
-          <IonSegmentButton value="flashcards">
-            <IonIcon icon={bookOutline} className="mr-2" />
+          <IonSegmentButton value='flashcards'>
+            <IonIcon icon={bookOutline} className='mr-2' />
             <IonLabel>Flashcard Sets</IonLabel>
           </IonSegmentButton>
-          <IonSegmentButton value="leaderboard">
-            <IonIcon icon={trophyOutline} className="mr-2" />
+          <IonSegmentButton value='leaderboard'>
+            <IonIcon icon={trophyOutline} className='mr-2' />
             <IonLabel>Leaderboard</IonLabel>
           </IonSegmentButton>
         </IonSegment>
