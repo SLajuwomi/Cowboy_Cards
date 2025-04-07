@@ -6,32 +6,44 @@ import { useState } from 'react';
 interface FlashCardProps {
   front: string;
   back: string;
+  onAdvance?: () => void;
 }
 
-export const FlashCard = ({ front, back }: FlashCardProps) => {
+export const FlashCard = ({ front, back, onAdvance }: FlashCardProps) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
   return (
-    <div className="w-full max-w-md mx-auto">
+    <div className='w-full max-w-md mx-auto'>
       <div
         className={`flip-card cursor-pointer ${isFlipped ? 'flipped' : ''}`}
         onClick={() => setIsFlipped(!isFlipped)}
       >
-        <Card className="flip-card-front p-8 min-h-[300px] flex items-center justify-center text-center">
-          <p className="text-xl">{front}</p>
+        <Card className='flip-card-front p-8 min-h-[300px] flex items-center justify-center text-center'>
+          <p className='text-xl'>{front}</p>
         </Card>
-        <Card className="flip-card-back p-8 min-h-[300px] flex items-center justify-center text-center absolute top-0 w-full">
-          <p className="text-xl">{back}</p>
+        <Card className='flip-card-back p-8 min-h-[300px] flex items-center justify-center text-center absolute top-0 w-full'>
+          <p className='text-xl'>{back}</p>
         </Card>
       </div>
 
-      <div className="flex justify-center gap-4 mt-6">
-        <Button variant="outline" className="w-32">
-          <X className="mr-2 h-4 w-4" />
+      <div className='flex justify-center gap-4 mt-6'>
+        <Button
+          variant='outline'
+          className='w-32'
+          onClick={() => {
+            onAdvance?.();
+          }}
+        >
+          <X className='mr-2 h-4 w-4' />
           Learning
         </Button>
-        <Button className="w-32">
-          <Check className="mr-2 h-4 w-4" />
+        <Button
+          className='w-32'
+          onClick={() => {
+            onAdvance?.();
+          }}
+        >
+          <Check className='mr-2 h-4 w-4' />
           Mastered
         </Button>
       </div>

@@ -1,0 +1,11 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Always  do a thourough examination of the codebase before you do anything.
+Before you do anything, Do a thorough examination of the code base and related references. 
+The fewer lines of code, the better. 
+Write clean, simple, efficient code. Use as few lines of code as possible and keep things simple. do not write extra code that is unecessary to solve the task at hand.
+Implement features in the simplest possible way.
+Do not make formatting changes when writing code. Such as, making double quotes to be single, etc.
