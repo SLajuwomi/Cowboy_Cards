@@ -3,18 +3,15 @@ package controllers
 import (
 	"context"
 	"net/http"
-	"os"
-	"strconv"
 	"time"
 
-	"aidanwoods.dev/go-paseto"
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/middleware"
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type Embed struct {
+// wraps mw handler that wraps db pool
+type DBHandler struct {
 	middleware.Handler
 }
 
@@ -46,7 +43,7 @@ type SignupRequest struct {
 
 // AuthResponse represents the response sent after successful authentication
 type AuthResponse struct {
-	Token     string `json:"token"`
+	// Token     string `json:"token"`
 	UserID    int32  `json:"user_id"`
 	Username  string `json:"username"`
 	Email     string `json:"email"`
@@ -67,7 +64,7 @@ func getHeaderVals(r *http.Request, headers ...string) (map[string]string, error
 	return middleware.GetHeaderVals(r, headers...)
 }
 
-func getQueryConnAndContext(r *http.Request, h *Embed) (query *db.Queries, ctx context.Context, conn *pgxpool.Conn, err error) {
+func getQueryConnAndContext(r *http.Request, h *DBHandler) (query *db.Queries, ctx context.Context, conn *pgxpool.Conn, err error) {
 	ctx = r.Context()
 
 	conn, err = h.DB.Acquire(ctx)
@@ -76,46 +73,6 @@ func getQueryConnAndContext(r *http.Request, h *Embed) (query *db.Queries, ctx c
 	}
 
 	query = db.New(conn)
-
-	return
-}
-
-func getTokenAndResponse(user db.User) (response AuthResponse, err error) {
-
-	// Generate PASETO token
-	//token, err := middleware.GeneratePasetoToken(user.ID)
-
-	var (
-		pasetoAud = os.Getenv("PASETO_AUD")
-		pasetoIss = os.Getenv("PASETO_ISS")
-		pasetoKey = os.Getenv("PASETO_SECRET")
-		pasetoImp = os.Getenv("PASETO_IMPLICIT")
-	)
-
-	token := paseto.NewToken()
-
-	token.SetAudience(pasetoAud)
-	token.SetJti(uuid.New().String())
-	token.SetIssuer(pasetoIss)
-	token.SetSubject(strconv.Itoa(int(user.ID)))
-	token.SetExpiration(time.Now().Add(time.Minute))
-	token.SetNotBefore(time.Now().Add(-3 * time.Second))
-	token.SetIssuedAt(time.Now())
-
-	secretKey, err := paseto.V4SymmetricKeyFromHex(pasetoKey)
-	if err != nil {
-		return AuthResponse{}, err
-	}
-	signed := token.V4Encrypt(secretKey, []byte(pasetoImp))
-
-	response = AuthResponse{
-		Token:     signed,
-		UserID:    user.ID,
-		Username:  user.Username,
-		Email:     user.Email,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-	}
 
 	return
 }

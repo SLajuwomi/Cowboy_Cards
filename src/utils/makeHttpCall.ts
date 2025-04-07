@@ -1,11 +1,18 @@
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+type CredentialOptions = 'include' | 'omit' | 'same-origin';
 
 // Interface defining the structure of options that can be passed to fetch requests
 interface FetchOptions {
   method: HttpMethod;
   headers: any;
-  credentials?: 'include' | 'omit' | 'same-origin';
+  credentials?: CredentialOptions;
 }
+
+const defaultOpts: FetchOptions = {
+  method: 'GET',
+  headers: {},
+  credentials: 'include',
+};
 
 /**
  * Universal fetch utility for making HTTP requests
@@ -18,15 +25,16 @@ interface FetchOptions {
  * @returns Promise with the parsed response data
  */
 export async function makeHttpCall<T>(
-  url: string,
-  options: FetchOptions = {
-    method: 'GET',
-    headers: {},
-  }
+  url: string = '',
+  options: FetchOptions = defaultOpts
 ): Promise<T> {
+  const finalOpts = {
+    ...defaultOpts,
+    ...options,
+  };
   try {
     // Make the actual HTTP request
-    const response = await fetch(url, { ...options });
+    const response = await fetch(url, finalOpts);
 
     // Check if the response was successful (status 200-299)
     if (!response.ok) {

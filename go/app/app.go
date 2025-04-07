@@ -38,7 +38,7 @@ func LoadPoolConfig() (config *pgxpool.Config) {
 	return
 }
 
-func CreatePool(config *pgxpool.Config) (h *controllers.Embed) {
+func CreatePool(config *pgxpool.Config) (h *controllers.DBHandler) {
 	ctx := context.Background()
 
 	pgpool, err := pgxpool.NewWithConfig(ctx, config)
@@ -52,7 +52,7 @@ func CreatePool(config *pgxpool.Config) (h *controllers.Embed) {
 
 	log.Println("Successfully connected to database")
 
-	h = &controllers.Embed{
+	h = &controllers.DBHandler{
 		Handler: middleware.Handler{DB: pgpool},
 	}
 
@@ -65,14 +65,13 @@ func CreatePool(config *pgxpool.Config) (h *controllers.Embed) {
 }
 
 func Init() {
-	cfg := LoadPoolConfig()
-	h := CreatePool(cfg)
+	h := CreatePool(LoadPoolConfig())
 
 	//mw for protected routes only
 	protectedRoutes := chi.NewRouter()
 	routes.Protected(protectedRoutes, h)
 	protectedRouteHandler := negroni.New()
-	// protectedRouteHandler.Use(negroni.HandlerFunc(middleware.Auth))
+	protectedRouteHandler.Use(negroni.HandlerFunc(middleware.Auth))
 	protectedRouteHandler.UseHandler(protectedRoutes)
 
 	//mw for every route
@@ -81,6 +80,7 @@ func Init() {
 	n := negroni.Classic() // serves "./public"
 	n.Use(middleware.Cors)
 	n.Use(negroni.HandlerFunc(middleware.SetCacheControlHeader))
+	n.Use(negroni.HandlerFunc(middleware.SetCredsHeaders)) //dev only, not necessary in prod w/ same origin
 	// Add CSRF protection middleware
 	// n.Use(negroni.HandlerFunc(middleware.CSRFMiddleware))
 	n.UseHandler(unprotectedRoutes)

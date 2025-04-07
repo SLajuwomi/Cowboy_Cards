@@ -7,7 +7,7 @@ import (
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 )
 
-func (h *Embed) JoinClass(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) JoinClass(w http.ResponseWriter, r *http.Request) {
 	//curl -X POST localhost:8000/api/class_user -H "user_id: 1" -H "class_id: 1" -H "role: Student"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -50,7 +50,7 @@ func (h *Embed) JoinClass(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Embed) LeaveClass(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) LeaveClass(w http.ResponseWriter, r *http.Request) {
 	//curl -X DELETE localhost:8000/api/class_user/ -H "user_id: 1" -H "class_id: 1"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -94,7 +94,7 @@ func (h *Embed) LeaveClass(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// func (h *Embed) GetStudentsOfAClass(w http.ResponseWriter, r *http.Request) {
+// func (h *DBHandler) GetStudentsOfAClass(w http.ResponseWriter, r *http.Request) {
 // 	//curl -X GET localhost:8000/api/class_user/getstudents -H "class_id: 1"
 // 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 // 	if err != nil {
@@ -126,7 +126,7 @@ func (h *Embed) LeaveClass(w http.ResponseWriter, r *http.Request) {
 // 	}
 // }
 
-// func (h *Embed) GetTeacherOfAClass(w http.ResponseWriter, r *http.Request) {
+// func (h *DBHandler) GetTeacherOfAClass(w http.ResponseWriter, r *http.Request) {
 // 	//curl -X GET localhost:8000/api/class_user/getstudents -H "class_id: 1"
 // 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 // 	if err != nil {
@@ -158,7 +158,7 @@ func (h *Embed) LeaveClass(w http.ResponseWriter, r *http.Request) {
 // 	}
 // }
 
-func (h *Embed) ListMembersOfAClass(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) ListMembersOfAClass(w http.ResponseWriter, r *http.Request) {
 	//curl -X GET localhost:8000/api/class_user/getmembers -H "class_id: 1"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -191,7 +191,7 @@ func (h *Embed) ListMembersOfAClass(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Embed) ListClassesOfAUser(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) ListClassesOfAUser(w http.ResponseWriter, r *http.Request) {
 	//curl -X GET localhost:8000/api/class_user/getclasses -H "user_id: 1"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {

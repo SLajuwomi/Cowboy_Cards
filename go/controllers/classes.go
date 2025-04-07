@@ -10,7 +10,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-func (h *Embed) ListClasses(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) ListClasses(w http.ResponseWriter, r *http.Request) {
 	// curl http://localhost:8000/api/classes/list | jq
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
@@ -32,7 +32,7 @@ func (h *Embed) ListClasses(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Embed) GetClassById(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) GetClassById(w http.ResponseWriter, r *http.Request) {
 	// curl http://localhost:8000/api/classes/ -H "id: 1"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
@@ -66,7 +66,7 @@ func (h *Embed) GetClassById(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Embed) CreateClass(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) CreateClass(w http.ResponseWriter, r *http.Request) {
 	// curl -X POST localhost:8000/api/classes -H "name: class name" -H "description: class description" -H "private t/f
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
@@ -124,7 +124,7 @@ func (h *Embed) CreateClass(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Embed) UpdateClass(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) UpdateClass(w http.ResponseWriter, r *http.Request) {
 	// curl -X PUT http://localhost:8000/api/classes/class_description -H "id: 9" -H "class_description: 1st german"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
@@ -176,7 +176,7 @@ func (h *Embed) UpdateClass(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Embed) DeleteClass(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) DeleteClass(w http.ResponseWriter, r *http.Request) {
 	// curl -X DELETE http://localhost:8000/api/classes/ -H "id: 2"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
@@ -209,7 +209,7 @@ func (h *Embed) DeleteClass(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte{})
 }
 
-func (h *Embed) GetClassScores(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) GetClassScores(w http.ResponseWriter, r *http.Request) {
 	// curl -GET http://localhost:8000/classes/get_scores -H "class_id: 1"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {

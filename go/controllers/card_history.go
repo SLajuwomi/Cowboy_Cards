@@ -7,7 +7,7 @@ import (
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 )
 
-func (h *Embed) UpsertCorrectFlashcardScore(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) UpsertCorrectFlashcardScore(w http.ResponseWriter, r *http.Request) {
 	// curl -X POST localhost:8000/api/card_history/incscore -H "user_id: 1" -H "card_id: 1"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -49,7 +49,7 @@ func (h *Embed) UpsertCorrectFlashcardScore(w http.ResponseWriter, r *http.Reque
 	}
 }
 
-func (h *Embed) UpsertIncorrectFlashcardScore(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) UpsertIncorrectFlashcardScore(w http.ResponseWriter, r *http.Request) {
 	// curl -X POST localhost:8000/api/card_history/decscore -H "user_id: 1" -H "card_id: 1"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -91,7 +91,7 @@ func (h *Embed) UpsertIncorrectFlashcardScore(w http.ResponseWriter, r *http.Req
 	}
 }
 
-func (h *Embed) GetCardScore(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) GetCardScore(w http.ResponseWriter, r *http.Request) {
 	// curl -X GET localhost:8000/api/card_history/ -H "user_id: 1" -H "card_id: 1"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -132,7 +132,7 @@ func (h *Embed) GetCardScore(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Embed) GetScoresInASet(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) GetScoresInASet(w http.ResponseWriter, r *http.Request) {
 	// curl -X GET localhost:8000/api/card_history/set -H "user_id: 1" -H "set_id: 1"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
