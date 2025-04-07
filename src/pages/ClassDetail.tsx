@@ -76,7 +76,13 @@ const ClassDetail = () => {
 
     async function fetchFlashcardSets() {
       const sets = await makeHttpCall<FlashcardSet[]>(
-        `${API_BASE}/api/flashcards/sets/list`
+        `${API_BASE}/api/class_set/get_sets`,
+        {
+          method: 'GET',
+          headers: {
+            class_id: id,
+          },
+        }
       );
       console.log('sets', sets);
       setFlashcardSets(sets);
