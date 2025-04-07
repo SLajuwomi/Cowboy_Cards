@@ -5,8 +5,11 @@ import Leaderboard from '@/components/ui/Leaderboard';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonButton,
+  IonCardContent,
   IonContent,
   IonIcon,
+  IonInput,
+  IonItem,
   IonLabel,
   IonSegment,
   IonSegmentButton,
@@ -54,6 +57,63 @@ const ClassDetail = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Update Class Name and Description Form
+  const [isEditing, setIsEditing] = useState(false);
+  const [updatedInfo, setUpdatedInfo] = useState({
+    className: '',
+    classDescription: '',
+  });
+
+  const handleEdit = () => {
+    console.log('Handling Edit');
+    setUpdatedInfo({
+      className: classData?.ClassName || '',
+      classDescription: classData?.ClassDescription || '',
+    });
+    setIsEditing(true);
+  };
+
+  const handleSave = async () => {
+    // try {
+    //   await makeHttpCall(`${API_BASE}/api/classes/${id}`, {
+    //     method: 'PUT',
+    //     body: JSON.stringify(updatedInfo),
+    //   });
+    //   setClassData((prev) => ({
+    //     ...prev,
+    //     ClassName: updatedInfo.className,
+    //     ClassDescription: updatedInfo.classDescription,
+    //   }));
+    //   setIsEditing(false);
+    // } catch (error) {
+    //   console.error('Error updating class:', error);
+    // }
+    console.log('Saving class data:', updatedInfo);
+    setClassData((prev) => ({
+      ...prev,
+      ClassName: updatedInfo.className,
+      ClassDescription: updatedInfo.classDescription,
+    }));
+    setIsEditing(false);
+    setUpdatedInfo({
+      className: '',
+      classDescription: '',
+    });
+  };
+
+  const handleChange = (e: any) => {
+    const { name } = e.target;
+    const value = e.detail.value;
+    setUpdatedInfo((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+  };
+
   useEffect(() => {
     async function fetchClass() {
       setLoading(true);
@@ -81,10 +141,10 @@ const ClassDetail = () => {
       console.log('sets', sets);
       setFlashcardSets(sets);
     }
-
+    console.log('In useEffect');
     fetchClass();
     fetchFlashcardSets();
-  });
+  }, []);
 
   // TODO: get the user role from the backend, this code is currently not functional
   // need a way to get the user role from the backend, maybe through auth, RLS, or a query
@@ -129,14 +189,72 @@ const ClassDetail = () => {
 
       <div id="main-content" className="container mx-auto px-4 py-8">
         {error && <div className="text-red-500 mt-2">{error}</div>}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">
-            {loading ? 'Loading...' : classData?.ClassName}
-          </h1>
-          <p className="text-gray-600">
-            {loading ? 'Loading...' : classData?.ClassDescription}
-          </p>
-        </div>
+
+        {isEditing ? (
+          <IonCardContent className="p-6 pt-0">
+            <h1 className="text-3xl font-bold mb-2">
+              Update Class Information
+            </h1>
+            <div className="space-y-4">
+              <IonItem>
+                <IonLabel position="stacked">Class Name</IonLabel>
+                <IonInput
+                  type="text"
+                  name="className"
+                  placeholder="Enter class name"
+                  value={updatedInfo?.className || 'Auth Failed'}
+                  onIonChange={handleChange}
+                />
+              </IonItem>
+              {/* {errors.ClassName && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {errors.ClassName}
+                            </p>
+                          )} */}
+              <IonItem>
+                <IonLabel position="stacked">Class Description</IonLabel>
+                <IonInput
+                  type="text"
+                  name="classDescription"
+                  placeholder="Enter class description"
+                  value={updatedInfo?.classDescription || 'Auth Failed'}
+                  onIonChange={handleChange}
+                />
+              </IonItem>
+              {/* {errors.ClassDescription && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {errors.ClassDescription}
+                            </p>
+                          )} */}
+              <div className="flex justify-end">
+                <IonButton
+                  onClick={handleCancel}
+                  fill="outline"
+                  className="mr-2"
+                >
+                  Cancel
+                </IonButton>
+                <IonButton onClick={handleSave} fill="solid" color="primary">
+                  Save
+                </IonButton>
+              </div>
+            </div>
+          </IonCardContent>
+        ) : (
+          <div className="flex justify-between items-center">
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold mb-2">
+                {loading ? 'Loading...' : classData?.ClassName}
+              </h1>
+              <p className="text-gray-600">
+                {loading ? 'Loading...' : classData?.ClassDescription}
+              </p>
+            </div>
+            <IonButton onClick={handleEdit} fill="outline" color="primary">
+              Edit
+            </IonButton>
+          </div>
+        )}
 
         <div className="flex flex-row justify-between mb-6">
           <IonButton onClick={() => window.history.back()} fill="outline">
