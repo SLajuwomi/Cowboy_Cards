@@ -6,7 +6,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
-import { IonButton, IonContent } from '@ionic/react';
+import { IonButton, IonContent, IonSpinner } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
@@ -20,6 +20,7 @@ const Flashcard = () => {
   const [cards, setCards] = useState<{ front: string; back: string }[]>([]);
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchSetDetails = async () => {
@@ -37,6 +38,7 @@ const Flashcard = () => {
     };
 
     const fetchCards = async () => {
+      setLoading(true);
       try {
         const res = await fetch(`${API_BASE}/api/flashcards/list`, {
           method: 'GET',
@@ -53,6 +55,9 @@ const Flashcard = () => {
         );
       } catch (error) {
         console.error('Failed to fetch cards', error);
+        setCards([]);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -109,8 +114,10 @@ const Flashcard = () => {
           </div>
         </div>
 
-        <div className='w-full max-w-xl mx-auto relative py-8'>
-          {cards.length === 0 ? (
+        <div className='w-full max-w-xl mx-auto relative py-8 min-h-[400px] flex items-center justify-center'>
+          {loading ? (
+            <IonSpinner name='circular' />
+          ) : cards.length === 0 ? (
             <div className='text-center text-gray-500 text-lg py-20'>
               This set has no cards yet.
             </div>
