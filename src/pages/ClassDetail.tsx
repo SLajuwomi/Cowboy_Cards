@@ -73,7 +73,45 @@ const ClassDetail = () => {
     setIsEditing(true);
   };
 
+  // Form validation
+  const [errors, setErrors] = useState<{
+    className?: string;
+    classDescription?: string;
+    general?: string;
+  }>({});
+
+  // Basic validation before submitting
+  const validateForm = () => {
+    const newErrors: {
+      className?: string;
+      classDescription?: string;
+    } = {};
+    let isValid = true;
+
+    // Trim whitespace from the input values
+    updatedInfo.className = updatedInfo.className.trim();
+    updatedInfo.classDescription = updatedInfo.classDescription.trim();
+
+    if (!updatedInfo.className) {
+      newErrors.className = 'Class name is required';
+      isValid = false;
+    }
+
+    if (!updatedInfo.classDescription) {
+      newErrors.classDescription = 'Class description is required';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
   const handleSave = async () => {
+    // Validate form before submission
+    if (!validateForm()) {
+      console.log('Form validation failed:', errors);
+      return;
+    }
     // try {
     //   await makeHttpCall(`${API_BASE}/api/classes/${id}`, {
     //     method: 'PUT',
@@ -202,30 +240,28 @@ const ClassDetail = () => {
                   type="text"
                   name="className"
                   placeholder="Enter class name"
-                  value={updatedInfo?.className || 'Auth Failed'}
+                  value={updatedInfo?.className}
                   onIonChange={handleChange}
                 />
               </IonItem>
-              {/* {errors.ClassName && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {errors.ClassName}
-                            </p>
-                          )} */}
+              {errors.className && (
+                <p className="text-red-500 text-xs mt-1">{errors.className}</p>
+              )}
               <IonItem>
                 <IonLabel position="stacked">Class Description</IonLabel>
                 <IonInput
                   type="text"
                   name="classDescription"
                   placeholder="Enter class description"
-                  value={updatedInfo?.classDescription || 'Auth Failed'}
+                  value={updatedInfo?.classDescription}
                   onIonChange={handleChange}
                 />
               </IonItem>
-              {/* {errors.ClassDescription && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {errors.ClassDescription}
-                            </p>
-                          )} */}
+              {errors.classDescription && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.classDescription}
+                </p>
+              )}
               <div className="flex justify-end">
                 <IonButton
                   onClick={handleCancel}
