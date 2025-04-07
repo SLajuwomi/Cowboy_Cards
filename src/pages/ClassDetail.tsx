@@ -10,6 +10,7 @@ import {
   IonLabel,
   IonSegment,
   IonSegmentButton,
+  IonSpinner,
 } from '@ionic/react';
 import {
   arrowBackOutline,
@@ -49,6 +50,14 @@ type ClassUser = {
   LastName: string;
 };
 
+type SetScore = {
+  SetName: string;
+  Correct: number;
+  Incorrect: number;
+  NetScore: number;
+  TimesAttempted: number;
+};
+
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const ClassDetail = () => {
@@ -62,6 +71,10 @@ const ClassDetail = () => {
   const [classUsers, setClassUsers] = useState<ClassUser[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [leaderboardData, setLeaderboardData] = useState<
+    Array<{ name: string; totalScore: number }>
+  >([]);
+  const [loadingScores, setLoadingScores] = useState(false);
 
   useEffect(() => {
     async function fetchClass() {
@@ -116,6 +129,86 @@ const ClassDetail = () => {
     fetchClassUsers();
   }, []);
 
+  // New useEffect for score calculation
+  useEffect(() => {
+    async function calculateLeaderboardScores() {
+      if (!classUsers.length || !flashcardSets.length) return;
+
+      setLoadingScores(true);
+      setError(null);
+      const userScores = new Map<number, number>();
+
+      try {
+        // Process all users concurrently
+        await Promise.all(
+          classUsers.map(async (user) => {
+            try {
+              // Fetch scores for all sets concurrently for this user
+              const setScores = await Promise.all(
+                flashcardSets.map(async (set) => {
+                  try {
+                    const setScoresResponse = await makeHttpCall<SetScore[]>(
+                      `${API_BASE}/api/card_history/set`,
+                      {
+                        method: 'GET',
+                        headers: {
+                          user_id: user.UserID.toString(),
+                          set_id: set.ID.toString(),
+                        },
+                      }
+                    );
+
+                    // Calculate total NetScore for this set
+                    if (Array.isArray(setScoresResponse)) {
+                      return setScoresResponse.reduce(
+                        (sum, score) => sum + (score.NetScore || 0),
+                        0
+                      );
+                    }
+                    return 0;
+                  } catch (error) {
+                    console.error(
+                      `Error fetching scores for set ${set.ID}:`,
+                      error
+                    );
+                    return 0;
+                  }
+                })
+              );
+
+              // Sum up all set scores for this user
+              const totalUserScore = setScores.reduce(
+                (sum, score) => sum + score,
+                0
+              );
+              userScores.set(user.UserID, totalUserScore);
+            } catch (error) {
+              console.error(`Error processing user ${user.UserID}:`, error);
+              userScores.set(user.UserID, 0);
+            }
+          })
+        );
+
+        // Create and sort final leaderboard data
+        const finalLeaderboard = classUsers
+          .map((user) => ({
+            name: `${user.FirstName} ${user.LastName}`,
+            totalScore: userScores.get(user.UserID) || 0,
+          }))
+          .sort((a, b) => b.totalScore - a.totalScore);
+
+        setLeaderboardData(finalLeaderboard);
+      } catch (error) {
+        setError('Error calculating leaderboard scores');
+        console.error('Leaderboard calculation error:', error);
+      } finally {
+        setLoadingScores(false);
+      }
+    }
+
+    calculateLeaderboardScores();
+  }, [classUsers, flashcardSets]);
+
   // TODO: get the user role from the backend, this code is currently not functional
   // need a way to get the user role from the backend, maybe through auth, RLS, or a query
   // useEffect(() => {
@@ -134,11 +227,6 @@ const ClassDetail = () => {
   //   }
   //   fetchUser();
   // }, []);
-
-  const leaderboard = classUsers.map((user) => ({
-    name: `${user.FirstName} ${user.LastName}`,
-    cardsMastered: 0,
-  }));
 
   useEffect(() => {
     if (!carouselApi) {
@@ -197,14 +285,28 @@ const ClassDetail = () => {
         </IonSegment>
 
         {tab === 'leaderboard' && (
-          <Leaderboard leaderboard={leaderboard} classUsers={classUsers} />
+          <>
+            {loadingScores ? (
+              <div className='flex justify-center items-center p-8'>
+                <IonSpinner name='circular' />
+                <span className='ml-2'>Calculating scores...</span>
+              </div>
+            ) : (
+              <Leaderboard
+                leaderboard={leaderboardData}
+                classUsers={classUsers}
+              />
+            )}
+          </>
         )}
 
-        <FlashcardCarousel
-          flashcardSets={flashcardSets}
-          currentCardIndex={currentCardIndex}
-          setApi={setCarouselApi}
-        />
+        {tab === 'flashcards' && (
+          <FlashcardCarousel
+            flashcardSets={flashcardSets}
+            currentCardIndex={currentCardIndex}
+            setApi={setCarouselApi}
+          />
+        )}
       </div>
     </IonContent>
   );
