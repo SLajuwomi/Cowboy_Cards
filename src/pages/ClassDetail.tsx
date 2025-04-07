@@ -41,6 +41,14 @@ type FlashcardSet = {
   UpdatedAt: string;
 };
 
+type ClassUser = {
+  UserID: number;
+  ClassID: number;
+  Role: string;
+  FirstName: string;
+  LastName: string;
+};
+
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const ClassDetail = () => {
@@ -51,6 +59,7 @@ const ClassDetail = () => {
   const [isTeacher, setIsTeacher] = useState(false);
   const [classData, setClassData] = useState<Class>();
   const [flashcardSets, setFlashcardSets] = useState<FlashcardSet[]>([]);
+  const [classUsers, setClassUsers] = useState<ClassUser[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -88,8 +97,23 @@ const ClassDetail = () => {
       setFlashcardSets(sets);
     }
 
+    async function fetchClassUsers() {
+      const users = await makeHttpCall<ClassUser[]>(
+        `${API_BASE}/api/class_user/members`,
+        {
+          method: 'GET',
+          headers: {
+            class_id: id,
+          },
+        }
+      );
+      console.log('users', users);
+      setClassUsers(users);
+    }
+
     fetchClass();
     fetchFlashcardSets();
+    fetchClassUsers();
   }, []);
 
   // TODO: get the user role from the backend, this code is currently not functional
@@ -111,13 +135,10 @@ const ClassDetail = () => {
   //   fetchUser();
   // }, []);
 
-  const leaderboard = [
-    { name: 'John Doe', cardsMastered: 95 },
-    { name: 'Jane Smith', cardsMastered: 90 },
-    { name: 'Bob Johnson', cardsMastered: 85 },
-    { name: 'Alice Williams', cardsMastered: 82 },
-    { name: 'Charlie Brown', cardsMastered: 80 },
-  ];
+  const leaderboard = classUsers.map((user) => ({
+    name: `${user.FirstName} ${user.LastName}`,
+    cardsMastered: 0,
+  }));
 
   useEffect(() => {
     if (!carouselApi) {
@@ -175,7 +196,9 @@ const ClassDetail = () => {
           </IonSegmentButton>
         </IonSegment>
 
-        {tab === 'leaderboard' && <Leaderboard leaderboard={leaderboard} />}
+        {tab === 'leaderboard' && (
+          <Leaderboard leaderboard={leaderboard} classUsers={classUsers} />
+        )}
 
         <FlashcardCarousel
           flashcardSets={flashcardSets}
