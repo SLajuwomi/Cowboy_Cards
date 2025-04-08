@@ -12,7 +12,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (h *Embed) ListUsers(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
 	// curl http://localhost:8000/api/users/list | jq
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
@@ -35,7 +35,7 @@ func (h *Embed) ListUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetUser handles retrieving user information
-func (h *Embed) GetUserById(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) GetUserById(w http.ResponseWriter, r *http.Request) {
 	// curl http://localhost:8000/api/users/ -H "id: 1"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
@@ -46,7 +46,7 @@ func (h *Embed) GetUserById(w http.ResponseWriter, r *http.Request) {
 	defer conn.Release()
 
 	// Get user_id from context (set by AuthMiddleware)
-	id, ok := middleware.FromContext(ctx)
+	id, ok := middleware.GetUserIDFromContext(ctx)
 	if !ok {
 		logAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -88,7 +88,7 @@ func (h *Embed) GetUserById(w http.ResponseWriter, r *http.Request) {
 }
 
 // UpdateUser handles updating user information
-func (h *Embed) UpdateUser(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	// curl -X PUT http://localhost:8000/api/users/email -H "id: 1" -H "email: a@a.com"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
@@ -99,7 +99,7 @@ func (h *Embed) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	defer conn.Release()
 
 	// Get user_id from context (set by AuthMiddleware)
-	id, ok := middleware.FromContext(ctx)
+	id, ok := middleware.GetUserIDFromContext(ctx)
 	if !ok {
 		logAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -197,7 +197,7 @@ func (h *Embed) UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteUser handles user account deletion
-func (h *Embed) DeleteUser(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -207,7 +207,7 @@ func (h *Embed) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	defer conn.Release()
 
 	// Get user_id from context (set by AuthMiddleware)
-	id, ok := middleware.FromContext(ctx)
+	id, ok := middleware.GetUserIDFromContext(ctx)
 	if !ok {
 		logAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
 		return

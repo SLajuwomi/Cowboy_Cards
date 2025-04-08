@@ -7,11 +7,12 @@ import (
 	"strings"
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
+	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/middleware"
 	"golang.org/x/crypto/bcrypt"
 )
 
 // Login handles user authentication
-func (h *Embed) Login(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		logAndSendError(w, err, "Invalid request body", http.StatusBadRequest)
@@ -37,21 +38,23 @@ func (h *Embed) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create session cookie
-	// if err := middleware.CreateSession(w, r, user.ID); err != nil {
-	// 	logAndSendError(w, err, "Error creating session", http.StatusInternalServerError)
-	// 	return
-	// }
-
-	resp, err := getTokenAndResponse(user)
-	if err != nil {
-		logAndSendError(w, err, "Error creating token", http.StatusInternalServerError)
+	if err := middleware.CreateSession(w, r, user.ID); err != nil {
+		logAndSendError(w, err, "Error creating session", http.StatusInternalServerError)
 		return
 	}
 
-	// Add CSRF token to response if this is a browser request
-	// if strings.Contains(r.Header.Get("Accept"), "text/html") ||
-	//    strings.Contains(r.Header.Get("Accept"), "application/json") {
-	// 	resp.CSRFToken = middleware.GetCSRFToken(r)
+	resp := AuthResponse{
+		UserID:    user.ID,
+		Username:  user.Username,
+		Email:     user.Email,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+	}
+
+	// resp, err := getTokenAndResponse(user)
+	// if err != nil {
+	// 	logAndSendError(w, err, "Error creating token", http.StatusInternalServerError)
+	// 	return
 	// }
 
 	w.Header().Set("Content-Type", "application/json")
@@ -61,7 +64,7 @@ func (h *Embed) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 // Signup handles user registration
-func (h *Embed) Signup(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) Signup(w http.ResponseWriter, r *http.Request) {
 	var req SignupRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		logAndSendError(w, err, "Invalid request body", http.StatusBadRequest)
@@ -127,21 +130,23 @@ func (h *Embed) Signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create session cookie
-	// if err := middleware.CreateSession(w, r, user.ID); err != nil {
-	// 	logAndSendError(w, err, "Error creating session", http.StatusInternalServerError)
-	// 	return
-	// }
-
-	resp, err := getTokenAndResponse(user)
-	if err != nil {
-		logAndSendError(w, err, "Error creating token", http.StatusInternalServerError)
+	if err := middleware.CreateSession(w, r, user.ID); err != nil {
+		logAndSendError(w, err, "Error creating session", http.StatusInternalServerError)
 		return
 	}
 
-	// Add CSRF token to response if this is a browser request
-	// if strings.Contains(r.Header.Get("Accept"), "text/html") ||
-	//    strings.Contains(r.Header.Get("Accept"), "application/json") {
-	// 	resp.CSRFToken = middleware.GetCSRFToken(r)
+	resp := AuthResponse{
+		UserID:    user.ID,
+		Username:  user.Username,
+		Email:     user.Email,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+	}
+
+	// resp, err := getTokenAndResponse(user)
+	// if err != nil {
+	// 	logAndSendError(w, err, "Error creating token", http.StatusInternalServerError)
+	// 	return
 	// }
 
 	w.Header().Set("Content-Type", "application/json")

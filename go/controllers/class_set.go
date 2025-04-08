@@ -7,7 +7,7 @@ import (
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 )
 
-func (h *Embed) AddSet(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) AddSet(w http.ResponseWriter, r *http.Request) {
 	// curl POST localhost:8000/api/class_set -H "class_id: 1" -H "set_id: 1"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -49,7 +49,7 @@ func (h *Embed) AddSet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Embed) RemoveSet(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) RemoveSet(w http.ResponseWriter, r *http.Request) {
 	// curl -X DELETE localhost:8000/api/class_user/ -H "class_id: 1" -H "set_id"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -89,7 +89,7 @@ func (h *Embed) RemoveSet(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte{})
 }
 
-func (h *Embed) GetSetsInClass(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) GetSetsInClass(w http.ResponseWriter, r *http.Request) {
 	// curl -X GET localhost:8000/api/class_set/get_sets -H "class_id"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -122,7 +122,7 @@ func (h *Embed) GetSetsInClass(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Embed) GetClassesHavingSet(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) GetClassesHavingSet(w http.ResponseWriter, r *http.Request) {
 	// curl -X GET localhost:8000/api/class_set/get_classes -H "set_id"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {

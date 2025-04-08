@@ -1,22 +1,18 @@
 package routes
 
 import (
-	"encoding/json"
-	"log"
-	"net/http"
-
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/controllers"
 	"github.com/go-chi/chi/v5"
 )
 
-func dummy(w http.ResponseWriter, r *http.Request) {
-	log.Println("url: ", r.URL)
+// func dummy(w http.ResponseWriter, r *http.Request) {
+// 	log.Println("url: ", r.URL)
 
-	json.NewEncoder(w).Encode("here: " + r.URL.Path)
-}
+// 	json.NewEncoder(w).Encode("here: " + r.URL.Path)
+// }
 
 // every protected route is preceded by /api
-func Protected(r *chi.Mux, h *controllers.Embed) {
+func Protected(r *chi.Mux, h *controllers.DBHandler) {
 
 	// -------------------complex-------------------------
 
@@ -52,7 +48,8 @@ func Protected(r *chi.Mux, h *controllers.Embed) {
 	r.Route("/classes", func(r chi.Router) {
 
 		r.Route("/", func(r chi.Router) {
-			r.Use(h.VerifyTeacherMW) // Ensure only teachers can update/delete
+			// Ensure only teachers can update/delete
+			r.Use(h.VerifyTeacherMW)
 			r.Put("/class_name", h.UpdateClass)
 			r.Put("/class_description", h.UpdateClass)
 			r.Delete("/", h.DeleteClass)
@@ -68,7 +65,7 @@ func Protected(r *chi.Mux, h *controllers.Embed) {
 		r.Get("/list", h.ListFlashcardsOfASet)
 		r.Post("/", h.CreateFlashcard)
 		r.Route("/", func(r chi.Router) {
-			r.Use(h.VerifyFlashCardOwnerMW) // Ensure only the owner can update/delete
+			r.Use(h.VerifyFlashcardOwnerMW) // Ensure only the owner can update/delete
 			r.Put("/front", h.UpdateFlashcard)
 			r.Put("/back", h.UpdateFlashcard)
 			r.Put("/set_id", h.UpdateFlashcard)
@@ -102,7 +99,7 @@ func Protected(r *chi.Mux, h *controllers.Embed) {
 }
 
 // auth
-func Unprotected(r *chi.Mux, h *controllers.Embed) {
+func Unprotected(r *chi.Mux, h *controllers.DBHandler) {
 	r.Post("/login", h.Login)
 	r.Post("/signup", h.Signup)
 }
