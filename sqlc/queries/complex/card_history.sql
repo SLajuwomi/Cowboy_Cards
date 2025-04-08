@@ -13,7 +13,7 @@ SELECT score AS correct, (times_attempted - score) AS incorrect, (score - times_
 WHERE user_id = $1 AND card_id = $2;
 
 -- name: GetScoresInASet :many
-SELECT set_name, score AS correct, (times_attempted - score) AS incorrect, (score - times_attempted) AS net_score, times_attempted 
+SELECT set_name, score AS correct, (times_attempted - score) AS incorrect, score AS net_score, times_attempted 
 FROM card_history 
 JOIN flashcards ON card_history.card_id = flashcards.id
 JOIN flashcard_sets ON flashcards.set_id = flashcard_sets.id
