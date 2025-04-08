@@ -11,7 +11,7 @@ interface FetchOptions {
 const defaultOpts: FetchOptions = {
   method: 'GET',
   headers: {},
-  credentials: 'include', //dev only
+  //   credentials: 'include', //dev only
 };
 
 /**

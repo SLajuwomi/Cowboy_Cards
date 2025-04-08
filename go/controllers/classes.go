@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"path"
 
@@ -193,19 +194,27 @@ func (h *DBHandler) DeleteClass(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Release()
 
-	headerVals, err := getHeaderVals(r, "id")
-	if err != nil {
-		logAndSendError(w, err, "Header error", http.StatusBadRequest)
+	// headerVals, err := getHeaderVals(r, "id")
+	// if err != nil {
+	// 	logAndSendError(w, err, "Header error", http.StatusBadRequest)
+	// 	return
+	// }
+
+	// id, err := getInt32Id(headerVals["id"])
+	// if err != nil {
+	// 	logAndSendError(w, err, "Invalid id", http.StatusBadRequest)
+	// 	return
+	// }
+
+	classID, ok := middleware.GetClassIDFromContext(ctx)
+	if !ok {
+		logAndSendError(w, errors.New("class id lookup error"), "context error", http.StatusInternalServerError)
 		return
 	}
 
-	id, err := getInt32Id(headerVals["id"])
-	if err != nil {
-		logAndSendError(w, err, "Invalid id", http.StatusBadRequest)
-		return
-	}
+	log.Println(classID)
 
-	err = query.DeleteClass(ctx, id)
+	err = query.DeleteClass(ctx, classID)
 	if err != nil {
 		logAndSendError(w, err, "Failed to delete class", http.StatusInternalServerError)
 		return

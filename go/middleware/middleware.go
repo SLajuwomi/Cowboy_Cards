@@ -99,31 +99,33 @@ func (h *Handler) VerifyTeacherMW(next http.Handler) http.Handler {
 
 func (h *Handler) VerifyFlashcardOwnerMW(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("DEBUG: VerifyFlashcardOwnerMW called for path: %s", r.URL.Path)
+
 		query, ctx, conn, err := GetQueryConnAndContext(r, h)
 		if err != nil {
 			LogAndSendError(w, err, "Database connection error", http.StatusInternalServerError)
 			return
 		}
 		defer conn.Release()
-		// Get user_id from context (set by AuthMiddleware)
-		// id, ok := GetUserIDFromContext(ctx)
-		// if !ok {
-		// 	LogAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
-		// 	return
-		// }
 
-		// THIS IS FOR TESTING
-		headerVals, err := GetHeaderVals(r, "id", "user_id")
+		// Get user_id from context (set by AuthMiddleware)
+		userID, ok := GetUserIDFromContext(ctx)
+		if !ok {
+			LogAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		headerVals, err := GetHeaderVals(r, "id")
 		if err != nil {
 			LogAndSendError(w, err, "Header error", http.StatusBadRequest)
 			return
 		}
 
-		id, err := GetInt32Id(headerVals["user_id"])
-		if err != nil {
-			LogAndSendError(w, err, "Invalid id", http.StatusBadRequest)
-			return
-		}
+		// id, err := GetInt32Id(headerVals["user_id"])
+		// if err != nil {
+		// 	LogAndSendError(w, err, "Invalid id", http.StatusBadRequest)
+		// 	return
+		// }
 
 		flashcardID, err := GetInt32Id(headerVals["id"])
 		if err != nil {
@@ -132,63 +134,69 @@ func (h *Handler) VerifyFlashcardOwnerMW(next http.Handler) http.Handler {
 		}
 
 		owner, err := query.VerifyFlashcardOwner(ctx, db.VerifyFlashcardOwnerParams{
-			UserID: id,
+			UserID: userID,
 			ID:     flashcardID,
 		})
-		log.Println("owner", owner)
-
 		if err != nil {
 			LogAndSendError(w, err, "Invalid permissions", http.StatusInternalServerError)
 			return
 		}
+
+		log.Println("owner", owner)
+
+		ctx = context.WithValue(ctx, flashcardKey, flashcardID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
 func (h *Handler) VerifySetOwnerMW(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("DEBUG: VerifySetOwnerMW called for path: %s", r.URL.Path)
+
 		query, ctx, conn, err := GetQueryConnAndContext(r, h)
 		if err != nil {
 			LogAndSendError(w, err, "Database connection error", http.StatusInternalServerError)
 			return
 		}
 		defer conn.Release()
-		// Get user_id from context (set by AuthMiddleware)
-		// id, ok := GetUserIDFromContext(ctx)
-		// if !ok {
-		// 	LogAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
-		// 	return
-		// }
 
-		// THIS IS FOR TESTING
-		headerVals, err := GetHeaderVals(r, "id", "user_id")
+		// Get user_id from context (set by AuthMiddleware)
+		userID, ok := GetUserIDFromContext(ctx)
+		if !ok {
+			LogAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		headerVals, err := GetHeaderVals(r, "id")
 		if err != nil {
 			LogAndSendError(w, err, "Header error", http.StatusBadRequest)
 			return
 		}
 
-		id, err := GetInt32Id(headerVals["user_id"])
-		if err != nil {
-			LogAndSendError(w, err, "Invalid id", http.StatusBadRequest)
-			return
-		}
+		// id, err := GetInt32Id(headerVals["user_id"])
+		// if err != nil {
+		// 	LogAndSendError(w, err, "Invalid id", http.StatusBadRequest)
+		// 	return
+		// }
 
-		sid, err := GetInt32Id(headerVals["id"])
+		setID, err := GetInt32Id(headerVals["id"])
 		if err != nil {
 			LogAndSendError(w, err, "Invalid class id", http.StatusBadRequest)
 			return
 		}
 
 		owner, err := query.VerifySetOwner(ctx, db.VerifySetOwnerParams{
-			UserID: id,
-			SetID:  sid,
+			UserID: userID,
+			SetID:  setID,
 		})
-		log.Println("owner", owner)
-
 		if err != nil {
 			LogAndSendError(w, err, "Invalid permissions", http.StatusInternalServerError)
 			return
 		}
+
+		log.Println("owner", owner)
+
+		ctx = context.WithValue(ctx, setKey, setID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

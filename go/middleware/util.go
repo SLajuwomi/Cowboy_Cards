@@ -20,11 +20,15 @@ type Handler struct {
 
 type userIDKey string
 type classIDKey string
+type flashcardIDKey string
+type setIDKey string
 
 const (
-	userKey     userIDKey  = "userID"
-	classKey    classIDKey = "classID"
-	sessionName string     = "cowboy-cards-session"
+	userKey      userIDKey      = "userID"
+	classKey     classIDKey     = "classID"
+	flashcardKey flashcardIDKey = "flashcardID"
+	setKey       setIDKey       = "setID"
+	sessionName  string         = "cowboy-cards-session"
 )
 
 func LogAndSendError(w http.ResponseWriter, err error, msg string, statusCode int) {
@@ -39,6 +43,16 @@ func GetUserIDFromContext(ctx context.Context) (id int32, ok bool) {
 
 func GetClassIDFromContext(ctx context.Context) (id int32, ok bool) {
 	id, ok = ctx.Value(classKey).(int32)
+	return
+}
+
+func GetFlashcardIDFromContext(ctx context.Context) (id int32, ok bool) {
+	id, ok = ctx.Value(flashcardKey).(int32)
+	return
+}
+
+func GetSetIDFromContext(ctx context.Context) (id int32, ok bool) {
+	id, ok = ctx.Value(setKey).(int32)
 	return
 }
 
