@@ -3,11 +3,14 @@ import {
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
+  IonIcon,
   IonItem,
   IonList,
 } from '@ionic/react';
 
-const StudentList = (props) => {
+import { trashOutline } from 'ionicons/icons';
+
+const StudentList = ({ students, isTeacher, onDeleteStudent }) => {
   return (
     <IonCard className="mt-6">
       <IonCardHeader>
@@ -17,12 +20,21 @@ const StudentList = (props) => {
       </IonCardHeader>
       <IonCardContent>
         <IonList className="space-y-3" lines="none">
-          {props.students.map((student) => (
+          {students.map((student) => (
             <IonItem key={student.id} className="muted-item p-3">
               <span className="font-medium">{student.name}</span>
               <span slot="end" className="text-muted-foreground">
                 {student.email}
               </span>
+              {isTeacher && (
+                <IonIcon
+                  slot="end"
+                  icon={trashOutline}
+                  color="danger"
+                  className="cursor-pointer"
+                  onClick={() => onDeleteStudent(student.id)}
+                />
+              )}
             </IonItem>
           ))}
         </IonList>

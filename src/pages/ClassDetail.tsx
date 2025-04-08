@@ -2,8 +2,10 @@ import FlashcardCarousel from '@/components/flashcards/FlashcardCarousel';
 import { Navbar } from '@/components/navbar';
 import { type CarouselApi } from '@/components/ui/carousel';
 import Leaderboard from '@/components/ui/Leaderboard';
+import StudentList from '@/components/ui/StudentList';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
+  IonAlert,
   IonButton,
   IonCardContent,
   IonContent,
@@ -14,10 +16,12 @@ import {
   IonSegment,
   IonSegmentButton,
 } from '@ionic/react';
+import { h } from 'ionicons/dist/types/stencil-public-runtime';
 import {
   arrowBackOutline,
   bookOutline,
   createOutline,
+  peopleOutline,
   trophyOutline,
 } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
@@ -44,8 +48,7 @@ type FlashcardSet = {
   UpdatedAt: string;
 };
 
-//const API_BASE = import.meta.env.VITE_API_BASE_URL;
-const API_BASE = 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const ClassDetail = () => {
   const { id } = useParams();
@@ -188,7 +191,7 @@ const ClassDetail = () => {
       console.log('sets', sets);
       setFlashcardSets(sets);
     }
-    console.log('In useEffect');
+
     fetchClass();
     fetchFlashcardSets();
   }, []);
@@ -219,6 +222,33 @@ const ClassDetail = () => {
     { name: 'Alice Williams', cardsMastered: 82 },
     { name: 'Charlie Brown', cardsMastered: 80 },
   ];
+
+  const [students, setStudents] = useState([
+    { id: 1, name: 'Student One', email: 'student1@example.com' },
+    { id: 2, name: 'Student Two', email: 'student2@example.com' },
+    { id: 3, name: 'Student Three', email: 'student3@example.com' },
+  ]);
+
+  // Should hold the id of the student to be deleted and the state of the alert
+  const [showDeleteAlert, setShowDeleteAlert] = useState({
+    isOpen: false,
+    studentId: null,
+  });
+
+  const showDeleteStudentAlert = (studentId) => {
+    setShowDeleteAlert((prev) => ({
+      ...prev,
+      isOpen: true,
+      studentId: studentId,
+    }));
+  };
+
+  // Handler to delete a student
+  const handleDeleteStudent = (studentId) => {
+    setStudents((prevStudents) =>
+      prevStudents.filter((student) => student.id !== studentId)
+    );
+  };
 
   useEffect(() => {
     if (!carouselApi) {
@@ -295,9 +325,6 @@ const ClassDetail = () => {
                 {loading ? 'Loading...' : classData?.ClassDescription}
               </p>
             </div>
-            <IonButton onClick={handleEdit} fill="outline" color="primary">
-              Edit
-            </IonButton>
           </div>
         )}
 
@@ -313,6 +340,7 @@ const ClassDetail = () => {
               size="large"
               color="primary"
               className="hover:transform hover:scale-110 cursor-pointer"
+              onClick={handleEdit}
             ></IonIcon>
           )}
         </div>
@@ -330,9 +358,20 @@ const ClassDetail = () => {
             <IonIcon icon={trophyOutline} className="mr-2" />
             <IonLabel>Leaderboard</IonLabel>
           </IonSegmentButton>
+          <IonSegmentButton value="students">
+            <IonIcon icon={peopleOutline} className="mr-2" />
+            <IonLabel>Students</IonLabel>
+          </IonSegmentButton>
         </IonSegment>
 
         {tab === 'leaderboard' && <Leaderboard leaderboard={leaderboard} />}
+        {tab === 'students' && (
+          <StudentList
+            students={students}
+            isTeacher={isTeacher}
+            onDeleteStudent={showDeleteStudentAlert}
+          />
+        )}
 
         <FlashcardCarousel
           flashcardSets={flashcardSets}
@@ -340,6 +379,48 @@ const ClassDetail = () => {
           setApi={setCarouselApi}
         />
       </div>
+
+      {/* Delete Account Alert */}
+      <IonAlert
+        isOpen={showDeleteAlert.isOpen}
+        onDidDismiss={() =>
+          setShowDeleteAlert((prev) => ({
+            ...prev,
+            isOpen: false,
+            studentId: null,
+          }))
+        }
+        header="Confirm Deletion"
+        message="Are you sure you want to delete this Student? This action cannot be undone."
+        buttons={[
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            handler: () => {
+              console.log('Cancel clicked');
+              setShowDeleteAlert((prev) => ({
+                ...prev,
+                isOpen: false,
+                studentId: null,
+              }));
+
+            },
+          },
+          {
+            text: 'Delete',
+            handler: () => {
+              // Add your delete account logic here
+              handleDeleteStudent(showDeleteAlert.studentId);
+              setShowDeleteAlert((prev) => ({
+                ...prev,
+                isOpen: false,
+                studentId: null,
+              }));
+              console.log('Account deleted');
+            },
+          },
+        ]}
+      />
     </IonContent>
   );
 };
