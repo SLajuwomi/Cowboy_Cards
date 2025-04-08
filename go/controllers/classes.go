@@ -3,14 +3,16 @@ package controllers
 import (
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"path"
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
+	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/middleware"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-func (h *Embed) ListClasses(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) ListClasses(w http.ResponseWriter, r *http.Request) {
 	// curl http://localhost:8000/api/classes/list | jq
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
@@ -32,7 +34,7 @@ func (h *Embed) ListClasses(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Embed) GetClassById(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) GetClassById(w http.ResponseWriter, r *http.Request) {
 	// curl http://localhost:8000/api/classes/ -H "id: 1"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
@@ -66,7 +68,7 @@ func (h *Embed) GetClassById(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Embed) CreateClass(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) CreateClass(w http.ResponseWriter, r *http.Request) {
 	// curl -X POST localhost:8000/api/classes -H "name: class name" -H "description: class description" -H "private t/f
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
@@ -124,7 +126,7 @@ func (h *Embed) CreateClass(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Embed) UpdateClass(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) UpdateClass(w http.ResponseWriter, r *http.Request) {
 	// curl -X PUT http://localhost:8000/api/classes/class_description -H "id: 9" -H "class_description: 1st german"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
@@ -136,31 +138,37 @@ func (h *Embed) UpdateClass(w http.ResponseWriter, r *http.Request) {
 
 	route := path.Base(r.URL.Path)
 
-	headerVals, err := getHeaderVals(r, "id", route)
+	headerVals, err := getHeaderVals(r, route)
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
 		return
 	}
 
-	id, err := getInt32Id(headerVals["id"])
-	if err != nil {
-		logAndSendError(w, err, "Invalid id", http.StatusBadRequest)
+	val := headerVals[route]
+
+	classID, ok := middleware.GetClassIDFromContext(ctx)
+	if !ok {
+		logAndSendError(w, errors.New("class id lookup error"), "context error", http.StatusInternalServerError)
 		return
 	}
 
-	val := headerVals[route]
+	// id, err := getInt32Id(headerVals["id"])
+	// if err != nil {
+	// 	logAndSendError(w, err, "Invalid id", http.StatusBadRequest)
+	// 	return
+	// }
 
 	var res string
 	switch route {
 	case "class_name":
 		res, err = query.UpdateClassName(ctx, db.UpdateClassNameParams{
 			ClassName: val,
-			ID:        id,
+			ID:        classID,
 		})
 	case "class_description":
 		res, err = query.UpdateClassDescription(ctx, db.UpdateClassDescriptionParams{
 			ClassDescription: val,
-			ID:               id,
+			ID:               classID,
 		})
 	default:
 		logAndSendError(w, errors.New("invalid column"), "Improper header", http.StatusBadRequest)
@@ -176,7 +184,7 @@ func (h *Embed) UpdateClass(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Embed) DeleteClass(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) DeleteClass(w http.ResponseWriter, r *http.Request) {
 	// curl -X DELETE http://localhost:8000/api/classes/ -H "id: 2"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
@@ -186,19 +194,27 @@ func (h *Embed) DeleteClass(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Release()
 
-	headerVals, err := getHeaderVals(r, "id")
-	if err != nil {
-		logAndSendError(w, err, "Header error", http.StatusBadRequest)
+	// headerVals, err := getHeaderVals(r, "id")
+	// if err != nil {
+	// 	logAndSendError(w, err, "Header error", http.StatusBadRequest)
+	// 	return
+	// }
+
+	// id, err := getInt32Id(headerVals["id"])
+	// if err != nil {
+	// 	logAndSendError(w, err, "Invalid id", http.StatusBadRequest)
+	// 	return
+	// }
+
+	classID, ok := middleware.GetClassIDFromContext(ctx)
+	if !ok {
+		logAndSendError(w, errors.New("class id lookup error"), "context error", http.StatusInternalServerError)
 		return
 	}
 
-	id, err := getInt32Id(headerVals["id"])
-	if err != nil {
-		logAndSendError(w, err, "Invalid id", http.StatusBadRequest)
-		return
-	}
+	log.Println(classID)
 
-	err = query.DeleteClass(ctx, id)
+	err = query.DeleteClass(ctx, classID)
 	if err != nil {
 		logAndSendError(w, err, "Failed to delete class", http.StatusInternalServerError)
 		return
@@ -209,7 +225,7 @@ func (h *Embed) DeleteClass(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte{})
 }
 
-func (h *Embed) GetClassScores(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) GetClassScores(w http.ResponseWriter, r *http.Request) {
 	// curl -GET http://localhost:8000/classes/get_scores -H "class_id: 1"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
