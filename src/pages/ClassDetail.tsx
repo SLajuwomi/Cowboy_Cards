@@ -55,7 +55,7 @@ const ClassDetail = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [tab, setTab] = useState('flashcards');
-  const [isTeacher, setIsTeacher] = useState(false);
+  const [isTeacher, setIsTeacher] = useState(true);
   const [classData, setClassData] = useState<Class>();
   const [flashcardSets, setFlashcardSets] = useState<FlashcardSet[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -334,6 +334,7 @@ const ClassDetail = () => {
             Back
           </IonButton>
           {/* TODO: should only show for teachers */}
+
           {isTeacher && (
             <IonIcon
               icon={createOutline}
@@ -344,6 +345,13 @@ const ClassDetail = () => {
             ></IonIcon>
           )}
         </div>
+
+        {isTeacher && (
+          //  TODO: create-set isn't accepting the class ID right now, will be necessary for making a set for a specific class
+          <IonButton routerLink={`/create-set`} fill="solid" color="primary">
+            Create Flashcard Set
+          </IonButton>
+        )}
 
         <IonSegment
           value={tab}
@@ -403,7 +411,6 @@ const ClassDetail = () => {
                 isOpen: false,
                 studentId: null,
               }));
-
             },
           },
           {
