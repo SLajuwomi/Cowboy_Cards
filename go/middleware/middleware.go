@@ -38,7 +38,6 @@ func SetCacheControlHeader(w http.ResponseWriter, r *http.Request, next http.Han
 }
 
 func SetCredsHeaders(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
 	w.Header().Set("Vary", "Origin")
