@@ -30,7 +30,8 @@ func init() {
 		MaxAge:   0,
 		Secure:   true,
 		HttpOnly: true,
-		SameSite: http.SameSiteNoneMode,
+		SameSite: http.SameSiteStrictMode,
+		// SameSite: http.SameSiteNoneMode,//dev only
 	}
 }
 
