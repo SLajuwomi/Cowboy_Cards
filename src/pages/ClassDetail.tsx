@@ -44,7 +44,8 @@ type FlashcardSet = {
   UpdatedAt: string;
 };
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
+//const API_BASE = import.meta.env.VITE_API_BASE_URL;
+const API_BASE = 'http://localhost:8000';
 
 const ClassDetail = () => {
   const { id } = useParams();
@@ -60,15 +61,15 @@ const ClassDetail = () => {
   // Update Class Name and Description Form
   const [isEditing, setIsEditing] = useState(false);
   const [updatedInfo, setUpdatedInfo] = useState({
-    className: '',
-    classDescription: '',
+    class_name: '',
+    class_description: '',
   });
 
   const handleEdit = () => {
     console.log('Handling Edit');
     setUpdatedInfo({
-      className: classData?.ClassName || '',
-      classDescription: classData?.ClassDescription || '',
+      class_name: classData?.ClassName || '',
+      class_description: classData?.ClassDescription || '',
     });
     setIsEditing(true);
   };
@@ -89,15 +90,15 @@ const ClassDetail = () => {
     let isValid = true;
 
     // Trim whitespace from the input values
-    updatedInfo.className = updatedInfo.className.trim();
-    updatedInfo.classDescription = updatedInfo.classDescription.trim();
+    updatedInfo.class_name = updatedInfo.class_name.trim();
+    updatedInfo.class_description = updatedInfo.class_description.trim();
 
-    if (!updatedInfo.className) {
+    if (!updatedInfo.class_name) {
       newErrors.className = 'Class name is required';
       isValid = false;
     }
 
-    if (!updatedInfo.classDescription) {
+    if (!updatedInfo.class_description) {
       newErrors.classDescription = 'Class description is required';
       isValid = false;
     }
@@ -112,31 +113,39 @@ const ClassDetail = () => {
       console.log('Form validation failed:', errors);
       return;
     }
-    // try {
-    //   await makeHttpCall(`${API_BASE}/api/classes/${id}`, {
-    //     method: 'PUT',
-    //     body: JSON.stringify(updatedInfo),
-    //   });
-    //   setClassData((prev) => ({
-    //     ...prev,
-    //     ClassName: updatedInfo.className,
-    //     ClassDescription: updatedInfo.classDescription,
-    //   }));
-    //   setIsEditing(false);
-    // } catch (error) {
-    //   console.error('Error updating class:', error);
-    // }
-    console.log('Saving class data:', updatedInfo);
-    setClassData((prev) => ({
-      ...prev,
-      ClassName: updatedInfo.className,
-      ClassDescription: updatedInfo.classDescription,
-    }));
-    setIsEditing(false);
-    setUpdatedInfo({
-      className: '',
-      classDescription: '',
-    });
+    // Define the fields to be updated
+    const fieldsToUpdate = ['class_name', 'class_description'];
+
+    // NOT WORKING YET
+
+    try {
+      // Identify which fields have changed and create API call promises
+      const updatePromises = fieldsToUpdate
+        // .filter((field) => updatedInfo[field] !== classData[field]) // Only include modified fields
+        .map((field) =>
+          makeHttpCall<Class>(`${API_BASE}/api/classes/${field}`, {
+            method: 'PUT',
+            headers: {
+              id: id, // User ID as a string
+              [field]: updatedInfo[field], // New value for the field
+            },
+          })
+        );
+
+      // Wait for all API calls to complete successfully
+      await Promise.all(updatePromises);
+      // If all updates succeed, update the local state and exit editing mode
+      setClassData((prev) => ({
+        ...prev,
+        ClassName: updatedInfo.class_name,
+        ClassDescription: updatedInfo.class_description,
+      }));
+      setIsEditing(false);
+    } catch (error) {
+      // Log the error and notify the user if any update fails
+      console.error(error);
+      alert('Failed to update some fields. Please try again.');
+    }
   };
 
   const handleChange = (e: any) => {
@@ -238,9 +247,9 @@ const ClassDetail = () => {
                 <IonLabel position="stacked">Class Name</IonLabel>
                 <IonInput
                   type="text"
-                  name="className"
+                  name="class_name"
                   placeholder="Enter class name"
-                  value={updatedInfo?.className}
+                  value={updatedInfo?.class_name}
                   onIonChange={handleChange}
                 />
               </IonItem>
@@ -251,9 +260,9 @@ const ClassDetail = () => {
                 <IonLabel position="stacked">Class Description</IonLabel>
                 <IonInput
                   type="text"
-                  name="classDescription"
+                  name="class_description"
                   placeholder="Enter class description"
-                  value={updatedInfo?.classDescription}
+                  value={updatedInfo?.class_description}
                   onIonChange={handleChange}
                 />
               </IonItem>
