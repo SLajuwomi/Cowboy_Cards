@@ -46,7 +46,7 @@ func (h *DBHandler) GetUserById(w http.ResponseWriter, r *http.Request) {
 	defer conn.Release()
 
 	// Get user_id from context (set by AuthMiddleware)
-	id, ok := middleware.FromContext(ctx)
+	id, ok := middleware.GetUserIDFromContext(ctx)
 	if !ok {
 		logAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -99,7 +99,7 @@ func (h *DBHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	defer conn.Release()
 
 	// Get user_id from context (set by AuthMiddleware)
-	id, ok := middleware.FromContext(ctx)
+	id, ok := middleware.GetUserIDFromContext(ctx)
 	if !ok {
 		logAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -207,7 +207,7 @@ func (h *DBHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	defer conn.Release()
 
 	// Get user_id from context (set by AuthMiddleware)
-	id, ok := middleware.FromContext(ctx)
+	id, ok := middleware.GetUserIDFromContext(ctx)
 	if !ok {
 		logAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
 		return

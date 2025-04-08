@@ -36,7 +36,7 @@ type User = {
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const UserAccount = () => {
-  const userId = '1'; // User ID for fetching user data
+  const userID = '1'; // User ID for fetching user data
 
   const { theme, setTheme } = useTheme();
   const [userInfo, setUserInfo] = useState<User>();
@@ -78,8 +78,8 @@ const UserAccount = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [updatedInfo, setUpdatedInfo] = useState(userInfo);
 
-  const toggleClassDetails = (classId: number) => {
-    setExpandedClass(expandedClass === classId ? null : classId);
+  const toggleClassDetails = (classID: number) => {
+    setExpandedClass(expandedClass === classID ? null : classID);
   };
 
   const handleEdit = () => {
@@ -104,7 +104,7 @@ const UserAccount = () => {
           makeHttpCall<User>(`${API_BASE}/api/users/${field}`, {
             method: 'PUT',
             headers: {
-              id: userId, // User ID as a string
+              id: userID, // User ID as a string
               [field]: updatedInfo[field], // New value for the field
             },
           })
@@ -193,7 +193,7 @@ const UserAccount = () => {
         const data = await makeHttpCall<User>(`${API_BASE}/api/users/`, {
           method: 'GET',
           headers: {
-            id: userId,
+            id: userID,
           },
         });
         setUserInfo(data);

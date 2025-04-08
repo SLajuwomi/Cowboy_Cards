@@ -7,6 +7,7 @@ import (
 	"path"
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
+	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/middleware"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -136,31 +137,37 @@ func (h *DBHandler) UpdateClass(w http.ResponseWriter, r *http.Request) {
 
 	route := path.Base(r.URL.Path)
 
-	headerVals, err := getHeaderVals(r, "id", route)
+	headerVals, err := getHeaderVals(r, route)
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
 		return
 	}
 
-	id, err := getInt32Id(headerVals["id"])
-	if err != nil {
-		logAndSendError(w, err, "Invalid id", http.StatusBadRequest)
+	val := headerVals[route]
+
+	classID, ok := middleware.GetClassIDFromContext(ctx)
+	if !ok {
+		logAndSendError(w, errors.New("class id lookup error"), "context error", http.StatusInternalServerError)
 		return
 	}
 
-	val := headerVals[route]
+	// id, err := getInt32Id(headerVals["id"])
+	// if err != nil {
+	// 	logAndSendError(w, err, "Invalid id", http.StatusBadRequest)
+	// 	return
+	// }
 
 	var res string
 	switch route {
 	case "class_name":
 		res, err = query.UpdateClassName(ctx, db.UpdateClassNameParams{
 			ClassName: val,
-			ID:        id,
+			ID:        classID,
 		})
 	case "class_description":
 		res, err = query.UpdateClassDescription(ctx, db.UpdateClassDescriptionParams{
 			ClassDescription: val,
-			ID:               id,
+			ID:               classID,
 		})
 	default:
 		logAndSendError(w, errors.New("invalid column"), "Improper header", http.StatusBadRequest)

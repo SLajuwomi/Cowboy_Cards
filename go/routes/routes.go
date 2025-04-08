@@ -48,7 +48,8 @@ func Protected(r *chi.Mux, h *controllers.DBHandler) {
 	r.Route("/classes", func(r chi.Router) {
 
 		r.Route("/", func(r chi.Router) {
-			r.Use(h.VerifyTeacherMW) // Ensure only teachers can update/delete
+			// Ensure only teachers can update/delete
+			r.Use(h.VerifyTeacherMW)
 			r.Put("/class_name", h.UpdateClass)
 			r.Put("/class_description", h.UpdateClass)
 			r.Delete("/", h.DeleteClass)
