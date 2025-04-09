@@ -426,9 +426,9 @@ const UserAccount = () => {
             <IonCardContent className="p-6 pt-0">
               <div className="space-y-4">
                 <IonItem>
-                  <IonLabel>Theme</IonLabel>
+                  {/* <IonLabel>Theme</IonLabel> */}
                   <IonSelect
-                    label="theme"
+                    label="Theme"
                     value={theme}
                     onIonChange={(e) =>
                       setTheme(e.detail.value as 'light' | 'dark')
