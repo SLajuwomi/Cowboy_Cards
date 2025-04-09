@@ -18,6 +18,7 @@ import {
   createOutline,
   trophyOutline,
 } from 'ionicons/icons';
+import { Footer } from '@/components/footer';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -123,7 +124,6 @@ const ClassDetail = () => {
       console.log('users', users);
       setClassUsers(users);
     }
-
     fetchClass();
     fetchFlashcardSets();
     fetchClassUsers();
@@ -308,6 +308,7 @@ const ClassDetail = () => {
           />
         )}
       </div>
+      <Footer />
     </IonContent>
   );
 };
