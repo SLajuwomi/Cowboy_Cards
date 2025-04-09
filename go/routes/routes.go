@@ -55,7 +55,7 @@ func Protected(r *chi.Mux, h *controllers.DBHandler) {
 			r.Delete("/", h.DeleteClass)
 		})
 
-		r.Get("/list", h.ListClasses)
+		// r.Get("/list", h.ListClasses)
 		r.Get("/", h.GetClassById)
 		r.Post("/", h.CreateClass)
 	})
