@@ -180,8 +180,8 @@ const UserAccount = () => {
     general?: string;
   }>({});
 
-  const handleChange = (e: any) => {
-    const { name } = e.target;
+  const handleChange = (e: CustomEvent) => {
+    const { name } = e.target as HTMLIonInputElement;
     const value = e.detail.value;
     setUpdatedInfo((prev) => ({
       ...prev,
@@ -274,6 +274,8 @@ const UserAccount = () => {
                   </IonCardTitle>
                 </IonCardHeader>
                 <IonCardContent className="p-6 pt-0">
+                  {/* TODO: Make this into an EditingField component where you can pass whatever label or field you want. */}
+
                   {isEditing ? (
                     <div className="space-y-4">
                       <IonItem>
@@ -410,7 +412,10 @@ const UserAccount = () => {
                   <IonList>
                     {classHistory.map((cls) => (
                       <div key={cls.id}>
-                        <IonItem button onClick={() => toggleClassDetails(cls.id)}>
+                        <IonItem
+                          button
+                          onClick={() => toggleClassDetails(cls.id)}
+                        >
                           <IonLabel>{cls.title}</IonLabel>
                           <IonIcon
                             icon={
@@ -425,14 +430,19 @@ const UserAccount = () => {
                           <IonItem lines="none">
                             <div className="pl-4 text-gray-700">
                               <p>
-                                <span className="font-medium">Date Started:</span>{' '}
+                                <span className="font-medium">
+                                  Date Started:
+                                </span>{' '}
                                 {cls.startDate}
                               </p>
                               <p>
                                 <span className="font-medium">Date Ended:</span>{' '}
                                 {cls.endDate}
                               </p>
-                              <a href={cls.link} className="text-primary underline">
+                              <a
+                                href={cls.link}
+                                className="text-primary underline"
+                              >
                                 Go to Class Page
                               </a>
                             </div>
@@ -470,7 +480,9 @@ const UserAccount = () => {
                     </IonItem>
                     <div className="flex justify-between items-center">
                       <div>
-                        <p className="text-sm font-medium">Change Your Password</p>
+                        <p className="text-sm font-medium">
+                          Change Your Password
+                        </p>
                         <p className="text-xs text-gray-600">
                           Reset your account password.
                         </p>
@@ -481,7 +493,9 @@ const UserAccount = () => {
                     </div>
                     <div className="flex justify-between items-center">
                       <div>
-                        <p className="text-sm font-medium">Delete Your Account</p>
+                        <p className="text-sm font-medium">
+                          Delete Your Account
+                        </p>
                         <p className="text-xs text-gray-600">
                           This will delete all account data and can't be undone.
                         </p>
