@@ -68,6 +68,40 @@ func (h *DBHandler) GetClassById(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (h *DBHandler) GetClassLeaderboard(w http.ResponseWriter, r *http.Request) {
+	// curl http://localhost:8000/api/classes/leaderboard -H "class_id: 1"
+
+	query, ctx, conn, err := getQueryConnAndContext(r, h)
+	if err != nil {
+		logAndSendError(w, err, "Database connection error", http.StatusInternalServerError)
+		return
+	}
+	defer conn.Release()
+
+	headerVals, err := getHeaderVals(r, "class_id")
+	if err != nil {
+		logAndSendError(w, err, "Header error", http.StatusBadRequest)
+		return
+	}
+
+	classID, err := getInt32Id(headerVals["class_id"])
+	if err != nil {
+		logAndSendError(w, err, "Invalid class id", http.StatusBadRequest)
+		return
+	}
+
+	scores, err := query.GetClassScores(ctx, classID)
+	if err != nil {
+		logAndSendError(w, err, "Error getting scores", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err = json.NewEncoder(w).Encode(scores); err != nil {
+		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
+	}
+}
+
 func (h *DBHandler) CreateClass(w http.ResponseWriter, r *http.Request) {
 	// curl -X POST localhost:8000/api/classes -H "name: class name" -H "description: class description" -H "private t/f
 
