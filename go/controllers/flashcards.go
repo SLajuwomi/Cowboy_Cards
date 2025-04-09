@@ -80,6 +80,7 @@ func (h *DBHandler) ListFlashcardsOfASet(w http.ResponseWriter, r *http.Request)
 
 func (h *DBHandler) CreateFlashcard(w http.ResponseWriter, r *http.Request) {
 	// curl -X POST localhost:8000/api/flashcards -H "front: test front" -H "back: back test" -H "set_id: 1"
+
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
 		logAndSendError(w, err, "Database connection error", http.StatusInternalServerError)

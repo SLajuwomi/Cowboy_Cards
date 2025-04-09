@@ -20,6 +20,8 @@ import {
 import { addOutline, bookOutline, listOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Footer } from '@/components/footer';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
@@ -198,6 +200,7 @@ const Home = () => {
             )}
           </>
         )}
+        <Footer />
         {/* <div className="mb-8">
           <IonHeader className="p-4">
             <IonTitle className="text-2xl font-bold">Suggested Sets</IonTitle>
