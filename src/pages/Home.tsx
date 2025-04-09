@@ -40,14 +40,14 @@ const Home = () => {
     { id: 6, name: 'Historical Events', cards: 5 },
   ];
 
-  const suggestedFlashcardSets = [
-    { id: 1, name: 'Physics Essentials', cards: 18 },
-    { id: 2, name: 'Spanish Phrases', cards: 22 },
-    { id: 3, name: 'World Capitals', cards: 12 },
-    { id: 4, name: 'Algebraic Equations', cards: 20 },
-    { id: 5, name: 'Shakespearean Plays', cards: 14 },
-    { id: 6, name: 'Ancient Civilizations', cards: 9 },
-  ];
+  // const suggestedFlashcardSets = [
+  //   { id: 1, name: 'Physics Essentials', cards: 18 },
+  //   { id: 2, name: 'Spanish Phrases', cards: 22 },
+  //   { id: 3, name: 'World Capitals', cards: 12 },
+  //   { id: 4, name: 'Algebraic Equations', cards: 20 },
+  //   { id: 5, name: 'Shakespearean Plays', cards: 14 },
+  //   { id: 6, name: 'Ancient Civilizations', cards: 9 },
+  // ];
 
   return (
     <IonContent className="ion-padding">
@@ -137,7 +137,7 @@ const Home = () => {
             <IonTitle className="text-2xl font-bold">Suggested Sets</IonTitle>
           </IonHeader>
         </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {/* <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {suggestedFlashcardSets.map((set) => (
             <Link key={set.id} to={`/class/${set.id}`}>
               <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-transform-shadow duration-200 rounded-lg border shadow-sm">
@@ -154,7 +154,7 @@ const Home = () => {
               </IonCard>
             </Link>
           ))}
-        </div>
+        </div> */}
       </div>
     </IonContent>
   );
