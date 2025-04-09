@@ -1,39 +1,23 @@
 import { IonInput, IonItem, IonLabel } from "@ionic/react";
 
-interface EditableFieldProps {
-  label: string;
-  name: string;
-  value: string;
-  isEditing: boolean;
-  error?: string;
-  onChange: (e: CustomEvent) => void;
-}
-
-export const EditableField = ({
-  label,
-  name,   
-  value,
-  isEditing,
-  error,      
-  onChange,
-}: EditableFieldProps) => {
-  return isEditing ? (
+export const EditableField = (props) => {
+  return props.isEditing ? (
     <div>
       <IonItem>
-        <IonLabel position="stacked">{label}</IonLabel>
+        <IonLabel position="stacked">{props.label}</IonLabel>
         <IonInput
           type="text" // TODO: Make this a prop
-          name={name}
-          value={value}
-          onIonChange={onChange}
+          name={props.name}
+          value={props.value}
+          onIonChange={props.onChange}
         />
       </IonItem>
-      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+      {props.error && <p className="text-red-500 text-xs mt-1">{props.error}</p>}
     </div>
   ) : (
     <div>
-      <span className="font-medium">{label}: </span>
-      {value}
+      <span className="font-medium">{props.label}: </span>
+      {props.value}
     </div>
   );
 };
