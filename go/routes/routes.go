@@ -5,12 +5,6 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-// func dummy(w http.ResponseWriter, r *http.Request) {
-// 	log.Println("url: ", r.URL)
-
-// 	json.NewEncoder(w).Encode("here: " + r.URL.Path)
-// }
-
 // every protected route is preceded by /api
 func Protected(r *chi.Mux, h *controllers.DBHandler) {
 
@@ -18,8 +12,8 @@ func Protected(r *chi.Mux, h *controllers.DBHandler) {
 
 	r.Route("/card_history", func(r chi.Router) {
 		// these are upserts, one each for (in)correct
-		r.Post("/incscore", h.UpsertCorrectFlashcardScore)
-		r.Post("/decscore", h.UpsertIncorrectFlashcardScore)
+		r.Post("/correct", h.UpdateFlashcardScore)
+		r.Post("/incorrect", h.UpdateFlashcardScore)
 
 		r.Get("/", h.GetCardScore)
 		r.Get("/set", h.GetScoresInASet)
