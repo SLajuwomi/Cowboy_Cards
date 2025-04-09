@@ -44,7 +44,7 @@ func (h *DBHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp := AuthResponse{
-		UserID:    user.ID,
+		// UserID:    user.ID,
 		Username:  user.Username,
 		Email:     user.Email,
 		FirstName: user.FirstName,
@@ -136,7 +136,7 @@ func (h *DBHandler) Signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp := AuthResponse{
-		UserID:    user.ID,
+		// UserID:    user.ID,
 		Username:  user.Username,
 		Email:     user.Email,
 		FirstName: user.FirstName,

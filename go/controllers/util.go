@@ -17,7 +17,7 @@ type DBHandler struct {
 
 // User represents the user data that will be sent to the client
 type User struct {
-	ID        int32     `json:"id"`
+	// ID        int32     `json:"id"`
 	Username  string    `json:"username"`
 	Email     string    `json:"email"`
 	FirstName string    `json:"first_name"`
@@ -44,7 +44,7 @@ type SignupRequest struct {
 // AuthResponse represents the response sent after successful authentication
 type AuthResponse struct {
 	// Token     string `json:"token"`
-	UserID    int32  `json:"user_id"`
+	// UserID    int32  `json:"user_id"`
 	Username  string `json:"username"`
 	Email     string `json:"email"`
 	FirstName string `json:"first_name"`

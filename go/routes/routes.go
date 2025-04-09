@@ -86,13 +86,14 @@ func Protected(r *chi.Mux, h *controllers.DBHandler) {
 	})
 
 	// CreateUser and GetUserBy{Email,Username} are called from the unprotected routes
+	// no mw seems necessary here - id comes from cookie only
 	r.Route("/users", func(r chi.Router) {
-		r.Get("/list", h.ListUsers)
+		// r.Get("/list", h.ListUsers)
 		r.Get("/", h.GetUserById)
 		r.Put("/username", h.UpdateUser)
 		r.Put("/email", h.UpdateUser)
-		r.Put("/firstname", h.UpdateUser)
-		r.Put("/lastname", h.UpdateUser)
+		r.Put("/first_name", h.UpdateUser)
+		r.Put("/last_name", h.UpdateUser)
 		r.Put("/password", h.UpdateUser)
 		// r.Delete("/", h.DeleteUser)
 	})

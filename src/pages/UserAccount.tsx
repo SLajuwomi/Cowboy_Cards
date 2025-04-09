@@ -29,24 +29,24 @@ import { useEffect, useState } from 'react';
 type User = {
   username: string;
   email: string;
-  firstname: string;
-  lastname: string;
+  first_name: string;
+  last_name: string;
+  created_at: string;
+};
+
+type Stats = {
+  accountCreated: string;
+  numClasses: number;
+  cardsShown: number;
+  cardsMastered: number;
 };
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const UserAccount = () => {
-  const userID = '1'; // User ID for fetching user data
-
   const { theme, setTheme } = useTheme();
   const [userInfo, setUserInfo] = useState<User>();
-
-  const [stats, setStats] = useState({
-    accountCreated: '1-01-2022',
-    numClasses: 2,
-    cardsShown: 120,
-    cardsMastered: 85,
-  });
+  const [stats, setStats] = useState<Stats>();
 
   const [classHistory, setClassHistory] = useState([
     {
@@ -94,7 +94,7 @@ const UserAccount = () => {
     }
 
     // Define the fields that can be updated
-    const fieldsToUpdate = ['firstname', 'lastname', 'username', 'email'];
+    const fieldsToUpdate = ['first_name', 'last_name', 'username', 'email'];
 
     try {
       // Identify which fields have changed and create API call promises
@@ -104,7 +104,6 @@ const UserAccount = () => {
           makeHttpCall<User>(`${API_BASE}/api/users/${field}`, {
             method: 'PUT',
             headers: {
-              id: userID, // User ID as a string
               [field]: updatedInfo[field], // New value for the field
             },
           })
@@ -125,22 +124,22 @@ const UserAccount = () => {
   // Basic validation before submitting
   const validateForm = () => {
     const newErrors: {
-      firstname?: string;
-      lastname?: string;
+      first_name?: string;
+      last_name?: string;
       email?: string;
       username?: string;
     } = {};
     let isValid = true;
 
     // First name validation
-    if (!updatedInfo.firstname) {
-      newErrors.firstname = 'First name is required';
+    if (!updatedInfo.first_name) {
+      newErrors.first_name = 'First name is required';
       isValid = false;
     }
 
     // Last name validation
-    if (!updatedInfo.lastname) {
-      newErrors.lastname = 'Last name is required';
+    if (!updatedInfo.last_name) {
+      newErrors.last_name = 'Last name is required';
       isValid = false;
     }
 
@@ -160,8 +159,8 @@ const UserAccount = () => {
     }
 
     // Trim whitespace from the input values
-    updatedInfo.firstname = updatedInfo.firstname.trim();
-    updatedInfo.lastname = updatedInfo.lastname.trim();
+    updatedInfo.first_name = updatedInfo.first_name.trim();
+    updatedInfo.last_name = updatedInfo.last_name.trim();
     updatedInfo.email = updatedInfo.email.trim();
     updatedInfo.username = updatedInfo.username.trim();
 
@@ -171,8 +170,8 @@ const UserAccount = () => {
 
   // Form validation
   const [errors, setErrors] = useState<{
-    firstname?: string;
-    lastname?: string;
+    first_name?: string;
+    last_name?: string;
     email?: string;
     username?: string;
     general?: string;
@@ -192,11 +191,15 @@ const UserAccount = () => {
       try {
         const data = await makeHttpCall<User>(`${API_BASE}/api/users/`, {
           method: 'GET',
-          headers: {
-            id: userID,
-          },
+          headers: {},
         });
         setUserInfo(data);
+        setStats({
+          accountCreated: data.created_at,
+          numClasses: 2,
+          cardsShown: 120,
+          cardsMastered: 85,
+        });
         setUpdatedInfo(data);
         console.log('data', data);
       } catch (error) {
@@ -251,28 +254,28 @@ const UserAccount = () => {
                     <IonLabel position="stacked">First Name</IonLabel>
                     <IonInput
                       type="text"
-                      name="firstname"
-                      value={updatedInfo?.firstname || 'Auth Failed'}
+                      name="first_name"
+                      value={updatedInfo?.first_name || 'Auth Failed'}
                       onIonChange={handleChange}
                     />
                   </IonItem>
-                  {errors.firstname && (
+                  {errors.first_name && (
                     <p className="text-red-500 text-xs mt-1">
-                      {errors.firstname}
+                      {errors.first_name}
                     </p>
                   )}
                   <IonItem>
                     <IonLabel position="stacked">Last Name</IonLabel>
                     <IonInput
                       type="text"
-                      name="lastname"
-                      value={updatedInfo?.lastname || 'Auth Failed'}
+                      name="last_name"
+                      value={updatedInfo?.last_name || 'Auth Failed'}
                       onIonChange={handleChange}
                     />
                   </IonItem>
-                  {errors.lastname && (
+                  {errors.last_name && (
                     <p className="text-red-500 text-xs mt-1">
-                      {errors.lastname}
+                      {errors.last_name}
                     </p>
                   )}
                   <IonItem>
@@ -309,11 +312,11 @@ const UserAccount = () => {
                 <div className="space-y-2">
                   <div>
                     <span className="font-medium">First Name: </span>
-                    {userInfo?.firstname || 'Auth Failed'}
+                    {userInfo?.first_name || 'Auth Failed'}
                   </div>
                   <div>
                     <span className="font-medium">Last Name: </span>
-                    {userInfo?.lastname || 'Auth Failed'}
+                    {userInfo?.last_name || 'Auth Failed'}
                   </div>
                   <div>
                     <span className="font-medium">Username: </span>
