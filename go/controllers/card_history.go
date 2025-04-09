@@ -7,30 +7,30 @@ import (
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 )
 
-func (h *Handler) UpsertCorrectFlashcardScore(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) UpsertCorrectFlashcardScore(w http.ResponseWriter, r *http.Request) {
 	// curl -X POST localhost:8000/api/card_history/incscore -H "user_id: 1" -H "card_id: 1"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
 		logAndSendError(w, err, "Error connecting to database", http.StatusInternalServerError)
-		return;
+		return
 	}
 	defer conn.Release()
 
 	headerVals, err := getHeaderVals(r, "user_id", "card_id")
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
-		return;
+		return
 	}
 
 	uid, err := getInt32Id(headerVals["user_id"])
 	if err != nil {
 		logAndSendError(w, err, "Invalid user id", http.StatusBadRequest)
-		return;
+		return
 	}
 	cid, err := getInt32Id(headerVals["card_id"])
 	if err != nil {
 		logAndSendError(w, err, "Invalid card id", http.StatusBadRequest)
-		return;
+		return
 	}
 
 	err = query.UpsertCorrectFlashcardScore(ctx, db.UpsertCorrectFlashcardScoreParams{
@@ -40,39 +40,39 @@ func (h *Handler) UpsertCorrectFlashcardScore(w http.ResponseWriter, r *http.Req
 
 	if err != nil {
 		logAndSendError(w, err, "Error updating score", http.StatusInternalServerError)
-		return;
+		return
 	}
 
-	w.WriteHeader(http.StatusCreated)	// TODO - WriteHeader insert case only, not update case
+	w.WriteHeader(http.StatusCreated) // TODO - WriteHeader insert case only, not update case
 	if err = json.NewEncoder(w).Encode("Score updated"); err != nil {
 		logAndSendError(w, err, "Error encoding message", http.StatusInternalServerError)
 	}
 }
 
-func (h *Handler) UpsertIncorrectFlashcardScore(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) UpsertIncorrectFlashcardScore(w http.ResponseWriter, r *http.Request) {
 	// curl -X POST localhost:8000/api/card_history/decscore -H "user_id: 1" -H "card_id: 1"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
 		logAndSendError(w, err, "Error connecting to database", http.StatusInternalServerError)
-		return;
+		return
 	}
 	defer conn.Release()
 
 	headerVals, err := getHeaderVals(r, "user_id", "card_id")
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
-		return;
+		return
 	}
 
 	uid, err := getInt32Id(headerVals["user_id"])
 	if err != nil {
 		logAndSendError(w, err, "Invalid user id", http.StatusBadRequest)
-		return;
+		return
 	}
 	cid, err := getInt32Id(headerVals["card_id"])
 	if err != nil {
 		logAndSendError(w, err, "Invalid card id", http.StatusBadRequest)
-		return;
+		return
 	}
 
 	err = query.UpsertIncorrectFlashcardScore(ctx, db.UpsertIncorrectFlashcardScoreParams{
@@ -82,39 +82,39 @@ func (h *Handler) UpsertIncorrectFlashcardScore(w http.ResponseWriter, r *http.R
 
 	if err != nil {
 		logAndSendError(w, err, "Error updating score", http.StatusInternalServerError)
-		return;
+		return
 	}
 
-	w.WriteHeader(http.StatusCreated)	// TODO - WriteHeader insert case only, not update case
+	w.WriteHeader(http.StatusCreated) // TODO - WriteHeader insert case only, not update case
 	if err = json.NewEncoder(w).Encode("Score updated"); err != nil {
 		logAndSendError(w, err, "Error encoding message", http.StatusInternalServerError)
 	}
 }
 
-func (h *Handler) GetCardScore(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) GetCardScore(w http.ResponseWriter, r *http.Request) {
 	// curl -X GET localhost:8000/api/card_history/ -H "user_id: 1" -H "card_id: 1"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
 		logAndSendError(w, err, "Error connecting to database", http.StatusInternalServerError)
-		return;
+		return
 	}
 	defer conn.Release()
 
 	headerVals, err := getHeaderVals(r, "user_id", "card_id")
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
-		return;
+		return
 	}
 
 	uid, err := getInt32Id(headerVals["user_id"])
 	if err != nil {
 		logAndSendError(w, err, "Invalid user id", http.StatusBadRequest)
-		return;
+		return
 	}
 	cid, err := getInt32Id(headerVals["card_id"])
 	if err != nil {
 		logAndSendError(w, err, "Invalid card id", http.StatusBadRequest)
-		return;
+		return
 	}
 
 	score, err := query.GetCardScore(ctx, db.GetCardScoreParams{
@@ -123,7 +123,7 @@ func (h *Handler) GetCardScore(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		logAndSendError(w, err, "Error getting score", http.StatusInternalServerError)
-		return;		
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -132,39 +132,39 @@ func (h *Handler) GetCardScore(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) GetScoresInASet(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) GetScoresInASet(w http.ResponseWriter, r *http.Request) {
 	// curl -X GET localhost:8000/api/card_history/set -H "user_id: 1" -H "set_id: 1"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
 		logAndSendError(w, err, "Error connecting to database", http.StatusInternalServerError)
-		return;
+		return
 	}
 	defer conn.Release()
 
 	headerVals, err := getHeaderVals(r, "user_id", "set_id")
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
-		return;
+		return
 	}
 
 	uid, err := getInt32Id(headerVals["user_id"])
 	if err != nil {
 		logAndSendError(w, err, "Invalid user id", http.StatusBadRequest)
-		return;
+		return
 	}
 	sid, err := getInt32Id(headerVals["set_id"])
 	if err != nil {
 		logAndSendError(w, err, "Invalid set id", http.StatusBadRequest)
-		return;
+		return
 	}
 
 	scores, err := query.GetScoresInASet(ctx, db.GetScoresInASetParams{
 		UserID: uid,
-		SetID: sid,
+		SetID:  sid,
 	})
 	if err != nil {
 		logAndSendError(w, err, "Error getting scores", http.StatusInternalServerError)
-		return;		
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")

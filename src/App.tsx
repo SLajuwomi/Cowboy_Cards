@@ -1,23 +1,25 @@
-import { Toaster } from '@/components/ui/toaster';
-import { Toaster as Sonner } from '@/components/ui/sonner';
-import { TooltipProvider } from '@/components/ui/tooltip';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
-import { IonReactRouter } from '@ionic/react-router';
-import { Route } from 'react-router-dom';
-import Index from './pages/Index';
-import Home from './pages/Home';
-import NotFound from './pages/NotFound';
-import ClassDetail from './pages/ClassDetail';
-import TeacherDashboard from './pages/TeacherDashboard';
 import { AuthForm } from '@/components/auth/AuthForm';
 import ResetPass from '@/components/auth/ResetPass';
-import PublicCards from './pages/PublicCards';
-import UserAccount from './pages/UserAccount';
+import { Toaster as Sonner } from '@/components/ui/sonner';
+import { Toaster } from '@/components/ui/toaster';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
+import { IonReactRouter } from '@ionic/react-router';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Route } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
+import ClassDetail from './pages/ClassDetail';
 import CreateClass from './pages/CreateClass';
-import Flashcard from './pages/Flashcard';
 import CreateSet from './pages/CreateSet';
+import Flashcard from './pages/Flashcard';
+import Home from './pages/Home';
+import Index from './pages/Index';
+import NotFound from './pages/NotFound';
+import PublicCards from './pages/PublicCards';
+import PublicClasses from './pages/PublicClasses';
+import SetOverview from './pages/SetOverview';
+import TeacherDashboard from './pages/TeacherDashboard';
+import UserAccount from './pages/UserAccount';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -58,9 +60,12 @@ function App() {
                 <Route exact path="/reset-password" component={ResetPass} />
                 <Route exact path="/public-cards" component={PublicCards} />
                 <Route exact path="/user-account" component={UserAccount} />
-                <Route exact path="/flashcards" component={Flashcard} />
+                <Route exact path="/flashcards/:id" component={Flashcard} />
                 <Route exact path="/create-set" component={CreateSet} />
+                <Route exact path="/edit-set/:id" component={CreateSet} />
                 <Route exact path="/class/create" component={CreateClass} />
+                <Route exact path="/public-classes" component={PublicClasses} />
+                <Route exact path="/set-overview/:id" component={SetOverview} />
                 <Route component={NotFound} />
               </IonRouterOutlet>
             </IonReactRouter>

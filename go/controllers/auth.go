@@ -7,11 +7,12 @@ import (
 	"strings"
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
+	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/middleware"
 	"golang.org/x/crypto/bcrypt"
 )
 
 // Login handles user authentication
-func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		logAndSendError(w, err, "Invalid request body", http.StatusBadRequest)
@@ -36,11 +37,25 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := getTokenAndResponse(user)
-	if err != nil {
-		logAndSendError(w, err, "Error creating token", http.StatusInternalServerError)
+	// Create session cookie
+	if err := middleware.CreateSession(w, r, user.ID); err != nil {
+		logAndSendError(w, err, "Error creating session", http.StatusInternalServerError)
 		return
 	}
+
+	resp := AuthResponse{
+		// UserID:    user.ID,
+		Username:  user.Username,
+		Email:     user.Email,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+	}
+
+	// resp, err := getTokenAndResponse(user)
+	// if err != nil {
+	// 	logAndSendError(w, err, "Error creating token", http.StatusInternalServerError)
+	// 	return
+	// }
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
@@ -49,7 +64,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 // Signup handles user registration
-func (h *Handler) Signup(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) Signup(w http.ResponseWriter, r *http.Request) {
 	var req SignupRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		logAndSendError(w, err, "Invalid request body", http.StatusBadRequest)
@@ -114,11 +129,25 @@ func (h *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := getTokenAndResponse(user)
-	if err != nil {
-		logAndSendError(w, err, "Error creating token", http.StatusInternalServerError)
+	// Create session cookie
+	if err := middleware.CreateSession(w, r, user.ID); err != nil {
+		logAndSendError(w, err, "Error creating session", http.StatusInternalServerError)
 		return
 	}
+
+	resp := AuthResponse{
+		// UserID:    user.ID,
+		Username:  user.Username,
+		Email:     user.Email,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+	}
+
+	// resp, err := getTokenAndResponse(user)
+	// if err != nil {
+	// 	logAndSendError(w, err, "Error creating token", http.StatusInternalServerError)
+	// 	return
+	// }
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -126,3 +155,15 @@ func (h *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
 	}
 }
+
+// Logout handles user logout
+// func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
+// 	// Clear the session
+// 	if err := middleware.ClearSession(w, r); err != nil {
+// 		logAndSendError(w, err, "Error clearing session", http.StatusInternalServerError)
+// 		return
+// 	}
+
+// 	w.WriteHeader(http.StatusOK)
+// 	json.NewEncoder(w).Encode(map[string]string{"message": "Successfully logged out"})
+// }

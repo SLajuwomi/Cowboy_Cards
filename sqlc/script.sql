@@ -124,3 +124,36 @@ INSERT INTO class_set VALUES (1,1);
 INSERT INTO class_set VALUES (2,1);
 INSERT INTO class_set VALUES (3,3);
 INSERT INTO class_set VALUES (3,2);
+
+CREATE TABLE set_user (
+	user_id INTEGER, 
+	set_id INTEGER, 
+	role TEXT NOT NULL CHECK (role IN ('user', 'owner')) DEFAULT 'user',
+	set_score INTEGER DEFAULT 0,
+	is_private BOOLEAN NOT NULL DEFAULT FALSE,
+	PRIMARY KEY (user_id, set_id),
+	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (set_id) REFERENCES flashcard_sets(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+INSERT INTO set_user VALUES (1,1,'owner');
+INSERT INTO set_user VALUES (1,2,DEFAULT);
+INSERT INTO set_user VALUES (2,1,DEFAULT);
+INSERT INTO set_user VALUES (2,2,'owner');
+INSERT INTO set_user VALUES (3,1,DEFAULT);
+
+CREATE FUNCTION update_set_score() RETURNS TRIGGER AS $$
+BEGIN
+	INSERT INTO set_user (user_id, set_id, set_score, is_private) VALUES (NEW.user_id, (SELECT set_id FROM flashcards WHERE id = NEW.card_id), NEW.score, DEFAULT)
+	ON CONFLICT (user_id, set_id)
+	DO UPDATE SET set_score = (set_user.set_score + 1) 
+	WHERE NEW.user_id = set_user.user_id AND set_user.set_id = (SELECT set_id FROM flashcards WHERE id = NEW.card_id);
+	RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_leaderboard
+BEFORE UPDATE ON card_history
+FOR EACH ROW 
+WHEN (OLD.score IS DISTINCT FROM NEW.score)
+EXECUTE FUNCTION update_set_score();

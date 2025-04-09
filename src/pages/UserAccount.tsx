@@ -1,46 +1,52 @@
-import { useState, useEffect } from 'react';
+import { Navbar } from '@/components/navbar';
+import { useTheme } from '@/contexts/ThemeContext';
+import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
-  IonContent,
+  IonAlert,
   IonButton,
-  IonIcon,
   IonCard,
+  IonCardContent,
   IonCardHeader,
   IonCardTitle,
-  IonCardContent,
+  IonContent,
+  IonIcon,
+  IonInput,
   IonItem,
   IonLabel,
-  IonInput,
+  IonList,
   IonSelect,
   IonSelectOption,
-  IonList,
-  IonAlert,
   useIonToast,
 } from '@ionic/react';
 import {
   arrowBackOutline,
-  createOutline,
   chevronDownOutline,
   chevronUpOutline,
+  createOutline,
 } from 'ionicons/icons';
-import { useTheme } from '@/contexts/ThemeContext';
-import { Navbar } from '@/components/navbar';
+import { useEffect, useState } from 'react';
+
+type User = {
+  username: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  created_at: string;
+};
+
+type Stats = {
+  accountCreated: string;
+  numClasses: number;
+  cardsShown: number;
+  cardsMastered: number;
+};
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const UserAccount = () => {
   const { theme, setTheme } = useTheme();
-  const [userInfo, setUserInfo] = useState({
-    username: 'john_doe',
-    email: 'john.doe@example.com',
-    firstname: 'John',
-    lastname: 'Doe',
-  });
-
-  const [stats, setStats] = useState({
-    accountCreated: '1-01-2022',
-    numClasses: 2,
-    cardsShown: 120,
-    cardsMastered: 85,
-    timeInApp: '5 hours 30 minutes',
-  });
+  const [userInfo, setUserInfo] = useState<User>();
+  const [stats, setStats] = useState<Stats>();
 
   const [classHistory, setClassHistory] = useState([
     {
@@ -72,18 +78,104 @@ const UserAccount = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [updatedInfo, setUpdatedInfo] = useState(userInfo);
 
-  const toggleClassDetails = (classId: number) => {
-    setExpandedClass(expandedClass === classId ? null : classId);
+  const toggleClassDetails = (classID: number) => {
+    setExpandedClass(expandedClass === classID ? null : classID);
   };
 
   const handleEdit = () => {
+    setUpdatedInfo(userInfo);
     setIsEditing(true);
   };
 
-  const handleSave = () => {
-    setUserInfo(updatedInfo);
-    setIsEditing(false);
+  const handleSave = async () => {
+    // Validate form before submission
+    if (!validateForm()) {
+      return;
+    }
+
+    // Define the fields that can be updated
+    const fieldsToUpdate = ['first_name', 'last_name', 'username', 'email'];
+
+    try {
+      // Identify which fields have changed and create API call promises
+      const updatePromises = fieldsToUpdate
+        .filter((field) => updatedInfo[field] !== userInfo[field]) // Only include modified fields
+        .map((field) =>
+          makeHttpCall<User>(`${API_BASE}/api/users/${field}`, {
+            method: 'PUT',
+            headers: {
+              [field]: updatedInfo[field], // New value for the field
+            },
+          })
+        );
+
+      // Wait for all API calls to complete successfully
+      await Promise.all(updatePromises);
+      // If all updates succeed, update the local state and exit editing mode
+      setUserInfo(updatedInfo);
+      setIsEditing(false);
+    } catch (error) {
+      // Log the error and notify the user if any update fails
+      console.error(error);
+      alert('Failed to update some fields. Please try again.');
+    }
   };
+
+  // Basic validation before submitting
+  const validateForm = () => {
+    const newErrors: {
+      first_name?: string;
+      last_name?: string;
+      email?: string;
+      username?: string;
+    } = {};
+    let isValid = true;
+
+    // First name validation
+    if (!updatedInfo.first_name) {
+      newErrors.first_name = 'First name is required';
+      isValid = false;
+    }
+
+    // Last name validation
+    if (!updatedInfo.last_name) {
+      newErrors.last_name = 'Last name is required';
+      isValid = false;
+    }
+
+    // Email validation
+    if (!updatedInfo.email) {
+      newErrors.email = 'Email is required';
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(updatedInfo.email)) {
+      newErrors.email = 'Email is invalid';
+      isValid = false;
+    }
+
+    // Username validation
+    if (!updatedInfo.username) {
+      newErrors.username = 'Username is required';
+      isValid = false;
+    }
+
+    // Trim whitespace from the input values
+    updatedInfo.first_name = updatedInfo.first_name.trim();
+    updatedInfo.last_name = updatedInfo.last_name.trim();
+    updatedInfo.email = updatedInfo.email.trim();
+    updatedInfo.username = updatedInfo.username.trim();
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  // Form validation
+  const [errors, setErrors] = useState<{
+    first_name?: string;
+    last_name?: string;
+    email?: string;
+    username?: string;
+    general?: string;
+  }>({});
 
   const handleChange = (e: any) => {
     const { name } = e.target;
@@ -95,7 +187,30 @@ const UserAccount = () => {
   };
 
   useEffect(() => {
-    // Mock API call for fetching user stats
+    const fetchUserData = async () => {
+      try {
+        const data = await makeHttpCall<User>(`${API_BASE}/api/users/`, {
+          method: 'GET',
+          headers: {},
+        });
+        setUserInfo(data);
+        setStats({
+          accountCreated: data.created_at,
+          numClasses: 2,
+          cardsShown: 120,
+          cardsMastered: 85,
+        });
+        setUpdatedInfo(data);
+        console.log('data', data as User);
+      } catch (error) {
+        console.log(`Failed to fetch User Data: ${error.message}`);
+      }
+    };
+
+    fetchUserData();
+
+    // cleanup func not necessary here
+    // https://blog.logrocket.com/understanding-react-useeffect-cleanup-function/
   }, []);
 
   // Hook for showing toast messages, used for password change
@@ -109,7 +224,7 @@ const UserAccount = () => {
         {/* Header Section */}
         <div className="mb-8">
           <p className="text-xl font-semibold text-primary">
-            Welcome back, {userInfo.username}!
+            Welcome back, {userInfo?.username || 'Auth Failed'}!
           </p>
         </div>
 
@@ -139,38 +254,56 @@ const UserAccount = () => {
                     <IonLabel position="stacked">First Name</IonLabel>
                     <IonInput
                       type="text"
-                      name="firstname"
-                      value={updatedInfo.firstname}
+                      name="first_name"
+                      value={updatedInfo?.first_name || 'Auth Failed'}
                       onIonChange={handleChange}
                     />
                   </IonItem>
+                  {errors.first_name && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.first_name}
+                    </p>
+                  )}
                   <IonItem>
                     <IonLabel position="stacked">Last Name</IonLabel>
                     <IonInput
                       type="text"
-                      name="lastname"
-                      value={updatedInfo.lastname}
+                      name="last_name"
+                      value={updatedInfo?.last_name || 'Auth Failed'}
                       onIonChange={handleChange}
                     />
                   </IonItem>
+                  {errors.last_name && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.last_name}
+                    </p>
+                  )}
                   <IonItem>
                     <IonLabel position="stacked">Username</IonLabel>
                     <IonInput
                       type="text"
                       name="username"
-                      value={updatedInfo.username}
+                      value={updatedInfo?.username || 'Auth Failed'}
                       onIonChange={handleChange}
                     />
                   </IonItem>
+                  {errors.username && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.username}
+                    </p>
+                  )}
                   <IonItem>
                     <IonLabel position="stacked">Email</IonLabel>
                     <IonInput
                       type="email"
                       name="email"
-                      value={updatedInfo.email}
+                      value={updatedInfo?.email || 'Auth Failed'}
                       onIonChange={handleChange}
                     />
                   </IonItem>
+                  {errors.email && (
+                    <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+                  )}
                   <div className="mt-4 flex justify-end">
                     <IonButton onClick={handleSave}>Save Changes</IonButton>
                   </div>
@@ -179,19 +312,19 @@ const UserAccount = () => {
                 <div className="space-y-2">
                   <div>
                     <span className="font-medium">First Name: </span>
-                    {userInfo.firstname}
+                    {userInfo?.first_name || 'Auth Failed'}
                   </div>
                   <div>
                     <span className="font-medium">Last Name: </span>
-                    {userInfo.lastname}
+                    {userInfo?.last_name || 'Auth Failed'}
                   </div>
                   <div>
                     <span className="font-medium">Username: </span>
-                    {userInfo.username}
+                    {userInfo?.username || 'Auth Failed'}
                   </div>
                   <div>
                     <span className="font-medium">Email: </span>
-                    {userInfo.email}
+                    {userInfo?.email || 'Auth Failed'}
                   </div>
                   <IonButton
                     fill="outline"
@@ -217,23 +350,19 @@ const UserAccount = () => {
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Account Created:</span>
-                  <span>{stats.accountCreated}</span>
+                  <span>{stats?.accountCreated}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Classes Taken:</span>
-                  <span>{stats.numClasses}</span>
+                  <span>{stats?.numClasses}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Cards Shown:</span>
-                  <span>{stats.cardsShown}</span>
+                  <span>{stats?.cardsShown}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Cards Mastered:</span>
-                  <span>{stats.cardsMastered}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="font-medium">Time in App:</span>
-                  <span>{stats.timeInApp}</span>
+                  <span>{stats?.cardsMastered}</span>
                 </div>
               </div>
             </IonCardContent>
@@ -297,8 +426,9 @@ const UserAccount = () => {
             <IonCardContent className="p-6 pt-0">
               <div className="space-y-4">
                 <IonItem>
-                  <IonLabel>Theme</IonLabel>
+                  {/* <IonLabel>Theme</IonLabel> */}
                   <IonSelect
+                    label="Theme"
                     value={theme}
                     onIonChange={(e) =>
                       setTheme(e.detail.value as 'light' | 'dark')

@@ -12,30 +12,30 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (h *Handler) ListUsers(w http.ResponseWriter, r *http.Request) {
-	// curl http://localhost:8000/api/users/list | jq
+// func (h *DBHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
+// 	// curl http://localhost:8000/api/users/list | jq
 
-	query, ctx, conn, err := getQueryConnAndContext(r, h)
-	if err != nil {
-		logAndSendError(w, err, "Database connection error", http.StatusInternalServerError)
-		return
-	}
-	defer conn.Release()
+// 	query, ctx, conn, err := getQueryConnAndContext(r, h)
+// 	if err != nil {
+// 		logAndSendError(w, err, "Database connection error", http.StatusInternalServerError)
+// 		return
+// 	}
+// 	defer conn.Release()
 
-	users, err := query.ListUsers(ctx)
-	if err != nil {
-		logAndSendError(w, err, "Error getting users from DB", http.StatusInternalServerError)
-		return
-	}
+// 	users, err := query.ListUsers(ctx)
+// 	if err != nil {
+// 		logAndSendError(w, err, "Error getting users from DB", http.StatusInternalServerError)
+// 		return
+// 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(users); err != nil {
-		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
-	}
-}
+// 	w.Header().Set("Content-Type", "application/json")
+// 	if err := json.NewEncoder(w).Encode(users); err != nil {
+// 		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
+// 	}
+// }
 
 // GetUser handles retrieving user information
-func (h *Handler) GetUserById(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) GetUserById(w http.ResponseWriter, r *http.Request) {
 	// curl http://localhost:8000/api/users/ -H "id: 1"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
@@ -46,7 +46,7 @@ func (h *Handler) GetUserById(w http.ResponseWriter, r *http.Request) {
 	defer conn.Release()
 
 	// Get user_id from context (set by AuthMiddleware)
-	id, ok := middleware.FromContext(ctx)
+	userID, ok := middleware.GetUserIDFromContext(ctx)
 	if !ok {
 		logAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -64,7 +64,7 @@ func (h *Handler) GetUserById(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	user, err := query.GetUserById(ctx, id)
+	user, err := query.GetUserById(ctx, userID)
 	if err != nil {
 		logAndSendError(w, err, "User not found", http.StatusNotFound)
 		return
@@ -72,7 +72,7 @@ func (h *Handler) GetUserById(w http.ResponseWriter, r *http.Request) {
 
 	// Convert to response type to avoid sending sensitive information
 	response := User{
-		ID:        user.ID,
+		// ID:        user.ID,
 		Username:  user.Username,
 		Email:     user.Email,
 		FirstName: user.FirstName,
@@ -88,7 +88,7 @@ func (h *Handler) GetUserById(w http.ResponseWriter, r *http.Request) {
 }
 
 // UpdateUser handles updating user information
-func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	// curl -X PUT http://localhost:8000/api/users/email -H "id: 1" -H "email: a@a.com"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
@@ -99,7 +99,7 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	defer conn.Release()
 
 	// Get user_id from context (set by AuthMiddleware)
-	id, ok := middleware.FromContext(ctx)
+	userID, ok := middleware.GetUserIDFromContext(ctx)
 	if !ok {
 		logAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -135,7 +135,7 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 		res, err = query.UpdateUsername(ctx, db.UpdateUsernameParams{
 			Username: val,
-			ID:       id,
+			ID:       userID,
 		})
 	case "email":
 		_, err = query.GetUserByEmail(ctx, val)
@@ -149,17 +149,17 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 		res, err = query.UpdateEmail(ctx, db.UpdateEmailParams{
 			Email: val,
-			ID:    id,
+			ID:    userID,
 		})
-	case "firstname":
+	case "first_name":
 		res, err = query.UpdateFirstname(ctx, db.UpdateFirstnameParams{
 			FirstName: val,
-			ID:        id,
+			ID:        userID,
 		})
-	case "lastname":
+	case "last_name":
 		res, err = query.UpdateLastname(ctx, db.UpdateLastnameParams{
 			LastName: val,
-			ID:       id,
+			ID:       userID,
 		})
 	case "password":
 		// *************
@@ -176,7 +176,7 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		res = "Password updated"
 		err = query.UpdatePassword(ctx, db.UpdatePasswordParams{
 			Password: string(hashedPassword),
-			ID:       id,
+			ID:       userID,
 		})
 		if err != nil {
 			logAndSendError(w, err, "Failed to update user", http.StatusInternalServerError)
@@ -197,7 +197,7 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteUser handles user account deletion
-func (h *Handler) DeleteUser(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -207,7 +207,7 @@ func (h *Handler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	defer conn.Release()
 
 	// Get user_id from context (set by AuthMiddleware)
-	id, ok := middleware.FromContext(ctx)
+	userID, ok := middleware.GetUserIDFromContext(ctx)
 	if !ok {
 		logAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -225,7 +225,7 @@ func (h *Handler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	err = query.DeleteUser(ctx, id)
+	err = query.DeleteUser(ctx, userID)
 	if err != nil {
 		logAndSendError(w, err, "Failed to delete user", http.StatusInternalServerError)
 		return

@@ -62,6 +62,41 @@ func (q *Queries) GetClassById(ctx context.Context, id int32) (Class, error) {
 	return i, err
 }
 
+const getClassScores = `-- name: GetClassScores :many
+SELECT class_user.user_id, SUM(set_score) AS class_score FROM classes 
+JOIN class_user ON classes.id = class_user.class_id 
+JOIN class_set ON classes.id = class_set.class_id
+JOIN set_user ON (class_user.user_id = set_user.user_id AND class_set.set_id = set_user.set_id)
+WHERE classes.id = $1
+GROUP BY class_user.user_id
+ORDER BY SUM(set_score) DESC
+`
+
+type GetClassScoresRow struct {
+	UserID     int32
+	ClassScore int64
+}
+
+func (q *Queries) GetClassScores(ctx context.Context, id int32) ([]GetClassScoresRow, error) {
+	rows, err := q.db.Query(ctx, getClassScores, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetClassScoresRow
+	for rows.Next() {
+		var i GetClassScoresRow
+		if err := rows.Scan(&i.UserID, &i.ClassScore); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listClasses = `-- name: ListClasses :many
 SELECT id, class_name, class_description, join_code, created_at, updated_at FROM classes ORDER BY class_name
 `
@@ -123,4 +158,20 @@ func (q *Queries) UpdateClassName(ctx context.Context, arg UpdateClassNameParams
 	var class_name string
 	err := row.Scan(&class_name)
 	return class_name, err
+}
+
+const verifyTeacher = `-- name: VerifyTeacher :one
+SELECT user_id, class_id, role FROM class_user WHERE class_id = $1 AND user_id = $2 AND role = 'teacher'
+`
+
+type VerifyTeacherParams struct {
+	ClassID int32
+	UserID  int32
+}
+
+func (q *Queries) VerifyTeacher(ctx context.Context, arg VerifyTeacherParams) (ClassUser, error) {
+	row := q.db.QueryRow(ctx, verifyTeacher, arg.ClassID, arg.UserID)
+	var i ClassUser
+	err := row.Scan(&i.UserID, &i.ClassID, &i.Role)
+	return i, err
 }

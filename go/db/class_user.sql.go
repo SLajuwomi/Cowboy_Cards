@@ -105,3 +105,47 @@ func (q *Queries) ListMembersOfAClass(ctx context.Context, classID int32) ([]Lis
 	}
 	return items, nil
 }
+
+const listStudentsOfAClass = `-- name: ListStudentsOfAClass :many
+
+SELECT user_id, class_id, role, first_name, last_name
+FROM class_user JOIN users ON class_user.user_id = users.id
+WHERE class_id = $1 AND role = 'teacher'
+`
+
+type ListStudentsOfAClassRow struct {
+	UserID    int32
+	ClassID   int32
+	Role      string
+	FirstName string
+	LastName  string
+}
+
+// SELECT user_id, class_id, role, first_name, last_name
+// FROM class_user JOIN users ON class_user.user_id = users.id
+// WHERE class_id = $1 AND role = 'student';
+func (q *Queries) ListStudentsOfAClass(ctx context.Context, classID int32) ([]ListStudentsOfAClassRow, error) {
+	rows, err := q.db.Query(ctx, listStudentsOfAClass, classID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListStudentsOfAClassRow
+	for rows.Next() {
+		var i ListStudentsOfAClassRow
+		if err := rows.Scan(
+			&i.UserID,
+			&i.ClassID,
+			&i.Role,
+			&i.FirstName,
+			&i.LastName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

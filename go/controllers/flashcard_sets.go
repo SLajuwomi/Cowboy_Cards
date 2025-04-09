@@ -9,7 +9,7 @@ import (
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 )
 
-func (h *Handler) ListFlashcardSets(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) ListFlashcardSets(w http.ResponseWriter, r *http.Request) {
 	// curl http://localhost:8000/api/flashcards/sets/list | jq
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
@@ -31,7 +31,7 @@ func (h *Handler) ListFlashcardSets(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) GetFlashcardSetById(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) GetFlashcardSetById(w http.ResponseWriter, r *http.Request) {
 	// curl http://localhost:8000/api/flashcards/sets/ -H "id: 1"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
@@ -65,7 +65,7 @@ func (h *Handler) GetFlashcardSetById(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) CreateFlashcardSet(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) CreateFlashcardSet(w http.ResponseWriter, r *http.Request) {
 	// curl -X POST localhost:8000/api/flashcards/sets -H "name: Knights Errant" -H "description: collection of famous knights"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -96,8 +96,8 @@ func (h *Handler) CreateFlashcardSet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) UpdateFlashcardSet(w http.ResponseWriter, r *http.Request) {
-	// curl -X PUT localhost:8000/api/flashcards/sets/name -H "id: 1" -H "name: Dad Jokes"
+func (h *DBHandler) UpdateFlashcardSet(w http.ResponseWriter, r *http.Request) {
+	// curl -X PUT localhost:8000/api/flashcards/sets/set_name -H "id: 1" -H "set_name: Knights Errant"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -148,7 +148,7 @@ func (h *Handler) UpdateFlashcardSet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) DeleteFlashcardSet(w http.ResponseWriter, r *http.Request) {
+func (h *DBHandler) DeleteFlashcardSet(w http.ResponseWriter, r *http.Request) {
 	// curl -X DELETE http://localhost:8000/api/flashcards/sets -H "id: 1"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)

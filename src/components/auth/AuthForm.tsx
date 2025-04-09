@@ -1,3 +1,4 @@
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -10,22 +11,12 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
-import { useIonRouter } from '@ionic/react';
-import { LogIn } from 'lucide-react';
+import { IonButton, IonIcon, useIonRouter } from '@ionic/react';
+import { AlertCircle, LogIn } from 'lucide-react';
 import { useState } from 'react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-// Backend API URL
-const API_URL = 'https://cowboy-cards.dsouth.org';
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -73,8 +64,8 @@ export const AuthForm = () => {
     if (!password) {
       newErrors.password = 'Password is required';
       isValid = false;
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+    } else if (password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
       isValid = false;
     }
 
@@ -104,7 +95,7 @@ export const AuthForm = () => {
 
       if (isLogin) {
         // Login request
-        response = await fetch(`${API_URL}/login`, {
+        response = await fetch(`${API_BASE}/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -117,7 +108,7 @@ export const AuthForm = () => {
         });
       } else {
         // Signup request
-        response = await fetch(`${API_URL}/signup`, {
+        response = await fetch(`${API_BASE}/signup`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -287,7 +278,7 @@ export const AuthForm = () => {
             )}
             {!isLogin && (
               <p className="text-xs text-gray-500 mt-1">
-                Password must be at least 6 characters long
+                Password must be at least 8 characters long
               </p>
             )}
           </div>
@@ -322,6 +313,28 @@ export const AuthForm = () => {
               ? 'Need an account? Sign up'
               : 'Already have an account? Sign in'}
           </Button>
+          <IonButton
+            expand="block"
+            fill="outline"
+            className="flex items-center justify-center space-x-2"
+            onClick={() => {
+              // Add your Google sign-in logic here
+              console.log('Sign in with Google clicked');
+            }}
+          >
+            <IonIcon
+              slot="start"
+              src="https://www.gstatic.com/marketing-cms/assets/images/d5/dc/cfe9ce8b4425b410b49b7f2dd3f3/g.webp=s96-fcrop64=1,00000000ffffffff-rw"
+              className="h-5 w-5"
+            />
+            <p></p>
+            Sign in with Google
+            <img
+              slot="start"
+              src="https://www.gstatic.com/marketing-cms/assets/images/d5/dc/cfe9ce8b4425b410b49b7f2dd3f3/g.webp=s96-fcrop64=1,00000000ffffffff-rw"
+              className="h-10 w-10"
+            />
+          </IonButton>
         </CardFooter>
       </form>
     </Card>

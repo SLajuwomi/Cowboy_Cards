@@ -1,23 +1,18 @@
 package routes
 
 import (
-	"context"
-	"encoding/json"
-	"log"
-	"net/http"
-
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/controllers"
 	"github.com/go-chi/chi/v5"
 )
 
-func dummy(w http.ResponseWriter, r *http.Request) {
-	log.Println("url: ", r.URL)
+// func dummy(w http.ResponseWriter, r *http.Request) {
+// 	log.Println("url: ", r.URL)
 
-	json.NewEncoder(w).Encode("here: " + r.URL.Path)
-}
+// 	json.NewEncoder(w).Encode("here: " + r.URL.Path)
+// }
 
 // every protected route is preceded by /api
-func Protected(r *chi.Mux, h *controllers.Handler) {
+func Protected(r *chi.Mux, h *controllers.DBHandler) {
 
 	// -------------------complex-------------------------
 
@@ -51,62 +46,61 @@ func Protected(r *chi.Mux, h *controllers.Handler) {
 	// r.Post("/logout", h.Logout)
 
 	r.Route("/classes", func(r chi.Router) {
+
+		r.Route("/", func(r chi.Router) {
+			// Ensure only teachers can update/delete
+			r.Use(h.VerifyTeacherMW)
+			r.Put("/class_name", h.UpdateClass)
+			r.Put("/class_description", h.UpdateClass)
+			r.Delete("/", h.DeleteClass)
+		})
+
 		r.Get("/list", h.ListClasses)
 		r.Get("/", h.GetClassById)
 		r.Post("/", h.CreateClass)
-		r.Put("/class_name", h.UpdateClass)
-		r.Put("/class_description", h.UpdateClass)
-		// r.Delete("/", h.DeleteClass)
 	})
 
 	r.Route("/flashcards", func(r chi.Router) {
 		r.Get("/", h.GetFlashcardById)
 		r.Get("/list", h.ListFlashcardsOfASet)
 		r.Post("/", h.CreateFlashcard)
-		r.Put("/front", h.UpdateFlashcard)
-		r.Put("/back", h.UpdateFlashcard)
-		r.Put("/set_id", h.UpdateFlashcard)
-		// r.Delete("/", h.DeleteFlashcard)
+		r.Route("/", func(r chi.Router) {
+			r.Use(h.VerifyFlashcardOwnerMW) // Ensure only the owner can update/delete
+			r.Put("/front", h.UpdateFlashcard)
+			r.Put("/back", h.UpdateFlashcard)
+			r.Put("/set_id", h.UpdateFlashcard)
+			r.Delete("/", h.DeleteFlashcard)
+		})
 
 		r.Route("/sets", func(r chi.Router) {
 			r.Get("/list", h.ListFlashcardSets)
 			r.Get("/", h.GetFlashcardSetById)
 			r.Post("/", h.CreateFlashcardSet)
-			r.Put("/set_name", h.UpdateFlashcardSet)
-			r.Put("/set_description", h.UpdateFlashcardSet)
-			// r.Delete("/", h.DeleteFlashcardSet)
+			r.Route("/", func(r chi.Router) {
+				r.Use(h.VerifySetOwnerMW) // Ensure only the owner can update/delete the set
+				r.Put("/set_name", h.UpdateFlashcardSet)
+				r.Put("/set_description", h.UpdateFlashcardSet)
+				r.Delete("/", h.DeleteFlashcardSet)
+			})
 		})
 	})
 
 	// CreateUser and GetUserBy{Email,Username} are called from the unprotected routes
+	// no mw seems necessary here - id comes from cookie only
 	r.Route("/users", func(r chi.Router) {
-		r.Get("/list", h.ListUsers)
+		// r.Get("/list", h.ListUsers)
 		r.Get("/", h.GetUserById)
 		r.Put("/username", h.UpdateUser)
 		r.Put("/email", h.UpdateUser)
-		r.Put("/firstname", h.UpdateUser)
-		r.Put("/lastname", h.UpdateUser)
+		r.Put("/first_name", h.UpdateUser)
+		r.Put("/last_name", h.UpdateUser)
 		r.Put("/password", h.UpdateUser)
 		// r.Delete("/", h.DeleteUser)
 	})
 }
 
-func fakeMW(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println("fake mw")
-
-		ctx := context.WithValue(r.Context(), "article", "article")
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
-}
-
 // auth
-func Unprotected(r *chi.Mux, h *controllers.Handler) {
+func Unprotected(r *chi.Mux, h *controllers.DBHandler) {
 	r.Post("/login", h.Login)
 	r.Post("/signup", h.Signup)
-
-	r.Route("/fake", func(r chi.Router) {
-		r.Use(fakeMW)
-		r.Post("/", dummy)
-	})
 }
