@@ -201,7 +201,7 @@ const UserAccount = () => {
           cardsMastered: 85,
         });
         setUpdatedInfo(data);
-        console.log('data', data);
+        console.log('data', data as User);
       } catch (error) {
         console.log(`Failed to fetch User Data: ${error.message}`);
       }
