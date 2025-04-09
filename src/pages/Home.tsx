@@ -1,41 +1,231 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Navbar } from '@/components/navbar';
+import { makeHttpCall } from '@/utils/makeHttpCall';
+import {
+  IonButton,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardSubtitle,
+  IonCardTitle,
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonLabel,
+  IonSegment,
+  IonSegmentButton,
+  IonSpinner,
+  IonText,
+  IonTitle,
+} from '@ionic/react';
+import { addOutline, bookOutline, listOutline } from 'ionicons/icons';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Footer } from '@/components/footer';
+import { useTheme } from '@/contexts/ThemeContext';
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
+type Class = {
+  ID: number;
+  ClassName: string;
+  ClassDescription: string;
+  JoinCode: string;
+  CreatedAt: string;
+  UpdatedAt: string;
+};
+
+type Set = {
+  ID: number;
+  SetName: string;
+  SetDescription: string;
+  CreatedAt: string;
+  UpdatedAt: string;
+};
 
 const Home = () => {
-  const classes = [
-    { id: 1, name: "Biology 101", teacher: "Dr. Smith", sets: 5 },
-    { id: 2, name: "Spanish Basics", teacher: "Mrs. Garcia", sets: 3 },
-    { id: 3, name: "World History", teacher: "Mr. Johnson", sets: 7 },
-  ];
+  const [tab, setTab] = useState('classes');
+  const [classes, setClasses] = useState<Class[]>([]);
+  const [sets, setSets] = useState<Set[]>([]);
+  const [classesLoading, setClassesLoading] = useState(false);
+  const [setsLoading, setSetsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Currently getting all classes, but should be getting only the classes the user is in. waiting on backend to implement this.
+  useEffect(() => {
+    const fetchClassesOfUser = async () => {
+      setClassesLoading(true);
+      setError(null);
+      try {
+        const data = await makeHttpCall<Class[]>(
+          `${API_BASE}/api/classes/list`
+        );
+        setClasses(data);
+      } catch (error) {
+        setError(`Error fetching classes: ${error.message}`);
+      } finally {
+        setClassesLoading(false);
+      }
+    };
+
+    const fetchSetsOfUser = async () => {
+      setSetsLoading(true);
+      try {
+        const data = await makeHttpCall<Set[]>(
+          `${API_BASE}/api/flashcards/sets/list`
+        );
+        setSets(data);
+      } catch (error) {
+        setError(`Error fetching sets: ${error.message}`);
+      } finally {
+        setSetsLoading(false);
+      }
+    };
+
+    fetchClassesOfUser();
+    fetchSetsOfUser();
+  }, []);
+
+  // const suggestedFlashcardSets = [
+  //   { id: 1, name: 'Physics Essentials', cards: 18 },
+  //   { id: 2, name: 'Spanish Phrases', cards: 22 },
+  //   { id: 3, name: 'World Capitals', cards: 12 },
+  //   { id: 4, name: 'Algebraic Equations', cards: 20 },
+  //   { id: 5, name: 'Shakespearean Plays', cards: 14 },
+  //   { id: 6, name: 'Ancient Civilizations', cards: 9 },
+  // ];
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">My Classes</h1>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" /> Add Class
-        </Button>
-      </div>
+    <IonContent className="ion-padding">
+      <Navbar />
+      <div id="main-content" className="container mx-auto px-4 py-8">
+        {error && <div className="text-red-500 mt-2">{error}</div>}
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-8">
+          <h1 className="text-3xl font-bold">
+            {tab === 'classes' ? 'My Classes' : 'Personal Flashcard Sets'}
+          </h1>
+          <div className="flex items-center gap-2 mt-4 md:mt-0">
+            <IonButton
+              color="primary"
+              className="rounded-lg"
+              style={{ '--border-radius': '0.5rem' }}
+              href={tab === 'classes' ? '/class/create' : '/set/create'}
+            >
+              <IonIcon slot="start" icon={addOutline} />{' '}
+              {tab === 'classes' ? 'Add Class' : 'Add Set'}
+            </IonButton>
+          </div>
+        </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {classes.map((cls) => (
-          <Card key={cls.id}>
-            <CardHeader>
-              <CardTitle>{cls.name}</CardTitle>
-              <CardDescription>{cls.teacher}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-600">{cls.sets} sets</p>
-              <Button variant="link" asChild className="mt-2 p-0">
-                <Link to={`/class/${cls.id}`}>View Class →</Link>
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
+        <div className="mb-8">
+          <IonSegment
+            value={tab}
+            onIonChange={(e) => setTab((e.detail.value as string) || 'classes')}
+            style={{
+              '--background': 'var(--ion-color-light)',
+            }}
+          >
+            <IonSegmentButton value="classes">
+              <IonIcon icon={listOutline} className="mr-2" />
+              <IonLabel>My Classes</IonLabel>
+            </IonSegmentButton>
+            <IonSegmentButton value="flashcards">
+              <IonIcon icon={bookOutline} className="mr-2" />
+              <IonLabel>My Cards</IonLabel>
+            </IonSegmentButton>
+          </IonSegment>
+        </div>
+
+        {tab === 'classes' && (
+          <>
+            {classesLoading ? (
+              <div className="flex justify-center items-center p-8">
+                <IonSpinner name="circular" />
+                <span className="ml-2">Loading classes...</span>
+              </div>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {classes.map((cls) => (
+                  <Link key={cls.ID} to={`/class/${cls.ID}`}>
+                    <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-transform-shadow duration-200 rounded-lg border shadow-sm">
+                      <IonCardHeader className="flex flex-col space-y-1.5 p-6">
+                        <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
+                          {cls.ClassName}
+                        </IonCardTitle>
+                        <IonCardSubtitle className="text-sm text-muted-foreground">
+                          {cls.ClassDescription}
+                        </IonCardSubtitle>
+                      </IonCardHeader>
+                      <IonCardContent>
+                        {/* <IonText className="text-sm text-gray-600">
+                          {cls.sets} sets
+                        </IonText> */}
+                      </IonCardContent>
+                    </IonCard>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {tab === 'flashcards' && (
+          <>
+            {setsLoading ? (
+              <div className="flex justify-center items-center p-8">
+                <IonSpinner name="circular" />
+                <span className="ml-2">Loading sets...</span>
+              </div>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {sets.map((set) => (
+                  <Link key={set.ID} to={`/set/${set.ID}`}>
+                    <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-transform-shadow duration-200 rounded-lg border shadow-sm">
+                      <IonCardHeader className="flex flex-col space-y-1.5 p-6">
+                        <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
+                          {set.SetName}
+                        </IonCardTitle>
+                        <IonCardSubtitle className="text-sm text-muted-foreground">
+                          {set.SetDescription}
+                        </IonCardSubtitle>
+                      </IonCardHeader>
+                      <IonCardContent>
+                        {/* <IonText className="text-sm text-gray-600">
+                          {set.cards} cards
+                        </IonText> */}
+                      </IonCardContent>
+                    </IonCard>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+        <Footer />
+        {/* <div className="mb-8">
+          <IonHeader className="p-4">
+            <IonTitle className="text-2xl font-bold">Suggested Sets</IonTitle>
+          </IonHeader>
+        </div> */}
+        {/* <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {suggestedFlashcardSets.map((set) => (
+            <Link key={set.id} to={`/class/${set.id}`}>
+              <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-transform-shadow duration-200 rounded-lg border shadow-sm">
+                <IonCardHeader className="flex flex-col space-y-1.5 p-6">
+                  <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
+                    {set.name}
+                  </IonCardTitle>
+                </IonCardHeader>
+                <IonCardContent>
+                  <IonText className="text-sm text-gray-600">
+                    {set.cards} cards
+                  </IonText>
+                </IonCardContent>
+              </IonCard>
+            </Link>
+          ))}
+        </div> */}
       </div>
-    </div>
+    </IonContent>
   );
 };
 
