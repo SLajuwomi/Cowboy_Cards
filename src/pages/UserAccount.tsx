@@ -350,19 +350,19 @@ const UserAccount = () => {
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Account Created:</span>
-                  <span>{stats.accountCreated}</span>
+                  <span>{stats?.accountCreated}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Classes Taken:</span>
-                  <span>{stats.numClasses}</span>
+                  <span>{stats?.numClasses}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Cards Shown:</span>
-                  <span>{stats.cardsShown}</span>
+                  <span>{stats?.cardsShown}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Cards Mastered:</span>
-                  <span>{stats.cardsMastered}</span>
+                  <span>{stats?.cardsMastered}</span>
                 </div>
               </div>
             </IonCardContent>
@@ -428,6 +428,7 @@ const UserAccount = () => {
                 <IonItem>
                   <IonLabel>Theme</IonLabel>
                   <IonSelect
+                    label="theme"
                     value={theme}
                     onIonChange={(e) =>
                       setTheme(e.detail.value as 'light' | 'dark')
