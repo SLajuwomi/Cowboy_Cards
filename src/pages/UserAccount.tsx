@@ -1,5 +1,6 @@
 import { Navbar } from '@/components/navbar';
 import { useTheme } from '@/contexts/ThemeContext';
+import { EditableField } from '@/utils/EditableField';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonAlert,
@@ -278,62 +279,38 @@ const UserAccount = () => {
 
                   {isEditing ? (
                     <div className="space-y-4">
-                      <IonItem>
-                        <IonLabel position="stacked">First Name</IonLabel>
-                        <IonInput
-                          type="text"
-                          name="first_name"
-                          value={updatedInfo?.first_name || ''}
-                          onIonChange={handleChange}
-                        />
-                      </IonItem>
-                      {errors.first_name && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.first_name}
-                        </p>
-                      )}
-                      <IonItem>
-                        <IonLabel position="stacked">Last Name</IonLabel>
-                        <IonInput
-                          type="text"
-                          name="last_name"
-                          value={updatedInfo?.last_name || ''}
-                          onIonChange={handleChange}
-                        />
-                      </IonItem>
-                      {errors.last_name && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.last_name}
-                        </p>
-                      )}
-                      <IonItem>
-                        <IonLabel position="stacked">Username</IonLabel>
-                        <IonInput
-                          type="text"
-                          name="username"
-                          value={updatedInfo?.username || ''}
-                          onIonChange={handleChange}
-                        />
-                      </IonItem>
-                      {errors.username && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.username}
-                        </p>
-                      )}
-                      <IonItem>
-                        <IonLabel position="stacked">Email</IonLabel>
-                        <IonInput
-                          type="email"
-                          name="email"
-                          value={updatedInfo?.email || ''}
-                          onIonChange={handleChange}
-                        />
-                      </IonItem>
-                      {errors.email && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.email}
-                        </p>
-                      )}
+                      <EditableField
+                        label="First Name"
+                        name="first_name"
+                        value={updatedInfo?.first_name || ''}
+                        isEditing={isEditing}
+                        error={errors.first_name}
+                        onChange={handleChange}
+                      />
+                      <EditableField
+                        label="Last Name"
+                        name="last_name"
+                        value={updatedInfo?.last_name || ''}
+                        isEditing={isEditing}
+                        error={errors.last_name}
+                        onChange={handleChange}
+                      />
+                      <EditableField
+                        label="Username"
+                        name="username"
+                        value={updatedInfo?.username || ''}
+                        isEditing={isEditing}
+                        error={errors.username}
+                        onChange={handleChange}
+                      />
+                      <EditableField
+                        label="Email"
+                        name="email"
+                        value={updatedInfo?.email || ''}
+                        isEditing={isEditing}
+                        error={errors.email}
+                        onChange={handleChange}
+                      />
                       <div className="mt-4 flex justify-end">
                         <IonButton onClick={handleSave}>Save Changes</IonButton>
                       </div>
