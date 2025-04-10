@@ -49,6 +49,11 @@ func Protected(r *chi.Mux, h *controllers.DBHandler) {
 			r.Delete("/", h.DeleteClass)
 		})
 
+		r.Route("/leaderboard", func(r chi.Router) {
+			r.Use(h.VerifyClassMemberMW)
+			r.Get("/", h.GetClassLeaderboard)
+		})
+
 		r.Get("/list", h.ListClasses)
 		r.Get("/", h.GetClassById)
 		r.Post("/", h.CreateClass)

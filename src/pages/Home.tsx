@@ -57,8 +57,9 @@ const Home = () => {
       setError(null);
       try {
         const data = await makeHttpCall<Class[]>(
-          `${API_BASE}/api/classes/list`
+          `${API_BASE}/api/class_user/classes`
         );
+        console.log(data);
         setClasses(data);
       } catch (error) {
         setError(`Error fetching classes: ${error.message}`);
@@ -142,8 +143,12 @@ const Home = () => {
                 <IonSpinner name="circular" />
                 <span className="ml-2">Loading classes...</span>
               </div>
+            ) : classes === null ? (
+              <div className="text-center p-8 text-gray-600">
+                You are not part of any classes. Join a class to get started.
+              </div>
             ) : (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {classes.map((cls) => (
                   <Link key={cls.ID} to={`/class/${cls.ID}`}>
                     <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-transform-shadow duration-200 rounded-lg border shadow-sm">
@@ -151,6 +156,7 @@ const Home = () => {
                         <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
                           {cls.ClassName}
                         </IonCardTitle>
+                        {/* TODO: Backend should return class description */}
                         <IonCardSubtitle className="text-sm text-muted-foreground">
                           {cls.ClassDescription}
                         </IonCardSubtitle>
