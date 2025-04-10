@@ -11,7 +11,7 @@ import (
 )
 
 func (h *DBHandler) UpdateFlashcardScore(w http.ResponseWriter, r *http.Request) {
-	// curl -X POST localhost:8000/api/card_history/correct -H "user_id: 1" -H "card_id: 1"
+	// curl -X POST localhost:8000/api/card_history/correct -H "card_id: 1"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -66,7 +66,7 @@ func (h *DBHandler) UpdateFlashcardScore(w http.ResponseWriter, r *http.Request)
 }
 
 func (h *DBHandler) GetCardScore(w http.ResponseWriter, r *http.Request) {
-	// curl -X GET localhost:8000/api/card_history/ -H "user_id: 1" -H "card_id: 1"
+	// curl -X GET localhost:8000/api/card_history/ -H "card_id: 1"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
 		logAndSendError(w, err, "Error connecting to database", http.StatusInternalServerError)
