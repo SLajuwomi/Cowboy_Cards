@@ -12,27 +12,27 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-// func (h *DBHandler) ListClasses(w http.ResponseWriter, r *http.Request) {
-// 	// curl http://localhost:8000/api/classes/list | jq
+func (h *DBHandler) ListClasses(w http.ResponseWriter, r *http.Request) {
+	// curl http://localhost:8000/api/classes/list | jq
 
-// 	query, ctx, conn, err := getQueryConnAndContext(r, h)
-// 	if err != nil {
-// 		logAndSendError(w, err, "Database connection error", http.StatusInternalServerError)
-// 		return
-// 	}
-// 	defer conn.Release()
+	query, ctx, conn, err := getQueryConnAndContext(r, h)
+	if err != nil {
+		logAndSendError(w, err, "Database connection error", http.StatusInternalServerError)
+		return
+	}
+	defer conn.Release()
 
-// 	classes, err := query.ListClasses(ctx)
-// 	if err != nil {
-// 		logAndSendError(w, err, "Error getting classes from DB", http.StatusInternalServerError)
-// 		return
-// 	}
+	classes, err := query.ListClasses(ctx)
+	if err != nil {
+		logAndSendError(w, err, "Error getting classes from DB", http.StatusInternalServerError)
+		return
+	}
 
-// 	w.Header().Set("Content-Type", "application/json")
-// 	if err := json.NewEncoder(w).Encode(classes); err != nil {
-// 		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
-// 	}
-// }
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(classes); err != nil {
+		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
+	}
+}
 
 func (h *DBHandler) GetClassById(w http.ResponseWriter, r *http.Request) {
 	// curl http://localhost:8000/api/classes/ -H "id: 1"
