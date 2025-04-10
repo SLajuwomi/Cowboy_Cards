@@ -442,10 +442,18 @@ const ClassDetail = () => {
               <p className="text-gray-600">
                 {loading ? 'Loading...' : classData?.ClassDescription}
               </p>
+              {isTeacher && (
+                <IonIcon
+                  icon={createOutline}
+                  size="large"
+                  color="primary"
+                  className="hover:transform hover:scale-110 cursor-pointer p-2"
+                  onClick={handleEdit}
+                ></IonIcon>
+              )}
             </div>
             {isTeacher && (
               //  TODO: create-set isn't accepting the class ID right now, will be necessary for making a set for a specific class
-              //IonButton should be in top right corner
               <div className="mb-8">
                 <IonButton
                   routerLink={`/create-set`}
@@ -465,16 +473,6 @@ const ClassDetail = () => {
             Back
           </IonButton>
           {/* TODO: should only show for teachers */}
-
-          {isTeacher && (
-            <IonIcon
-              icon={createOutline}
-              size="large"
-              color="primary"
-              className="hover:transform hover:scale-110 cursor-pointer"
-              onClick={handleEdit}
-            ></IonIcon>
-          )}
         </div>
 
         <IonSegment
