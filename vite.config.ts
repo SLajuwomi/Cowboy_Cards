@@ -12,6 +12,7 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: 'public',
+    sourcemap: true,
   },
   publicDir: 'static',
   plugins: [react(), mode === 'development' && componentTagger()].filter(

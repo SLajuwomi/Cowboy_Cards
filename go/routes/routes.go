@@ -5,12 +5,6 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-// func dummy(w http.ResponseWriter, r *http.Request) {
-// 	log.Println("url: ", r.URL)
-
-// 	json.NewEncoder(w).Encode("here: " + r.URL.Path)
-// }
-
 // every protected route is preceded by /api
 func Protected(r *chi.Mux, h *controllers.DBHandler) {
 
@@ -18,8 +12,8 @@ func Protected(r *chi.Mux, h *controllers.DBHandler) {
 
 	r.Route("/card_history", func(r chi.Router) {
 		// these are upserts, one each for (in)correct
-		r.Post("/incscore", h.UpsertCorrectFlashcardScore)
-		r.Post("/decscore", h.UpsertIncorrectFlashcardScore)
+		r.Post("/correct", h.UpdateFlashcardScore)
+		r.Post("/incorrect", h.UpdateFlashcardScore)
 
 		r.Get("/", h.GetCardScore)
 		r.Get("/set", h.GetScoresInASet)
@@ -55,7 +49,7 @@ func Protected(r *chi.Mux, h *controllers.DBHandler) {
 			r.Delete("/", h.DeleteClass)
 		})
 
-		r.Get("/list", h.ListClasses)
+		// r.Get("/list", h.ListClasses)
 		r.Get("/", h.GetClassById)
 		r.Post("/", h.CreateClass)
 	})
@@ -74,10 +68,10 @@ func Protected(r *chi.Mux, h *controllers.DBHandler) {
 
 		r.Route("/sets", func(r chi.Router) {
 			r.Get("/list", h.ListFlashcardSets)
-			r.Get("/", h.GetFlashcardSetById)
 			r.Post("/", h.CreateFlashcardSet)
 			r.Route("/", func(r chi.Router) {
 				r.Use(h.VerifySetOwnerMW) // Ensure only the owner can update/delete the set
+				r.Get("/", h.GetFlashcardSetById)
 				r.Put("/set_name", h.UpdateFlashcardSet)
 				r.Put("/set_description", h.UpdateFlashcardSet)
 				r.Delete("/", h.DeleteFlashcardSet)
@@ -86,13 +80,14 @@ func Protected(r *chi.Mux, h *controllers.DBHandler) {
 	})
 
 	// CreateUser and GetUserBy{Email,Username} are called from the unprotected routes
+	// no mw seems necessary here - id comes from cookie only
 	r.Route("/users", func(r chi.Router) {
-		r.Get("/list", h.ListUsers)
+		// r.Get("/list", h.ListUsers)
 		r.Get("/", h.GetUserById)
 		r.Put("/username", h.UpdateUser)
 		r.Put("/email", h.UpdateUser)
-		r.Put("/firstname", h.UpdateUser)
-		r.Put("/lastname", h.UpdateUser)
+		r.Put("/first_name", h.UpdateUser)
+		r.Put("/last_name", h.UpdateUser)
 		r.Put("/password", h.UpdateUser)
 		// r.Delete("/", h.DeleteUser)
 	})

@@ -3,7 +3,6 @@ package controllers
 import (
 	"context"
 	"net/http"
-	"time"
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/middleware"
@@ -17,13 +16,14 @@ type DBHandler struct {
 
 // User represents the user data that will be sent to the client
 type User struct {
-	ID        int32     `json:"id"`
-	Username  string    `json:"username"`
-	Email     string    `json:"email"`
-	FirstName string    `json:"first_name"`
-	LastName  string    `json:"last_name"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	// ID        int32     `json:"id"`
+	Username  string `json:"username"`
+	Email     string `json:"email"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	CreatedAt string `json:"created_at"`
+	// UpdatedAt time.Time `json:"updated_at"`
+	NumClasses int `json:"numClasses"`
 }
 
 // LoginRequest represents the login request body
@@ -44,7 +44,7 @@ type SignupRequest struct {
 // AuthResponse represents the response sent after successful authentication
 type AuthResponse struct {
 	// Token     string `json:"token"`
-	UserID    int32  `json:"user_id"`
+	// UserID    int32  `json:"user_id"`
 	Username  string `json:"username"`
 	Email     string `json:"email"`
 	FirstName string `json:"first_name"`

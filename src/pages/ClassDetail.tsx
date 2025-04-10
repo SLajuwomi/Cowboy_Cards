@@ -15,6 +15,7 @@ import {
   IonLabel,
   IonSegment,
   IonSegmentButton,
+  IonSpinner,
 } from '@ionic/react';
 import { h } from 'ionicons/dist/types/stencil-public-runtime';
 import {
@@ -24,6 +25,7 @@ import {
   peopleOutline,
   trophyOutline,
 } from 'ionicons/icons';
+import { Footer } from '@/components/footer';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -48,6 +50,22 @@ type FlashcardSet = {
   UpdatedAt: string;
 };
 
+type ClassUser = {
+  UserID: number;
+  ClassID: number;
+  Role: string;
+  FirstName: string;
+  LastName: string;
+};
+
+type SetScore = {
+  SetName: string;
+  Correct: number;
+  Incorrect: number;
+  NetScore: number;
+  TimesAttempted: number;
+};
+
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const ClassDetail = () => {
@@ -58,8 +76,13 @@ const ClassDetail = () => {
   const [isTeacher, setIsTeacher] = useState(true);
   const [classData, setClassData] = useState<Class>();
   const [flashcardSets, setFlashcardSets] = useState<FlashcardSet[]>([]);
+  const [classUsers, setClassUsers] = useState<ClassUser[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [leaderboardData, setLeaderboardData] = useState<
+    Array<{ name: string; totalScore: number }>
+  >([]);
+  const [loadingScores, setLoadingScores] = useState(false);
 
   // Update Class Name and Description Form
   const [isEditing, setIsEditing] = useState(false);
@@ -186,15 +209,115 @@ const ClassDetail = () => {
 
     async function fetchFlashcardSets() {
       const sets = await makeHttpCall<FlashcardSet[]>(
-        `${API_BASE}/api/flashcards/sets/list`
+        `${API_BASE}/api/class_set/get_sets`,
+        {
+          method: 'GET',
+          headers: {
+            class_id: id,
+          },
+        }
       );
       console.log('sets', sets);
       setFlashcardSets(sets);
     }
 
+    async function fetchClassUsers() {
+      const users = await makeHttpCall<ClassUser[]>(
+        `${API_BASE}/api/class_user/members`,
+        {
+          method: 'GET',
+          headers: {
+            class_id: id,
+          },
+        }
+      );
+      console.log('users', users);
+      setClassUsers(users);
+    }
     fetchClass();
     fetchFlashcardSets();
-  }, []);
+    fetchClassUsers();
+  }, [id]);
+
+  // New useEffect for score calculation
+  useEffect(() => {
+    async function calculateLeaderboardScores() {
+      if (!classUsers.length || !flashcardSets.length) return;
+
+      setLoadingScores(true);
+      setError(null);
+      const userScores = new Map<number, number>();
+
+      try {
+        // Process all users concurrently
+        await Promise.all(
+          classUsers.map(async (user) => {
+            try {
+              // Fetch scores for all sets concurrently for this user
+              const setScores = await Promise.all(
+                flashcardSets.map(async (set) => {
+                  try {
+                    const setScoresResponse = await makeHttpCall<SetScore[]>(
+                      `${API_BASE}/api/card_history/set`,
+                      {
+                        method: 'GET',
+                        headers: {
+                          user_id: user.UserID.toString(),
+                          set_id: set.ID.toString(),
+                        },
+                      }
+                    );
+
+                    // Calculate total NetScore for this set
+                    if (Array.isArray(setScoresResponse)) {
+                      return setScoresResponse.reduce(
+                        (sum, score) => sum + (score.NetScore || 0),
+                        0
+                      );
+                    }
+                    return 0;
+                  } catch (error) {
+                    console.error(
+                      `Error fetching scores for set ${set.ID}:`,
+                      error
+                    );
+                    return 0;
+                  }
+                })
+              );
+
+              // Sum up all set scores for this user
+              const totalUserScore = setScores.reduce(
+                (sum, score) => sum + score,
+                0
+              );
+              userScores.set(user.UserID, totalUserScore);
+            } catch (error) {
+              console.error(`Error processing user ${user.UserID}:`, error);
+              userScores.set(user.UserID, 0);
+            }
+          })
+        );
+
+        // Create and sort final leaderboard data
+        const finalLeaderboard = classUsers
+          .map((user) => ({
+            name: `${user.FirstName} ${user.LastName}`,
+            totalScore: userScores.get(user.UserID) || 0,
+          }))
+          .sort((a, b) => b.totalScore - a.totalScore);
+
+        setLeaderboardData(finalLeaderboard);
+      } catch (error) {
+        setError('Error calculating leaderboard scores');
+        console.error('Leaderboard calculation error:', error);
+      } finally {
+        setLoadingScores(false);
+      }
+    }
+
+    calculateLeaderboardScores();
+  }, [classUsers, flashcardSets]);
 
   // TODO: get the user role from the backend, this code is currently not functional
   // need a way to get the user role from the backend, maybe through auth, RLS, or a query
@@ -214,14 +337,6 @@ const ClassDetail = () => {
   //   }
   //   fetchUser();
   // }, []);
-
-  const leaderboard = [
-    { name: 'John Doe', cardsMastered: 95 },
-    { name: 'Jane Smith', cardsMastered: 90 },
-    { name: 'Bob Johnson', cardsMastered: 85 },
-    { name: 'Alice Williams', cardsMastered: 82 },
-    { name: 'Charlie Brown', cardsMastered: 80 },
-  ];
 
   const [students, setStudents] = useState([
     { id: 1, name: 'Student One', email: 'student1@example.com' },
@@ -372,20 +487,29 @@ const ClassDetail = () => {
           </IonSegmentButton>
         </IonSegment>
 
-        {tab === 'leaderboard' && <Leaderboard leaderboard={leaderboard} />}
-        {tab === 'students' && (
-          <StudentList
-            students={students}
-            isTeacher={isTeacher}
-            onDeleteStudent={showDeleteStudentAlert}
-          />
+        {tab === 'leaderboard' && (
+          <>
+            {loadingScores ? (
+              <div className="flex justify-center items-center p-8">
+                <IonSpinner name="circular" />
+                <span className="ml-2">Calculating scores...</span>
+              </div>
+            ) : (
+              <Leaderboard
+                leaderboard={leaderboardData}
+                classUsers={classUsers}
+              />
+            )}
+          </>
         )}
 
-        <FlashcardCarousel
-          flashcardSets={flashcardSets}
-          currentCardIndex={currentCardIndex}
-          setApi={setCarouselApi}
-        />
+        {tab === 'flashcards' && (
+          <FlashcardCarousel
+            flashcardSets={flashcardSets}
+            currentCardIndex={currentCardIndex}
+            setApi={setCarouselApi}
+          />
+        )}
       </div>
 
       {/* Delete Account Alert */}
@@ -428,6 +552,7 @@ const ClassDetail = () => {
           },
         ]}
       />
+      <Footer />
     </IonContent>
   );
 };

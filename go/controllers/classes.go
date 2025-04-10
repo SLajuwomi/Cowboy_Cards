@@ -12,27 +12,27 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-func (h *DBHandler) ListClasses(w http.ResponseWriter, r *http.Request) {
-	// curl http://localhost:8000/api/classes/list | jq
+// func (h *DBHandler) ListClasses(w http.ResponseWriter, r *http.Request) {
+// 	// curl http://localhost:8000/api/classes/list | jq
 
-	query, ctx, conn, err := getQueryConnAndContext(r, h)
-	if err != nil {
-		logAndSendError(w, err, "Database connection error", http.StatusInternalServerError)
-		return
-	}
-	defer conn.Release()
+// 	query, ctx, conn, err := getQueryConnAndContext(r, h)
+// 	if err != nil {
+// 		logAndSendError(w, err, "Database connection error", http.StatusInternalServerError)
+// 		return
+// 	}
+// 	defer conn.Release()
 
-	classes, err := query.ListClasses(ctx)
-	if err != nil {
-		logAndSendError(w, err, "Error getting classes from DB", http.StatusInternalServerError)
-		return
-	}
+// 	classes, err := query.ListClasses(ctx)
+// 	if err != nil {
+// 		logAndSendError(w, err, "Error getting classes from DB", http.StatusInternalServerError)
+// 		return
+// 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(classes); err != nil {
-		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
-	}
-}
+// 	w.Header().Set("Content-Type", "application/json")
+// 	if err := json.NewEncoder(w).Encode(classes); err != nil {
+// 		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
+// 	}
+// }
 
 func (h *DBHandler) GetClassById(w http.ResponseWriter, r *http.Request) {
 	// curl http://localhost:8000/api/classes/ -H "id: 1"
@@ -227,6 +227,7 @@ func (h *DBHandler) DeleteClass(w http.ResponseWriter, r *http.Request) {
 
 func (h *DBHandler) GetClassScores(w http.ResponseWriter, r *http.Request) {
 	// curl -GET http://localhost:8000/classes/get_scores -H "class_id: 1"
+
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
 		logAndSendError(w, err, "Error connecting to database", http.StatusInternalServerError)
@@ -240,13 +241,13 @@ func (h *DBHandler) GetClassScores(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cid, err := getInt32Id(headerVals["class_id"])
+	classID, err := getInt32Id(headerVals["class_id"])
 	if err != nil {
 		logAndSendError(w, err, "Invalid class id", http.StatusBadRequest)
 		return
 	}
 
-	scores, err := query.GetClassScores(ctx, cid)
+	scores, err := query.GetClassScores(ctx, classID)
 	if err != nil {
 		logAndSendError(w, err, "Error getting scores", http.StatusInternalServerError)
 		return
@@ -256,5 +257,4 @@ func (h *DBHandler) GetClassScores(w http.ResponseWriter, r *http.Request) {
 	if err = json.NewEncoder(w).Encode(scores); err != nil {
 		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
 	}
-
 }
