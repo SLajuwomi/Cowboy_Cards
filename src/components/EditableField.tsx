@@ -6,7 +6,7 @@ export const EditableField = (props) => {
       <IonItem>
         <IonInput
           type="text" // TODO: Make this a prop
-          label={probs.label}
+          label={props.label}
           name={props.name}
           value={props.value}
           onIonChange={props.onChange}
