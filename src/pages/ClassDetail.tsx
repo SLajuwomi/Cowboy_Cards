@@ -338,12 +338,6 @@ const ClassDetail = () => {
   //   fetchUser();
   // }, []);
 
-  const [students, setStudents] = useState([
-    { id: 1, name: 'Student One', email: 'student1@example.com' },
-    { id: 2, name: 'Student Two', email: 'student2@example.com' },
-    { id: 3, name: 'Student Three', email: 'student3@example.com' },
-  ]);
-
   // Should hold the id of the student to be deleted and the state of the alert
   const [showDeleteAlert, setShowDeleteAlert] = useState({
     isOpen: false,
@@ -360,9 +354,18 @@ const ClassDetail = () => {
 
   // Handler to delete a student
   const handleDeleteStudent = (studentId) => {
-    setStudents((prevStudents) =>
-      prevStudents.filter((student) => student.id !== studentId)
-    );
+    try {
+      makeHttpCall(`${API_BASE}/api/class_user/`, {
+        method: 'DELETE',
+        headers: {
+          class_id: id,
+          user_id: studentId,
+        },
+      });
+    } catch (error) {
+      console.error('Error deleting student:', error);
+      setError('Error deleting student');
+    }
   };
 
   useEffect(() => {
@@ -440,6 +443,19 @@ const ClassDetail = () => {
                 {loading ? 'Loading...' : classData?.ClassDescription}
               </p>
             </div>
+            {isTeacher && (
+              //  TODO: create-set isn't accepting the class ID right now, will be necessary for making a set for a specific class
+              //IonButton should be in top right corner
+              <div className="mb-8">
+                <IonButton
+                  routerLink={`/create-set`}
+                  fill="solid"
+                  color="primary"
+                >
+                  Create Flashcard Set
+                </IonButton>
+              </div>
+            )}
           </div>
         )}
 
@@ -460,13 +476,6 @@ const ClassDetail = () => {
             ></IonIcon>
           )}
         </div>
-
-        {isTeacher && (
-          //  TODO: create-set isn't accepting the class ID right now, will be necessary for making a set for a specific class
-          <IonButton routerLink={`/create-set`} fill="solid" color="primary">
-            Create Flashcard Set
-          </IonButton>
-        )}
 
         <IonSegment
           value={tab}
