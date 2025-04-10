@@ -25,7 +25,8 @@ const PublicFlashcards = () => {
   const [flashcardSets, setFlashcardSets] = useState<FlashcardSet[]>([]);
   const [searchText, setSearchText] = useState('');
   const filteredFlashcardSets = flashcardSets.filter((set) =>
-    set.SetName.toLowerCase().includes(searchText.toLowerCase())
+    set.SetName.toLowerCase().includes(searchText.toLowerCase()) ||
+    (set.SetDescription && set.SetDescription.toLowerCase().includes(searchText.toLowerCase()))
   );
   useEffect(() => {
     async function fetchSets() {
@@ -55,13 +56,12 @@ const PublicFlashcards = () => {
           <h1 className="text-3xl font-bold pb-8">Public Flashcard Sets</h1>
           {loading && <div>Loading...</div>}
           {error && <div className="text-red-500 mt-2">{error}</div>}
-          <IonSearchbar
-            value={searchText}
-            onIonChange={(e) => setSearchText(e.detail.value!)} // Update search text dynamically
-            placeholder="Search flashcard sets"
-            className="mb-4 w-1/2"
-            debounce={500} // Debounce for 500ms
-          />
+            <IonSearchbar
+              value={searchText}
+              onIonInput={(e: any) => setSearchText(e.target.value)} // Use onIonInput for real-time updates
+              placeholder="Search flashcard sets"
+              className="mb-4 w-1/2"
+            />
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filteredFlashcardSets.map((set) => (

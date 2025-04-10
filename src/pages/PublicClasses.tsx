@@ -6,6 +6,8 @@ import {
   IonCardSubtitle,
   IonCardTitle,
   IonContent,
+  IonButton,
+  IonSearchbar,
 } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -14,13 +16,35 @@ type Class = {
   ID: number;
   ClassName: string;
   ClassDescription: string;
-  JoinCode: string;
+  JoinCode?: string;
   CreatedAt: string;
   UpdatedAt: string;
 };
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
-
+// const mockClasses = [
+//   {
+//     ID: 1,
+//     ClassName: 'Biology 101',
+//     ClassDescription: 'Biology',
+//     CreatedAt: '2023-01-15',
+//     UpdatedAt: '2023-05-20',
+//   },
+//   {
+//     ID: 2,
+//     ClassName: 'Chemistry 101',
+//     ClassDescription: 'Chemistry',
+//     CreatedAt: '2025-01-15',
+//     UpdatedAt: '2023-05-20',
+//   },
+//   {
+//     ID: 3,
+//     ClassName: 'physic 101',
+//     ClassDescription: 'physic',
+//     CreatedAt: '2023-01-11',
+//     UpdatedAt: '2023-05-10',
+//   },
+// ]
 const PublicClasses = () => {
   const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(false);
@@ -57,11 +81,29 @@ const PublicClasses = () => {
               <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-transform-shadow duration-200 rounded-lg border shadow-sm">
                 <IonCardHeader className="flex flex-col space-y-1.5 p-6">
                   <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
-                    {classItem.ClassName}
+                    {classItem.ClassName} 
                   </IonCardTitle>
                   <IonCardSubtitle className="text-sm text-gray-600">
                     {classItem.ClassDescription || 'No description'}
                   </IonCardSubtitle>
+                  <IonButton
+                      expand="block"
+                      color="primary"
+                      className="mt-4"
+                      onClick={async () => {
+                        try {
+                          const response = await makeHttpCall(`${API_BASE}/api/class_user`, {
+                            method: 'POST',
+                            headers: { class_id: classItem.ID, role: 'student' },
+                          });
+                          console.log('Join class response:', response);
+                        } catch (error) {
+                          console.error('Error joining class:', error);
+                              }
+                        }}
+                      >
+                  Join Class
+                </IonButton>
                 </IonCardHeader>
               </IonCard>
             </Link>
