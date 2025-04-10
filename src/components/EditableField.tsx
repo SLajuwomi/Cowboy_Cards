@@ -4,9 +4,9 @@ export const EditableField = (props) => {
   return (
     <div>
       <IonItem>
-        <IonLabel position="stacked">{props.label}</IonLabel>
         <IonInput
           type="text" // TODO: Make this a prop
+          label={probs.label}
           name={props.name}
           value={props.value}
           onIonChange={props.onChange}
