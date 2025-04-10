@@ -96,6 +96,58 @@ func (h *Handler) VerifyTeacherMW(next http.Handler) http.Handler {
 	})
 }
 
+func (h *Handler) VerifyClassMemberMW(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("DEBUG: VerifyClassMemberMW called for path: %s", r.URL.Path)
+
+		query, ctx, conn, err := GetQueryConnAndContext(r, h)
+		if err != nil {
+			LogAndSendError(w, err, "Database connection error", http.StatusInternalServerError)
+			return
+		}
+		defer conn.Release()
+
+		// Get user_id from context (set by AuthMiddleware)
+		userID, ok := GetUserIDFromContext(ctx)
+		if !ok {
+			LogAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		headerVals, err := GetHeaderVals(r, "class_id")
+		if err != nil {
+			LogAndSendError(w, err, "Header error", http.StatusBadRequest)
+			return
+		}
+
+		// id, err := GetInt32Id(headerVals["user_id"])
+		// if err != nil {
+		// 	LogAndSendError(w, err, "Invalid id", http.StatusBadRequest)
+		// 	return
+		// }
+
+		classID, err := GetInt32Id(headerVals["class_id"])
+		if err != nil {
+			LogAndSendError(w, err, "Invalid class id", http.StatusBadRequest)
+			return
+		}
+
+		member, err := query.VerifyClassMember(ctx, db.VerifyClassMemberParams{
+			ClassID: classID,
+			UserID:  userID,
+		})
+		if err != nil {
+			LogAndSendError(w, err, "Invalid permissions", http.StatusUnauthorized)
+			return
+		}
+
+		log.Println("member: ", member)
+
+		ctx = context.WithValue(ctx, classKey, classID)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
 func (h *Handler) VerifyFlashcardOwnerMW(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("DEBUG: VerifyFlashcardOwnerMW called for path: %s", r.URL.Path)
