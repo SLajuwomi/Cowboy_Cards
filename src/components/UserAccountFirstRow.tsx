@@ -1,7 +1,7 @@
 import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonIcon } from "@ionic/react";
-import { EditableField } from "@/utils/EditableField";
+import { EditableField } from "@/components/EditableField";
 import { createOutline } from "ionicons/icons";
-
+import InfoRow from "./InfoRow";
 
 const UserAccountFirstRow = (props) => {
   return (
@@ -56,22 +56,10 @@ const UserAccountFirstRow = (props) => {
       </div>
     ) : (
       <div className="space-y-2">
-        <div>
-          <span className="font-medium">First Name: </span>
-          {props.userInfo?.first_name}
-        </div>
-        <div>
-          <span className="font-medium">Last Name: </span>
-          {props.userInfo?.last_name}
-        </div>
-        <div>
-          <span className="font-medium">Username: </span>
-          {props.userInfo?.username}
-        </div>
-        <div>
-          <span className="font-medium">Email: </span>
-          {props.userInfo?.email}
-        </div>
+        <InfoRow label="First Name" value={props.userInfo?.first_name} />
+        <InfoRow label="Last Name" value={props.userInfo?.last_name} />
+        <InfoRow label="Username" value={props.userInfo?.username} />
+        <InfoRow label="Email" value={props.userInfo?.email} />
         <IonButton
           fill="outline"
           onClick={props.handleEdit}
@@ -94,26 +82,14 @@ const UserAccountFirstRow = (props) => {
   </IonCardHeader>
   <IonCardContent className="p-6 pt-0">
     <div className="space-y-3">
-      <div className="flex justify-between items-center">
-        <span className="font-medium">Account Created:</span>
-        <span>{props.stats?.accountCreated}</span>
+      <InfoRow label="Account Created" value={props.userInfo?.created_at} />
+      <InfoRow label="Classes Taken" value={props.userInfo?.numClasses} />
+      <InfoRow label="Cards Shown" value={props.userInfo?.cardsSeen} />
+      <InfoRow label="Cards Mastered" value={props.userInfo?.totalCardViews} />
       </div>
-      <div className="flex justify-between items-center">
-        <span className="font-medium">Classes Taken:</span>
-        <span>{props.stats?.numClasses}</span>
-      </div>
-      <div className="flex justify-between items-center">
-        <span className="font-medium">Cards Shown:</span>
-        <span>{props.stats?.cardsShown}</span>
-      </div>
-      <div className="flex justify-between items-center">
-        <span className="font-medium">Cards Mastered:</span>
-        <span>{props.stats?.cardsMastered}</span>
-      </div>
-    </div>
-  </IonCardContent>
-</IonCard>
-    </div>
+    </IonCardContent>
+  </IonCard>
+  </div>
   );
 };
 

@@ -1,6 +1,6 @@
 import { Navbar } from '@/components/navbar';
 import { useTheme } from '@/contexts/ThemeContext';
-import { EditableField } from '@/utils/EditableField';
+import { EditableField } from '@/components/EditableField';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonAlert,
@@ -27,21 +27,18 @@ import {
   createOutline,
 } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
-import UserAccountFirstRow from './UserAccountFirstRow';
-import UserAccountSecondRow from './UserAccountSecondRow';
+import UserAccountFirstRow from '../components/UserAccountFirstRow';
+import UserAccountSecondRow from '../components/UserAccountSecondRow';
+
 type User = {
   username: string;
   email: string;
   first_name: string;
   last_name: string;
   created_at: string;
-};
-
-type Stats = {
-  accountCreated: string;
   numClasses: number;
-  cardsShown: number;
-  cardsMastered: number;
+  cardsSeen: number;
+  totalCardViews: number;
 };
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
@@ -49,7 +46,6 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL;
 const UserAccount = () => {
   const { theme, setTheme } = useTheme();
   const [userInfo, setUserInfo] = useState<User>();
-  const [stats, setStats] = useState<Stats>();
   const [loading, setLoading] = useState(true); // Start loading initially
   const [error, setError] = useState<string | null>(null);
   
@@ -201,12 +197,6 @@ const UserAccount = () => {
           headers: {},
         });
         setUserInfo(data);
-        setStats({
-          accountCreated: data.created_at,
-          numClasses: 2,
-          cardsShown: 120,
-          cardsMastered: 85,
-        });
         setUpdatedInfo(data);
         console.log('data', data as User);
       } catch (error) {
@@ -266,7 +256,7 @@ const UserAccount = () => {
         {/* Content: Only show if not loading and no error */}
         {!loading && !error && userInfo && (
           <>
-            <UserAccountFirstRow isEditing={isEditing} errors={errors} handleChange={handleChange} handleSave={handleSave} updatedInfo={updatedInfo} userInfo={userInfo} stats={stats} />
+            <UserAccountFirstRow isEditing={isEditing} errors={errors} handleChange={handleChange} handleSave={handleSave} updatedInfo={updatedInfo} userInfo={userInfo} />
             <UserAccountSecondRow isEditing={isEditing} errors={errors} handleChange={handleChange} handleSave={handleSave} updatedInfo={updatedInfo} userInfo={userInfo} expandedClass={expandedClass} toggleClassDetails={toggleClassDetails} showPasswordAlert={showPasswordAlert} setShowPasswordAlert={setShowPasswordAlert} showDeleteAlert={showDeleteAlert} setShowDeleteAlert={setShowDeleteAlert} theme={theme} setTheme={setTheme} presentToast={presentToast} />
           </>
         )}
