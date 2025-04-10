@@ -52,33 +52,41 @@ func (h *DBHandler) GetUserById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// headerVals, err := getHeaderVals(r, "id")
-	// if err != nil {
-	// 	logAndSendError(w, err, "Header error", http.StatusBadRequest)
-	// 	return
-	// }
+	tx, err := conn.Begin(ctx)
+	if err != nil {
+		logAndSendError(w, err, "Database tx connection error", http.StatusInternalServerError)
+	}
+	defer tx.Rollback(ctx)
 
-	// id, err := getInt32Id(headerVals["id"])
-	// if err != nil {
-	// 	logAndSendError(w, err, "Invalid id", http.StatusBadRequest)
-	// 	return
-	// }
+	qtx := query.WithTx(tx)
 
-	user, err := query.GetUserById(ctx, userID)
+	user, err := qtx.GetUserById(ctx, userID)
 	if err != nil {
 		logAndSendError(w, err, "User not found", http.StatusNotFound)
 		return
 	}
 
-	// Convert to response type to avoid sending sensitive information
+	classes, err := qtx.ListClassesOfAUser(ctx, userID)
+	if err != nil {
+		logAndSendError(w, err, "Error getting classes", http.StatusInternalServerError)
+		return
+	}
+
+	err = tx.Commit(ctx)
+	if err != nil {
+		logAndSendError(w, err, "Failed to commit transaction", http.StatusInternalServerError)
+		return
+	}
+
 	response := User{
 		// ID:        user.ID,
 		Username:  user.Username,
 		Email:     user.Email,
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
-		CreatedAt: user.CreatedAt.Time,
-		UpdatedAt: user.UpdatedAt.Time,
+		CreatedAt: user.CreatedAt.Time.Format("2006/01/02"),
+		// UpdatedAt: user.UpdatedAt.Time,
+		NumClasses: len(classes),
 	}
 
 	w.Header().Set("Content-Type", "application/json")

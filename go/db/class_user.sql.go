@@ -39,13 +39,14 @@ func (q *Queries) LeaveClass(ctx context.Context, arg LeaveClassParams) error {
 }
 
 const listClassesOfAUser = `-- name: ListClassesOfAUser :many
-SELECT class_id, role, class_name FROM class_user JOIN classes ON class_user.class_id = classes.id WHERE user_id = $1
+SELECT class_id, role, class_name, class_description FROM class_user JOIN classes ON class_user.class_id = classes.id WHERE user_id = $1
 `
 
 type ListClassesOfAUserRow struct {
-	ClassID   int32
-	Role      string
-	ClassName string
+	ClassID          int32
+	Role             string
+	ClassName        string
+	ClassDescription string
 }
 
 func (q *Queries) ListClassesOfAUser(ctx context.Context, userID int32) ([]ListClassesOfAUserRow, error) {
@@ -57,7 +58,12 @@ func (q *Queries) ListClassesOfAUser(ctx context.Context, userID int32) ([]ListC
 	var items []ListClassesOfAUserRow
 	for rows.Next() {
 		var i ListClassesOfAUserRow
-		if err := rows.Scan(&i.ClassID, &i.Role, &i.ClassName); err != nil {
+		if err := rows.Scan(
+			&i.ClassID,
+			&i.Role,
+			&i.ClassName,
+			&i.ClassDescription,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
