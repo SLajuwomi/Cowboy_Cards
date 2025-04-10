@@ -22,7 +22,6 @@ const UserAccountFirstRow = (props) => {
           label="First Name"
           name="first_name"
           value={props.updatedInfo?.first_name || ''}
-          isEditing={props.isEditing}
           error={props.errors.first_name}
           onChange={props.handleChange}
         />
@@ -30,7 +29,6 @@ const UserAccountFirstRow = (props) => {
           label="Last Name"
           name="last_name"
           value={props.updatedInfo?.last_name || ''}
-          isEditing={props.isEditing}
           error={props.errors.last_name}
           onChange={props.handleChange}
         />
@@ -38,7 +36,6 @@ const UserAccountFirstRow = (props) => {
           label="Username"
           name="username"
           value={props.updatedInfo?.username || ''}
-          isEditing={props.isEditing}
           error={props.errors.username}
           onChange={props.handleChange}
         />
@@ -46,7 +43,6 @@ const UserAccountFirstRow = (props) => {
           label="Email"
           name="email"
           value={props.updatedInfo?.email || ''}
-          isEditing={props.isEditing}
           error={props.errors.email}
           onChange={props.handleChange}
         />
@@ -56,7 +52,7 @@ const UserAccountFirstRow = (props) => {
       </div>
     ) : (
       <div className="space-y-2">
-        <InfoRow label="First Name" value={props.userInfo?.first_name} />
+        <InfoRow label="First Name" value={props.userInfo?.first_name}  />
         <InfoRow label="Last Name" value={props.userInfo?.last_name} />
         <InfoRow label="Username" value={props.userInfo?.username} />
         <InfoRow label="Email" value={props.userInfo?.email} />

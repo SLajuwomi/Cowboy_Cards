@@ -256,7 +256,7 @@ const UserAccount = () => {
         {/* Content: Only show if not loading and no error */}
         {!loading && !error && userInfo && (
           <>
-            <UserAccountFirstRow isEditing={isEditing} errors={errors} handleChange={handleChange} handleSave={handleSave} updatedInfo={updatedInfo} userInfo={userInfo} />
+            <UserAccountFirstRow isEditing={isEditing} errors={errors} handleChange={handleChange} handleSave={handleSave} updatedInfo={updatedInfo} userInfo={userInfo} handleEdit={handleEdit} />
             <UserAccountSecondRow isEditing={isEditing} errors={errors} handleChange={handleChange} handleSave={handleSave} updatedInfo={updatedInfo} userInfo={userInfo} expandedClass={expandedClass} toggleClassDetails={toggleClassDetails} showPasswordAlert={showPasswordAlert} setShowPasswordAlert={setShowPasswordAlert} showDeleteAlert={showDeleteAlert} setShowDeleteAlert={setShowDeleteAlert} theme={theme} setTheme={setTheme} presentToast={presentToast} />
           </>
         )}
