@@ -510,6 +510,16 @@ const ClassDetail = () => {
             setApi={setCarouselApi}
           />
         )}
+
+        {tab === 'students' && (
+          <div className="flex flex-col">
+            <StudentList
+              isTeacher={isTeacher}
+              students={classUsers}
+              onDeleteStudent={showDeleteStudentAlert}
+            />
+          </div>
+        )}
       </div>
 
       {/* Delete Account Alert */}
