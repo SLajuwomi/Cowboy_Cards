@@ -71,64 +71,38 @@ const FlashcardCarousel = (props) => {
   return (
     <div className="mt-6">
       {selectedSet === null ? (
-        <IonGrid>
-          <IonRow>
-            {props.flashcardSets
-              .sort((a, b) => a.ID - b.ID)
-              .map((set) => (
-                <IonCol size="12" sizeMd="6" sizeLg="4" key={set.ID}>
-                  <IonCard
-                    className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-200 rounded-lg border shadow-sm"
-                    onClick={(e) => {
-                      history.push(`/set-overview/${set.ID}`);
-                      console.log('IonCard clicked - ', e);
-                    }}
-                  >
-                    <IonCardHeader>
-                      <IonCardTitle className="text-lg font-semibold">
-                        {set.SetName}
-                      </IonCardTitle>
-                    </IonCardHeader>
-                    <IonCardContent>
-                      <p className="text-muted-foreground mb-2">
-                        {set.SetDescription}
-                      </p>
-                      {/* <p className="text-muted-foreground">
+        props.flashcardSets?.length ? (
+          <IonGrid>
+            <IonRow>
+              {props.flashcardSets
+                .sort((a, b) => a.ID - b.ID)
+                .map((set) => (
+                  <IonCol size="12" sizeMd="6" sizeLg="4" key={set.ID}>
+                    <IonCard
+                      className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-200 rounded-lg border shadow-sm"
+                      onClick={() => history.push(`/set-overview/${set.ID}`)}
+                    >
+                      <IonCardHeader>
+                        <IonCardTitle className="text-lg font-semibold">
+                          {set.SetName}
+                        </IonCardTitle>
+                      </IonCardHeader>
+                      <IonCardContent>
+                        <p className="text-muted-foreground mb-2">
+                          {set.SetDescription}
+                        </p>
+                        {/* <p className="text-muted-foreground">
                                             {set.cards.length} cards
                                         </p> */}
-                      {props.isTeacher && (
-                        <IonButtons slot="end" className="flex justify-end">
-                          <IonButton
-                            onClick={(e) => {
-                              history.push(`/edit-set/${set.ID}`);
-                              e.bubbles = false;
-                              e.stopPropagation();
-                            }}
-                          >
-                            <IonIcon icon={createOutline} />
-                          </IonButton>
-                          <IonButton
-                            onClick={(e) => {
-                              e.bubbles = false;
-                              e.stopPropagation();
-                              props.onDeleteSet(set.ID);
-                            }}
-                          >
-                            <IonIcon
-                              slot="end"
-                              icon={trashOutline}
-                              color="danger"
-                              className="cursor-pointer"
-                            />
-                          </IonButton>
-                        </IonButtons>
-                      )}
-                    </IonCardContent>
-                  </IonCard>
-                </IonCol>
-              ))}
-          </IonRow>
-        </IonGrid>
+                      </IonCardContent>
+                    </IonCard>
+                  </IonCol>
+                ))}
+            </IonRow>
+          </IonGrid>
+        ) : (
+          <p>No flashcard sets available.</p>
+        )
       ) : (
         <>
           <IonButton
