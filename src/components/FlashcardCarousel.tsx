@@ -26,8 +26,8 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from '../ui/carousel';
-import { FlashCard } from '../FlashCard';
+} from '@/components/ui/carousel';
+import { FlashCard } from '@/components/FlashCard';
 import { useHistory } from 'react-router-dom';
 import { Link } from 'lucide-react';
 
