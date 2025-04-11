@@ -38,9 +38,12 @@ func (h *DBHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create session cookie
-	if err := middleware.CreateSession(w, r, user.ID); err != nil {
+	err = middleware.CreateSession(w, r, user.ID)
+	if err != nil {
 		logAndSendError(w, err, "Error creating session", http.StatusInternalServerError)
 		return
+	} else {
+		// login and streak
 	}
 
 	resp := AuthResponse{

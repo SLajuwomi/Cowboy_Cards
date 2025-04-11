@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"path"
 	"strings"
+	"time"
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/middleware"
@@ -84,7 +85,7 @@ func (h *DBHandler) GetUserById(w http.ResponseWriter, r *http.Request) {
 		Email:     user.Email,
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
-		CreatedAt: user.CreatedAt.Time.Format(timeFormat),
+		CreatedAt: user.CreatedAt.Time.Format(time.DateTime),
 		// UpdatedAt: user.UpdatedAt.Time,
 		NumClasses: len(classes),
 	}

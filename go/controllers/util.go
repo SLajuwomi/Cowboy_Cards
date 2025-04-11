@@ -62,10 +62,6 @@ type AuthResponse struct {
 	// CSRFToken string
 }
 
-const (
-	timeFormat string = "2006/01/02"
-)
-
 func logAndSendError(w http.ResponseWriter, err error, msg string, statusCode int) {
 	middleware.LogAndSendError(w, err, msg, statusCode)
 }

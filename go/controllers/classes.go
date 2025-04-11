@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"path"
+	"time"
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/middleware"
@@ -65,8 +66,8 @@ func (h *DBHandler) GetClassById(w http.ResponseWriter, r *http.Request) {
 		ID:               class.ID,
 		ClassName:        class.ClassName,
 		ClassDescription: class.ClassDescription,
-		CreatedAt:        class.CreatedAt.Time.Format(timeFormat),
-		UpdatedAt:        class.UpdatedAt.Time.Format(timeFormat),
+		CreatedAt:        class.CreatedAt.Time.Format(time.DateTime),
+		UpdatedAt:        class.UpdatedAt.Time.Format(time.DateTime),
 		Role:             role,
 	}
 
