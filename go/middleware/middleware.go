@@ -44,9 +44,9 @@ func SetCredsHeaders(w http.ResponseWriter, r *http.Request, next http.HandlerFu
 	next(w, r)
 }
 
-func (h *Handler) VerifyTeacherMW(next http.Handler) http.Handler {
+func (h *Handler) VerifyClassMemberMW(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("DEBUG: VerifyTeacherMW called for path: %s", r.URL.Path)
+		log.Printf("DEBUG: VerifyClassMemberMW called for path: %s", r.URL.Path)
 
 		query, ctx, conn, err := GetQueryConnAndContext(r, h)
 		if err != nil {
@@ -68,19 +68,13 @@ func (h *Handler) VerifyTeacherMW(next http.Handler) http.Handler {
 			return
 		}
 
-		// id, err := GetInt32Id(headerVals["user_id"])
-		// if err != nil {
-		// 	LogAndSendError(w, err, "Invalid id", http.StatusBadRequest)
-		// 	return
-		// }
-
-		classID, err := GetInt32Id(headerVals["class_id"])
+		classID, err := GetInt32Id(headerVals["id"])
 		if err != nil {
 			LogAndSendError(w, err, "Invalid class id", http.StatusBadRequest)
 			return
 		}
 
-		teacher, err := query.VerifyTeacher(ctx, db.VerifyTeacherParams{
+		member, err := query.VerifyClassMember(ctx, db.VerifyClassMemberParams{
 			ClassID: classID,
 			UserID:  userID,
 		})
@@ -89,9 +83,10 @@ func (h *Handler) VerifyTeacherMW(next http.Handler) http.Handler {
 			return
 		}
 
-		log.Println("teacher: ", teacher)
+		log.Println("member: ", member)
 
 		ctx = context.WithValue(ctx, classKey, classID)
+		ctx = context.WithValue(ctx, roleKey, member.Role)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

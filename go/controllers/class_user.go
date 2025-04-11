@@ -9,7 +9,7 @@ import (
 )
 
 func (h *DBHandler) JoinClass(w http.ResponseWriter, r *http.Request) {
-	//curl -X POST localhost:8000/api/class_user -H "user_id: 1" -H "class_id: 1" -H "role: Student"
+	//curl -X POST localhost:8000/api/class_user -H "class_id: 1" -H "role: Student"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {

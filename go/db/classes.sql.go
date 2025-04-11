@@ -63,17 +63,19 @@ func (q *Queries) GetClassById(ctx context.Context, id int32) (Class, error) {
 }
 
 const getClassScores = `-- name: GetClassScores :many
-SELECT class_user.user_id, SUM(set_score) AS class_score FROM classes 
+SELECT class_user.user_id, users.username, SUM(set_score) AS class_score FROM classes 
 JOIN class_user ON classes.id = class_user.class_id 
 JOIN class_set ON classes.id = class_set.class_id
 JOIN set_user ON (class_user.user_id = set_user.user_id AND class_set.set_id = set_user.set_id)
+JOIN users ON class_user.user_id = users.id
 WHERE classes.id = $1
-GROUP BY class_user.user_id
+GROUP BY class_user.user_id, users.username
 ORDER BY SUM(set_score) DESC
 `
 
 type GetClassScoresRow struct {
 	UserID     int32
+	Username   string
 	ClassScore int64
 }
 
@@ -86,7 +88,7 @@ func (q *Queries) GetClassScores(ctx context.Context, id int32) ([]GetClassScore
 	var items []GetClassScoresRow
 	for rows.Next() {
 		var i GetClassScoresRow
-		if err := rows.Scan(&i.UserID, &i.ClassScore); err != nil {
+		if err := rows.Scan(&i.UserID, &i.Username, &i.ClassScore); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -160,17 +162,17 @@ func (q *Queries) UpdateClassName(ctx context.Context, arg UpdateClassNameParams
 	return class_name, err
 }
 
-const verifyTeacher = `-- name: VerifyTeacher :one
-SELECT user_id, class_id, role FROM class_user WHERE class_id = $1 AND user_id = $2 AND role = 'teacher'
+const verifyClassMember = `-- name: VerifyClassMember :one
+SELECT user_id, class_id, role FROM class_user WHERE class_id = $1 AND user_id = $2
 `
 
-type VerifyTeacherParams struct {
+type VerifyClassMemberParams struct {
 	ClassID int32
 	UserID  int32
 }
 
-func (q *Queries) VerifyTeacher(ctx context.Context, arg VerifyTeacherParams) (ClassUser, error) {
-	row := q.db.QueryRow(ctx, verifyTeacher, arg.ClassID, arg.UserID)
+func (q *Queries) VerifyClassMember(ctx context.Context, arg VerifyClassMemberParams) (ClassUser, error) {
+	row := q.db.QueryRow(ctx, verifyClassMember, arg.ClassID, arg.UserID)
 	var i ClassUser
 	err := row.Scan(&i.UserID, &i.ClassID, &i.Role)
 	return i, err
