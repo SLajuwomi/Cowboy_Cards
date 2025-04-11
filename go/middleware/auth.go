@@ -2,20 +2,18 @@ package middleware
 
 import (
 	"context"
-	"encoding/hex"
 	"errors"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/gorilla/sessions"
 )
 
 var (
-	sessionKey = os.Getenv("SESSION_KEY")
-	sKey, _    = hex.DecodeString(sessionKey)
-	store      = sessions.NewCookieStore(sKey)
+	// sessionKey = os.Getenv("SESSION_KEY")
+	// sKey, _    = hex.DecodeString(sessionKey)
+	store = sessions.NewCookieStore([]byte{95, 65, 12, 40})
 )
 
 func init() {

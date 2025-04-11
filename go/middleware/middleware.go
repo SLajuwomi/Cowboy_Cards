@@ -62,7 +62,7 @@ func (h *Handler) VerifyTeacherMW(next http.Handler) http.Handler {
 			return
 		}
 
-		headerVals, err := GetHeaderVals(r, "id")
+		headerVals, err := GetHeaderVals(r, "class_id")
 		if err != nil {
 			LogAndSendError(w, err, "Header error", http.StatusBadRequest)
 			return
@@ -74,7 +74,7 @@ func (h *Handler) VerifyTeacherMW(next http.Handler) http.Handler {
 		// 	return
 		// }
 
-		classID, err := GetInt32Id(headerVals["id"])
+		classID, err := GetInt32Id(headerVals["class_id"])
 		if err != nil {
 			LogAndSendError(w, err, "Invalid class id", http.StatusBadRequest)
 			return

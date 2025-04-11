@@ -20,8 +20,11 @@ func Protected(r *chi.Mux, h *controllers.DBHandler) {
 	})
 
 	r.Route("/class_set", func(r chi.Router) {
-		r.Post("/", h.AddSet)
-		r.Delete("/", h.RemoveSet)
+		r.Route("/", func(r chi.Router) {
+			r.Use(h.VerifyTeacherMW)
+			r.Post("/", h.AddSet)
+			r.Delete("/", h.RemoveSet)
+		})
 		r.Get("/get_sets", h.GetSetsInClass)
 		r.Get("/get_classes", h.GetClassesHavingSet)
 	})
