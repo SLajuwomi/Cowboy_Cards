@@ -131,7 +131,7 @@ func (q *Queries) ListClasses(ctx context.Context) ([]Class, error) {
 }
 
 const updateClassDescription = `-- name: UpdateClassDescription :one
-UPDATE classes SET class_description = $1, updated_at = NOW() WHERE id = $2 RETURNING class_description
+UPDATE classes SET class_description = $1, updated_at = LOCALTIMESTAMP(2) WHERE id = $2 RETURNING class_description
 `
 
 type UpdateClassDescriptionParams struct {
@@ -147,7 +147,7 @@ func (q *Queries) UpdateClassDescription(ctx context.Context, arg UpdateClassDes
 }
 
 const updateClassName = `-- name: UpdateClassName :one
-UPDATE classes SET class_name = $1, updated_at = NOW() WHERE id = $2 RETURNING class_name
+UPDATE classes SET class_name = $1, updated_at = LOCALTIMESTAMP(2) WHERE id = $2 RETURNING class_name
 `
 
 type UpdateClassNameParams struct {

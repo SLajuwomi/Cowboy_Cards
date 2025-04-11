@@ -8,10 +8,10 @@ SELECT * FROM classes WHERE id = $1;
 INSERT INTO classes (class_name, class_description, join_code) VALUES ($1, $2, $3) RETURNING *;
 
 -- name: UpdateClassName :one
-UPDATE classes SET class_name = $1, updated_at = NOW() WHERE id = $2 RETURNING class_name;
+UPDATE classes SET class_name = $1, updated_at = LOCALTIMESTAMP(2) WHERE id = $2 RETURNING class_name;
 
 -- name: UpdateClassDescription :one
-UPDATE classes SET class_description = $1, updated_at = NOW() WHERE id = $2 RETURNING class_description;
+UPDATE classes SET class_description = $1, updated_at = LOCALTIMESTAMP(2) WHERE id = $2 RETURNING class_description;
 
 -- name: DeleteClass :exec
 DELETE FROM classes WHERE id = $1;

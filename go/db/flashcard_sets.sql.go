@@ -88,7 +88,7 @@ func (q *Queries) ListFlashcardSets(ctx context.Context) ([]FlashcardSet, error)
 }
 
 const updateFlashcardSetDescription = `-- name: UpdateFlashcardSetDescription :one
-UPDATE flashcard_sets SET set_description = $1, updated_at = NOW() WHERE id = $2 RETURNING set_description
+UPDATE flashcard_sets SET set_description = $1, updated_at = LOCALTIMESTAMP(2) WHERE id = $2 RETURNING set_description
 `
 
 type UpdateFlashcardSetDescriptionParams struct {
@@ -104,7 +104,7 @@ func (q *Queries) UpdateFlashcardSetDescription(ctx context.Context, arg UpdateF
 }
 
 const updateFlashcardSetName = `-- name: UpdateFlashcardSetName :one
-UPDATE flashcard_sets SET set_name = $1, updated_at = NOW() WHERE id = $2 RETURNING set_name
+UPDATE flashcard_sets SET set_name = $1, updated_at = LOCALTIMESTAMP(2) WHERE id = $2 RETURNING set_name
 `
 
 type UpdateFlashcardSetNameParams struct {

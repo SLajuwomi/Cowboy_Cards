@@ -27,8 +27,12 @@ func Protected(r *chi.Mux, h *controllers.DBHandler) {
 	})
 
 	r.Route("/class_user", func(r chi.Router) {
+		r.Route("/", func(r chi.Router) {
+			r.Use(h.VerifyClassMemberMW)
+			r.Delete("/", h.LeaveClass)
+		})
+
 		r.Post("/", h.JoinClass)
-		r.Delete("/", h.LeaveClass)
 		r.Get("/classes", h.ListClassesOfAUser)
 		r.Get("/members", h.ListMembersOfAClass)
 		// r.Get("/getstudents", h.ListStudentsOfAClass)

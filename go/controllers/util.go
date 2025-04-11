@@ -51,17 +51,6 @@ type SignupRequest struct {
 	LastName  string
 }
 
-// AuthResponse represents the response sent after successful authentication
-type AuthResponse struct {
-	// Token     string
-	// UserID    int32
-	Username  string
-	Email     string
-	FirstName string
-	LastName  string
-	// CSRFToken string
-}
-
 func logAndSendError(w http.ResponseWriter, err error, msg string, statusCode int) {
 	middleware.LogAndSendError(w, err, msg, statusCode)
 }

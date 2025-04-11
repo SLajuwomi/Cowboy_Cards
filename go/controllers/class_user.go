@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
@@ -70,22 +71,46 @@ func (h *DBHandler) LeaveClass(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	headerVals, err := getHeaderVals(r, "class_id")
+	classID, ok := middleware.GetClassIDFromContext(ctx)
+	if !ok {
+		logAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	role, ok := middleware.GetRoleFromContext(ctx)
+	if !ok {
+		logAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	headerVals, err := getHeaderVals(r, "student_id")
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
 		return
 	}
 
-	classID, err := getInt32Id(headerVals["class_id"])
+	studentID, err := getInt32Id(headerVals["student_id"])
 	if err != nil {
 		logAndSendError(w, err, "Invalid class id", http.StatusBadRequest)
 		return
 	}
 
-	err = query.LeaveClass(ctx, db.LeaveClassParams{
-		UserID:  userID,
+	params := db.LeaveClassParams{
 		ClassID: classID,
-	})
+	}
+
+	if userID == studentID {
+		params.UserID = userID
+	} else {
+		if role == "teacher" {
+			params.UserID = studentID
+		} else {
+			logAndSendError(w, errors.New("forbidden"), "not a teacher", http.StatusUnauthorized)
+			return
+		}
+	}
+
+	err = query.LeaveClass(ctx, params)
 	if err != nil {
 		logAndSendError(w, err, "Error leaving class", http.StatusInternalServerError)
 		return
