@@ -23,10 +23,9 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 type Class = {
   ClassID: number;
+  Role: string;
   ClassName: string;
   ClassDescription: string;
-  CreatedAt: string;
-  UpdatedAt: string;
 };
 
 type Set = {
@@ -44,6 +43,10 @@ const Home = () => {
   const [classesLoading, setClassesLoading] = useState(false);
   const [setsLoading, setSetsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    console.log('Classes state updated:', classes);
+  }, [classes]);
 
   // Currently getting all classes, but should be getting only the classes the user is in. waiting on backend to implement this.
   useEffect(() => {
