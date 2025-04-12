@@ -77,7 +77,7 @@ func (h *DBHandler) GetClassById(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *DBHandler) GetClassLeaderboard(w http.ResponseWriter, r *http.Request) {
-	// curl http://localhost:8000/api/classes/leaderboard -H "class_id: 1"
+	// curl http://localhost:8000/api/classes/leaderboard -H "id: 1"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {

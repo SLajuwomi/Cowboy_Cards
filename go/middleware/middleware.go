@@ -62,7 +62,7 @@ func (h *Handler) VerifyClassMemberMW(next http.Handler) http.Handler {
 			return
 		}
 
-		headerVals, err := GetHeaderVals(r, "class_id")
+		headerVals, err := GetHeaderVals(r, "id")
 		if err != nil {
 			LogAndSendError(w, err, "Header error", http.StatusBadRequest)
 			return
