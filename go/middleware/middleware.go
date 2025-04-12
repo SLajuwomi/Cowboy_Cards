@@ -13,7 +13,7 @@ import (
 
 var (
 	Cors = cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:3000", "http://localhost:5173", "http://localhost:8080", "http://localhost:8100", "http://localhost:8000", "http://10.84.16.34:8080"},
+		AllowedOrigins: []string{"http://localhost:3000", "http://localhost:5173", "http://localhost:8080", "http://localhost:8100", "http://localhost:8000", "http://10.84.16.34:8080"},// this last one is for mobile, it's the IP from the second line ("Network") of the output of 'npm run dev' that runs the Vite front-end dev server
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{"*"},
 		ExposedHeaders: []string{"Link"},
@@ -39,7 +39,8 @@ func SetCacheControlHeader(w http.ResponseWriter, r *http.Request, next http.Han
 
 func SetCredsHeaders(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.Header().Set("Access-Control-Allow-Origin", "http://10.84.16.34:8080")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
+	//w.Header().Set("Access-Control-Allow-Origin", "http://10.84.16.34:8080")// mobile dev only
 	w.Header().Set("Vary", "Origin")
 	next(w, r)
 }
