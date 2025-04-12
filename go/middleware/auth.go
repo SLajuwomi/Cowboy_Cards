@@ -30,9 +30,11 @@ func init() {
 		Path:     "/",
 		MaxAge:   0,
 		Secure:   true,
+		// Secure:   false,//mobile dev only
 		HttpOnly: true,
-		// SameSite: http.SameSiteStrictMode,
-		SameSite: http.SameSiteNoneMode, //dev only
+		// SameSite: http.SameSiteStrictMode,//prod
+		// SameSite: http.SameSiteLaxMode, //mobile dev only
+		SameSite: http.SameSiteNoneMode, //web dev only
 	}
 }
 
