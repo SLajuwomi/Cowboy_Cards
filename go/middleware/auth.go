@@ -16,7 +16,7 @@ var (
 	sessionKey = os.Getenv("SESSION_KEY")
 	sKey, _    = hex.DecodeString(sessionKey)
 	store      = sessions.NewCookieStore(sKey)
-	//store = sessions.NewCookieStore([]byte{95, 65, 12, 40}) // dev only
+	// store = sessions.NewCookieStore([]byte{95, 65, 12, 40})// dev only
 )
 
 func init() {
@@ -29,10 +29,12 @@ func init() {
 	store.Options = &sessions.Options{
 		Path:     "/",
 		MaxAge:   0,
-		Secure:   false,
+		Secure:   true,
+		// Secure:   false,//dev only
 		HttpOnly: true,
-		// SameSite: http.SameSiteStrictMode,
-		SameSite: http.SameSiteLaxMode, //dev only
+		SameSite: http.SameSiteStrictMode,
+		// SameSite: http.SameSiteLaxMode, //mobile dev only
+		// SameSite: http.SameSiteNoneMode, //web dev only
 	}
 }
 
