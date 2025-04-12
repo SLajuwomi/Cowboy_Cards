@@ -19,34 +19,30 @@ func (h *DBHandler) AddSetToClass(w http.ResponseWriter, r *http.Request) {
 	defer conn.Release()
 
 	role, ok := middleware.GetRoleFromContext(ctx)
-	if !ok {
-		logAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-	if role != "teacher" {
-		logAndSendError(w, err, "Invalid permissions", http.StatusUnauthorized)
+	if !ok || role != teacher {
+		logAndSendError(w, errContext, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
 	classID, ok := middleware.GetClassIDFromContext(ctx)
 	if !ok {
-		logAndSendError(w, err, "Invalid class id", http.StatusUnauthorized)
+		logAndSendError(w, errContext, "Invalid class id", http.StatusUnauthorized)
 		return
 	}
 
-	headerVals, err := getHeaderVals(r, "set_id")
+	headerVals, err := getHeaderVals(r, set_id)
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
 		return
 	}
 
-	setID, err := getInt32Id(headerVals["set_id"])
+	setID, err := getInt32Id(headerVals[set_id])
 	if err != nil {
 		logAndSendError(w, err, "Invalid set id", http.StatusBadRequest)
 		return
 	}
 
-	err = query.AddSet(ctx, db.AddSetParams{
+	err = query.AddSetToClass(ctx, db.AddSetToClassParams{
 		ClassID: classID,
 		SetID:   setID,
 	})
@@ -72,34 +68,30 @@ func (h *DBHandler) RemoveSetFromClass(w http.ResponseWriter, r *http.Request) {
 	defer conn.Release()
 
 	role, ok := middleware.GetRoleFromContext(ctx)
-	if !ok {
-		logAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-	if role != "teacher" {
-		logAndSendError(w, err, "Invalid permissions", http.StatusUnauthorized)
+	if !ok || role != teacher {
+		logAndSendError(w, errContext, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
 	classID, ok := middleware.GetClassIDFromContext(ctx)
 	if !ok {
-		logAndSendError(w, err, "Invalid class id", http.StatusUnauthorized)
+		logAndSendError(w, errContext, "Invalid class id", http.StatusUnauthorized)
 		return
 	}
 
-	headerVals, err := getHeaderVals(r, "set_id")
+	headerVals, err := getHeaderVals(r, set_id)
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
 		return
 	}
 
-	setID, err := getInt32Id(headerVals["set_id"])
+	setID, err := getInt32Id(headerVals[set_id])
 	if err != nil {
 		logAndSendError(w, err, "Invalid set id", http.StatusBadRequest)
 		return
 	}
 
-	err = query.RemoveSet(ctx, db.RemoveSetParams{
+	err = query.RemoveSetFromClass(ctx, db.RemoveSetFromClassParams{
 		ClassID: classID,
 		SetID:   setID,
 	})
@@ -112,9 +104,9 @@ func (h *DBHandler) RemoveSetFromClass(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte{})
 }
 
-func (h *DBHandler) GetSetsInClass(w http.ResponseWriter, r *http.Request) {
-	// curl -X GET localhost:8000/api/class_set/get_sets -H "id: 1"
-	
+func (h *DBHandler) ListSetsInClass(w http.ResponseWriter, r *http.Request) {
+	// curl -X GET localhost:8000/api/class_set/list_sets -H "id: 1"
+
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
 		logAndSendError(w, err, "Error connecting to database", http.StatusInternalServerError)
@@ -122,19 +114,19 @@ func (h *DBHandler) GetSetsInClass(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Release()
 
-	headerVals, err := getHeaderVals(r, "id")
+	headerVals, err := getHeaderVals(r, id)
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
 		return
 	}
 
-	cid, err := getInt32Id(headerVals["id"])
+	cid, err := getInt32Id(headerVals[id])
 	if err != nil {
 		logAndSendError(w, err, "Invalid class id", http.StatusBadRequest)
 		return
 	}
 
-	sets, err := query.GetSetsInClass(ctx, cid)
+	sets, err := query.ListSetsInClass(ctx, cid)
 	if err != nil {
 		logAndSendError(w, err, "Error getting sets", http.StatusInternalServerError)
 		return
@@ -146,8 +138,8 @@ func (h *DBHandler) GetSetsInClass(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *DBHandler) GetClassesHavingSet(w http.ResponseWriter, r *http.Request) {
-	// curl -X GET localhost:8000/api/class_set/get_classes -H "set_id"
+func (h *DBHandler) ListClassesHavingSet(w http.ResponseWriter, r *http.Request) {
+	// curl -X GET localhost:8000/api/class_set/list_classes -H "set_id"
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
 		logAndSendError(w, err, "Error connecting to database", http.StatusInternalServerError)
@@ -155,19 +147,19 @@ func (h *DBHandler) GetClassesHavingSet(w http.ResponseWriter, r *http.Request) 
 	}
 	defer conn.Release()
 
-	headerVals, err := getHeaderVals(r, "set_id")
+	headerVals, err := getHeaderVals(r, set_id)
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
 		return
 	}
 
-	sid, err := getInt32Id(headerVals["set_id"])
+	sid, err := getInt32Id(headerVals[set_id])
 	if err != nil {
 		logAndSendError(w, err, "Invalid set id", http.StatusBadRequest)
 		return
 	}
 
-	classes, err := query.GetClassesHavingSet(ctx, sid)
+	classes, err := query.ListClassesHavingSet(ctx, sid)
 	if err != nil {
 		logAndSendError(w, err, "Error getting classes", http.StatusInternalServerError)
 		return

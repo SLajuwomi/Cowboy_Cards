@@ -22,17 +22,17 @@ func (h *DBHandler) JoinClass(w http.ResponseWriter, r *http.Request) {
 	// Get user_id from context (set by AuthMiddleware)
 	userID, ok := middleware.GetUserIDFromContext(ctx)
 	if !ok {
-		logAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
+		logAndSendError(w, errContext, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	headerVals, err := getHeaderVals(r, "class_id", "role")
+	headerVals, err := getHeaderVals(r, class_id, roleStr)
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
 		return
 	}
 
-	classID, err := getInt32Id(headerVals["class_id"])
+	classID, err := getInt32Id(headerVals[class_id])
 	if err != nil {
 		logAndSendError(w, err, "Invalid class id", http.StatusBadRequest)
 		return
@@ -41,7 +41,7 @@ func (h *DBHandler) JoinClass(w http.ResponseWriter, r *http.Request) {
 	err = query.JoinClass(ctx, db.JoinClassParams{
 		UserID:  userID,
 		ClassID: classID,
-		Role:    headerVals["role"],
+		Role:    headerVals[roleStr],
 	})
 	if err != nil {
 		logAndSendError(w, err, "Failed to join class", http.StatusInternalServerError)
@@ -67,29 +67,29 @@ func (h *DBHandler) LeaveClass(w http.ResponseWriter, r *http.Request) {
 	// Get user_id from context (set by AuthMiddleware)
 	userID, ok := middleware.GetUserIDFromContext(ctx)
 	if !ok {
-		logAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
+		logAndSendError(w, errContext, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
 	classID, ok := middleware.GetClassIDFromContext(ctx)
 	if !ok {
-		logAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
+		logAndSendError(w, errContext, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
 	role, ok := middleware.GetRoleFromContext(ctx)
 	if !ok {
-		logAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
+		logAndSendError(w, errContext, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	headerVals, err := getHeaderVals(r, "student_id")
+	headerVals, err := getHeaderVals(r, student_id)
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
 		return
 	}
 
-	studentID, err := getInt32Id(headerVals["student_id"])
+	studentID, err := getInt32Id(headerVals[student_id])
 	if err != nil {
 		logAndSendError(w, err, "Invalid class id", http.StatusBadRequest)
 		return
@@ -102,7 +102,7 @@ func (h *DBHandler) LeaveClass(w http.ResponseWriter, r *http.Request) {
 	if userID == studentID {
 		params.UserID = userID
 	} else {
-		if role == "teacher" {
+		if role == teacher {
 			params.UserID = studentID
 		} else {
 			logAndSendError(w, errors.New("forbidden"), "not a teacher", http.StatusUnauthorized)
@@ -134,7 +134,7 @@ func (h *DBHandler) ListClassesOfAUser(w http.ResponseWriter, r *http.Request) {
 	// Get user_id from context (set by AuthMiddleware)
 	userID, ok := middleware.GetUserIDFromContext(ctx)
 	if !ok {
-		logAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
+		logAndSendError(w, errContext, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
@@ -160,13 +160,13 @@ func (h *DBHandler) ListMembersOfAClass(w http.ResponseWriter, r *http.Request) 
 	}
 	defer conn.Release()
 
-	headerVals, err := getHeaderVals(r, "class_id")
+	headerVals, err := getHeaderVals(r, class_id)
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
 		return
 	}
 
-	classID, err := getInt32Id(headerVals["class_id"])
+	classID, err := getInt32Id(headerVals[class_id])
 	if err != nil {
 		logAndSendError(w, err, "Invalid class id", http.StatusBadRequest)
 		return

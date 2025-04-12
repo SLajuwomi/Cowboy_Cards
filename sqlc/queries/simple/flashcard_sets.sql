@@ -16,8 +16,8 @@ UPDATE flashcard_sets SET set_description = $1, updated_at = LOCALTIMESTAMP(2) W
 -- name: DeleteFlashcardSet :exec
 DELETE FROM flashcard_sets WHERE id = $1;
 
--- name: VerifySetOwner :one
-SELECT * from set_user WHERE user_id = $1 AND set_id = $2 AND role = 'owner';
+-- name: VerifySetMember :one
+SELECT * from set_user WHERE set_id = $1 AND user_id = $2;
 
 -- execresult annotation is buggy, trying exec https://github.com/sqlc-dev/sqlc/issues/3699#issuecomment-2486892414
 

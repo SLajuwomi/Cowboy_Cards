@@ -46,13 +46,13 @@ func (h *DBHandler) GetClassById(w http.ResponseWriter, r *http.Request) {
 
 	classID, ok := middleware.GetClassIDFromContext(ctx)
 	if !ok {
-		logAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
+		logAndSendError(w, errContext, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
 	role, ok := middleware.GetRoleFromContext(ctx)
 	if !ok {
-		logAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
+		logAndSendError(w, errContext, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
@@ -89,7 +89,7 @@ func (h *DBHandler) GetClassLeaderboard(w http.ResponseWriter, r *http.Request) 
 
 	classID, ok := middleware.GetClassIDFromContext(ctx)
 	if !ok {
-		logAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
+		logAndSendError(w, errContext, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
@@ -116,7 +116,7 @@ func (h *DBHandler) CreateClass(w http.ResponseWriter, r *http.Request) {
 	defer conn.Release()
 
 	// "private"
-	headerVals, err := getHeaderVals(r, "class_name", "class_description")
+	headerVals, err := getHeaderVals(r, class_name, class_description)
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
 		return
@@ -125,7 +125,7 @@ func (h *DBHandler) CreateClass(w http.ResponseWriter, r *http.Request) {
 	// Get user_id from context (set by AuthMiddleware)
 	userID, ok := middleware.GetUserIDFromContext(ctx)
 	if !ok {
-		middleware.LogAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
+		middleware.LogAndSendError(w, errContext, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
@@ -138,8 +138,8 @@ func (h *DBHandler) CreateClass(w http.ResponseWriter, r *http.Request) {
 	qtx := query.WithTx(tx)
 
 	class, err := qtx.CreateClass(ctx, db.CreateClassParams{
-		ClassName:        headerVals["class_name"],
-		ClassDescription: headerVals["class_description"],
+		ClassName:        headerVals[class_name],
+		ClassDescription: headerVals[class_description],
 		JoinCode:         pgtype.Text{String: "123", Valid: false},
 	})
 	if err != nil {
@@ -150,7 +150,7 @@ func (h *DBHandler) CreateClass(w http.ResponseWriter, r *http.Request) {
 	err = qtx.JoinClass(ctx, db.JoinClassParams{
 		UserID:  userID,
 		ClassID: class.ID,
-		Role:    "teacher",
+		Role:    teacher,
 	})
 	if err != nil {
 		logAndSendError(w, err, "Failed to join class", http.StatusInternalServerError)
@@ -181,12 +181,8 @@ func (h *DBHandler) UpdateClass(w http.ResponseWriter, r *http.Request) {
 	defer conn.Release()
 
 	role, ok := middleware.GetRoleFromContext(ctx)
-	if !ok {
-		logAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-	if role != "teacher" {
-		logAndSendError(w, err, "Invalid permissions", http.StatusUnauthorized)
+	if !ok || role != teacher {
+		logAndSendError(w, errContext, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
@@ -202,18 +198,18 @@ func (h *DBHandler) UpdateClass(w http.ResponseWriter, r *http.Request) {
 
 	classID, ok := middleware.GetClassIDFromContext(ctx)
 	if !ok {
-		logAndSendError(w, errors.New("class id lookup error"), "context error", http.StatusInternalServerError)
+		logAndSendError(w, errContext, "context error", http.StatusInternalServerError)
 		return
 	}
 
 	var res string
 	switch route {
-	case "class_name":
+	case class_name:
 		res, err = query.UpdateClassName(ctx, db.UpdateClassNameParams{
 			ClassName: val,
 			ID:        classID,
 		})
-	case "class_description":
+	case class_description:
 		res, err = query.UpdateClassDescription(ctx, db.UpdateClassDescriptionParams{
 			ClassDescription: val,
 			ID:               classID,
@@ -243,18 +239,14 @@ func (h *DBHandler) DeleteClass(w http.ResponseWriter, r *http.Request) {
 	defer conn.Release()
 
 	role, ok := middleware.GetRoleFromContext(ctx)
-	if !ok {
-		logAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-	if role != "teacher" {
-		logAndSendError(w, err, "Invalid permissions", http.StatusUnauthorized)
+	if !ok || role != teacher {
+		logAndSendError(w, errContext, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
 	classID, ok := middleware.GetClassIDFromContext(ctx)
 	if !ok {
-		logAndSendError(w, errors.New("class id lookup error"), "context error", http.StatusInternalServerError)
+		logAndSendError(w, errContext, "context error", http.StatusInternalServerError)
 		return
 	}
 
