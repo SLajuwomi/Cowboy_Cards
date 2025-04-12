@@ -77,7 +77,7 @@ func (h *DBHandler) GetClassById(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *DBHandler) GetClassLeaderboard(w http.ResponseWriter, r *http.Request) {
-	// curl http://localhost:8000/api/classes/leaderboard -H "class_id: 1"
+	// curl http://localhost:8000/api/classes/leaderboard -H "id: 1"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -105,7 +105,7 @@ func (h *DBHandler) GetClassLeaderboard(w http.ResponseWriter, r *http.Request) 
 }
 
 func (h *DBHandler) CreateClass(w http.ResponseWriter, r *http.Request) {
-	// curl -X POST localhost:8000/api/classes -H "name: class name" -H "description: class description" -H "private t/f
+	// curl -X POST --cookie "cookie" localhost:8000/api/classes/ -H "class_name: Exploring Knights Errant" -H "class_description: Knights Errant"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
@@ -118,6 +118,13 @@ func (h *DBHandler) CreateClass(w http.ResponseWriter, r *http.Request) {
 	headerVals, err := getHeaderVals(r, "class_name", "class_description")
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
+		return
+	}
+
+	// Get user_id from context (set by AuthMiddleware)
+	userID, ok := middleware.GetUserIDFromContext(ctx)
+	if !ok {
+		middleware.LogAndSendError(w, err, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
@@ -140,7 +147,7 @@ func (h *DBHandler) CreateClass(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = qtx.JoinClass(ctx, db.JoinClassParams{
-		UserID:  int32(1),
+		UserID:  userID,
 		ClassID: class.ID,
 		Role:    "teacher",
 	})
