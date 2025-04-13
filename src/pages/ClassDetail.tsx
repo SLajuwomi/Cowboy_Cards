@@ -2,7 +2,7 @@ import { Footer } from '@/components/Footer';
 import { Navbar } from '@/components/Navbar';
 import { type CarouselApi } from '@/components/ui/carousel';
 import { makeHttpCall } from '@/utils/makeHttpCall';
-import { IonCard, IonContent } from '@ionic/react';
+import { IonContent } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import ClassDetailHeader from '@/components/ClassDetailHeader';
@@ -62,7 +62,6 @@ const ClassDetail = () => {
   );
   const [loadingScores, setLoadingScores] = useState(false);
 
-  // Update Class Name and Description Form
   const [isEditing, setIsEditing] = useState(false);
   const [updatedInfo, setUpdatedInfo] = useState({
     class_name: '',
@@ -78,14 +77,12 @@ const ClassDetail = () => {
     setIsEditing(true);
   };
 
-  // Form validation
   const [errors, setErrors] = useState<{
     className?: string;
     classDescription?: string;
     general?: string;
   }>({});
 
-  // Basic validation before submitting
   const validateForm = () => {
     const newErrors: {
       className?: string;
@@ -93,7 +90,6 @@ const ClassDetail = () => {
     } = {};
     let isValid = true;
 
-    // Trim whitespace from the input values
     updatedInfo.class_name = updatedInfo.class_name.trim();
     updatedInfo.class_description = updatedInfo.class_description.trim();
 
@@ -112,31 +108,24 @@ const ClassDetail = () => {
   };
 
   const handleSave = async () => {
-    // Validate form before submission
     if (!validateForm()) {
       console.log('Form validation failed:', errors);
       return;
     }
-    // Define the fields to be updated
     const fieldsToUpdate = ['class_name', 'class_description'];
 
     try {
-      // Identify which fields have changed and create API call promises
-      const updatePromises = fieldsToUpdate
-        // .filter((field) => updatedInfo[field] !== classData[field]) // Only include modified fields
-        .map((field) =>
-          makeHttpCall<Class>(`${API_BASE}/api/classes/${field}`, {
-            method: 'PUT',
-            headers: {
-              id: id, // User ID as a string
-              [field]: updatedInfo[field], // New value for the field
-            },
-          })
-        );
+      const updatePromises = fieldsToUpdate.map((field) =>
+        makeHttpCall<Class>(`${API_BASE}/api/classes/${field}`, {
+          method: 'PUT',
+          headers: {
+            id: id,
+            [field]: updatedInfo[field],
+          },
+        })
+      );
 
-      // Wait for all API calls to complete successfully
       await Promise.all(updatePromises);
-      // If all updates succeed, update the local state and exit editing mode
       setClassData((prev) => ({
         ...prev,
         ClassName: updatedInfo.class_name,
@@ -144,7 +133,6 @@ const ClassDetail = () => {
       }));
       setIsEditing(false);
     } catch (error) {
-      // Log the error and notify the user if any update fails
       console.error(error);
       alert('Failed to update some fields. Please try again.');
     }
@@ -163,32 +151,28 @@ const ClassDetail = () => {
     setIsEditing(false);
   };
 
-  // Single useEffect to fetch all data for the class
   useEffect(() => {
     async function fetchDataForClass() {
       setLoading(true);
+      setLoadingScores(true);
       setError(null);
       try {
         const [classDetails, sets, users, scores] = await Promise.all([
-          // Fetch class information
           makeHttpCall<Class>(`${API_BASE}/api/classes/`, {
             method: 'GET',
             headers: { id: id },
           }),
 
-          // Fetch flashcard sets
-          makeHttpCall<FlashcardSet[]>(`${API_BASE}/api/class_set/get_sets`, {
+          makeHttpCall<FlashcardSet[]>(`${API_BASE}/api/class_set/list_sets`, {
             method: 'GET',
-            headers: { class_id: id },
+            headers: { id: id },
           }),
 
-          // Fetch class users
           makeHttpCall<ClassUser[]>(`${API_BASE}/api/class_user/members`, {
             method: 'GET',
             headers: { class_id: id },
           }),
 
-          // Fetch class leaderboard
           makeHttpCall<GetClassScoresRow[]>(
             `${API_BASE}/api/classes/leaderboard`,
             {
@@ -214,15 +198,13 @@ const ClassDetail = () => {
         setError(`Error fetching class data: ${error.message}`);
       } finally {
         setLoading(false);
+        setLoadingScores(false);
       }
     }
 
-    if (id) {
-      fetchDataForClass();
-    }
+    fetchDataForClass();
   }, [id]);
 
-  // Handler to delete a student
   const handleDeleteStudent = async (studentId: number | null) => {
     if (studentId === null) return;
     try {
@@ -255,44 +237,32 @@ const ClassDetail = () => {
     <>
       <Navbar />
       <IonContent className="ion-padding">
-        <div className="max-w-4xl mx-auto">
-          {/* Remove the old Back button since it's now in ClassDetailControls */}
+        <div id="main-content" className="max-w-4xl mx-auto">
           {error && <div className="text-red-500">{error}</div>}
 
-          {/* Class Header and Edit Form Section */}
-          <IonCard className="mb-4">
-            {/* Integrate ClassDetailHeader Component */}
-            <ClassDetailHeader
-              classData={classData}
-              isTeacher={isTeacher}
-              loading={loading}
-              handleEdit={handleEdit}
-              isEditing={isEditing}
-              updatedInfo={updatedInfo}
-              errors={errors}
-              handleChange={handleChange}
-              handleSave={handleSave}
-              handleCancel={handleCancel}
-            />
+          <ClassDetailHeader
+            classData={classData}
+            isTeacher={isTeacher}
+            loading={loading}
+            handleEdit={handleEdit}
+            isEditing={isEditing}
+            updatedInfo={updatedInfo}
+            errors={errors}
+            handleChange={handleChange}
+            handleSave={handleSave}
+            handleCancel={handleCancel}
+          />
 
-            {/* Integrate ClassDetailControls component */}
-            <ClassDetailControls isTeacher={isTeacher} classId={id} />
-          </IonCard>
+          <ClassDetailControls isTeacher={isTeacher} classId={id} />
 
-          {/* Integrate ClassDetailTabs Component */}
           <ClassDetailTabs selectedTab={tab} onTabChange={setTab} />
 
-          {/* Conditionally render the appropriate tab content component */}
-          {/* Pass necessary data and handlers as props */}
-          {
-            // Render LeaderboardTab when 'leaderboard' tab is active
-            tab === 'leaderboard' && (
-              <LeaderboardTab
-                leaderboardData={leaderboardData}
-                loadingScores={loadingScores}
-              />
-            )
-          }
+          {tab === 'leaderboard' && (
+            <LeaderboardTab
+              leaderboardData={leaderboardData}
+              loadingScores={loadingScores}
+            />
+          )}
 
           {
             // Render FlashcardTab when 'flashcards' tab is active
