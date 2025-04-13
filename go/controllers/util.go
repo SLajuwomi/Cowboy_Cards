@@ -48,8 +48,8 @@ type SignupRequest struct {
 	Username  string
 	Email     string
 	Password  string
-	FirstName string
-	LastName  string
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
 }
 
 var errContext error = errors.New("error retrieving from context")
