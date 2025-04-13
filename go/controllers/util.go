@@ -25,6 +25,7 @@ type User struct {
 	CreatedAt string `json:"created_at"`
 	// UpdatedAt time.Time
 	NumClasses int `json:"numClasses"`
+	CardsSeen  int `json:"cardsSeen"`
 }
 
 // Class represents the class data that will be sent to the client in a getclassbyid req

@@ -18,3 +18,6 @@ FROM card_history
 JOIN flashcards ON card_history.card_id = flashcards.id
 JOIN flashcard_sets ON flashcards.set_id = flashcard_sets.id
 WHERE user_id = $1 AND set_id = $2;
+
+-- name: GetCardsSeen :one
+SELECT COUNT(card_id) FROM card_history WHERE user_id = $1;

@@ -73,6 +73,12 @@ func (h *DBHandler) GetUserById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	cardsSeen, err := qtx.GetCardsSeen(ctx, userID)
+	if err != nil {
+		logAndSendError(w, err, "Error getting cards seen", http.StatusInternalServerError)
+		return
+	}
+
 	err = tx.Commit(ctx)
 	if err != nil {
 		logAndSendError(w, err, "Failed to commit transaction", http.StatusInternalServerError)
@@ -88,6 +94,7 @@ func (h *DBHandler) GetUserById(w http.ResponseWriter, r *http.Request) {
 		CreatedAt: user.CreatedAt.Time.Format(time.DateTime),
 		// UpdatedAt: user.UpdatedAt.Time,
 		NumClasses: len(classes),
+		CardsSeen:  int(cardsSeen),
 	}
 
 	w.Header().Set("Content-Type", "application/json")
