@@ -21,7 +21,6 @@ type Class struct {
 	ID               int32
 	ClassName        string
 	ClassDescription string
-	JoinCode         pgtype.Text
 	CreatedAt        pgtype.Timestamp
 	UpdatedAt        pgtype.Timestamp
 }
@@ -69,7 +68,7 @@ type User struct {
 	LastName    string
 	Email       string
 	Password    string
-	LastLogin   pgtype.Timestamptz
+	LastLogin   pgtype.Date
 	LoginStreak int32
 	CreatedAt   pgtype.Timestamp
 	UpdatedAt   pgtype.Timestamp

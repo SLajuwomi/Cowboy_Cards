@@ -211,7 +211,7 @@ func (q *Queries) UpdateFirstname(ctx context.Context, arg UpdateFirstnameParams
 }
 
 const updateLastLogin = `-- name: UpdateLastLogin :exec
-UPDATE users SET last_login = NOW(), updated_at = LOCALTIMESTAMP(2) WHERE id = $1
+UPDATE users SET last_login = CURRENT_DATE, updated_at = LOCALTIMESTAMP(2) WHERE id = $1
 `
 
 func (q *Queries) UpdateLastLogin(ctx context.Context, id int32) error {

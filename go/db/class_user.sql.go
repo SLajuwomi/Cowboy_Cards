@@ -75,7 +75,7 @@ func (q *Queries) ListClassesOfAUser(ctx context.Context, userID int32) ([]ListC
 }
 
 const listMembersOfAClass = `-- name: ListMembersOfAClass :many
-SELECT user_id, class_id, role, first_name, last_name FROM class_user JOIN users ON class_user.user_id = users.id WHERE class_id = $1 ORDER BY last_name, first_name
+SELECT user_id, class_id, role, first_name, last_name, username FROM class_user JOIN users ON class_user.user_id = users.id WHERE class_id = $1 ORDER BY last_name, first_name
 `
 
 type ListMembersOfAClassRow struct {
@@ -84,6 +84,7 @@ type ListMembersOfAClassRow struct {
 	Role      string
 	FirstName string
 	LastName  string
+	Username  string
 }
 
 func (q *Queries) ListMembersOfAClass(ctx context.Context, classID int32) ([]ListMembersOfAClassRow, error) {
@@ -101,6 +102,7 @@ func (q *Queries) ListMembersOfAClass(ctx context.Context, classID int32) ([]Lis
 			&i.Role,
 			&i.FirstName,
 			&i.LastName,
+			&i.Username,
 		); err != nil {
 			return nil, err
 		}

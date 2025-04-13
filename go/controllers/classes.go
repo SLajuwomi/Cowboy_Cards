@@ -9,7 +9,6 @@ import (
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/middleware"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 func (h *DBHandler) ListClasses(w http.ResponseWriter, r *http.Request) {
@@ -140,7 +139,6 @@ func (h *DBHandler) CreateClass(w http.ResponseWriter, r *http.Request) {
 	class, err := qtx.CreateClass(ctx, db.CreateClassParams{
 		ClassName:        headerVals[class_name],
 		ClassDescription: headerVals[class_description],
-		JoinCode:         pgtype.Text{String: "123", Valid: false},
 	})
 	if err != nil {
 		logAndSendError(w, err, "Failed to create class", http.StatusInternalServerError)

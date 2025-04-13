@@ -1,13 +1,12 @@
 import { Navbar } from '@/components/navbar';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
+  IonButton,
   IonCard,
   IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
   IonContent,
-  IonButton,
-  IonSearchbar,
 } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -16,7 +15,6 @@ type Class = {
   ID: number;
   ClassName: string;
   ClassDescription: string;
-  JoinCode?: string;
   CreatedAt: string;
   UpdatedAt: string;
 };
@@ -81,29 +79,35 @@ const PublicClasses = () => {
               <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-transform-shadow duration-200 rounded-lg border shadow-sm">
                 <IonCardHeader className="flex flex-col space-y-1.5 p-6">
                   <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
-                    {classItem.ClassName} 
+                    {classItem.ClassName}
                   </IonCardTitle>
                   <IonCardSubtitle className="text-sm text-gray-600">
                     {classItem.ClassDescription || 'No description'}
                   </IonCardSubtitle>
                   <IonButton
-                      expand="block"
-                      color="primary"
-                      className="mt-4"
-                      onClick={async () => {
-                        try {
-                          const response = await makeHttpCall(`${API_BASE}/api/class_user`, {
+                    expand="block"
+                    color="primary"
+                    className="mt-4"
+                    onClick={async () => {
+                      try {
+                        const response = await makeHttpCall(
+                          `${API_BASE}/api/class_user`,
+                          {
                             method: 'POST',
-                            headers: { class_id: classItem.ID, role: 'student' },
-                          });
-                          console.log('Join class response:', response);
-                        } catch (error) {
-                          console.error('Error joining class:', error);
-                              }
-                        }}
-                      >
-                  Join Class
-                </IonButton>
+                            headers: {
+                              class_id: classItem.ID,
+                              role: 'student',
+                            },
+                          }
+                        );
+                        console.log('Join class response:', response);
+                      } catch (error) {
+                        console.error('Error joining class:', error);
+                      }
+                    }}
+                  >
+                    Join Class
+                  </IonButton>
                 </IonCardHeader>
               </IonCard>
             </Link>

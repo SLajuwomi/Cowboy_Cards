@@ -29,7 +29,7 @@ UPDATE users SET last_name = $1, updated_at = LOCALTIMESTAMP(2) WHERE id = $2 RE
 UPDATE users SET password = $1, updated_at = LOCALTIMESTAMP(2) WHERE id = $2;
 
 -- name: UpdateLastLogin :exec
-UPDATE users SET last_login = NOW(), updated_at = LOCALTIMESTAMP(2) WHERE id = $1;
+UPDATE users SET last_login = CURRENT_DATE, updated_at = LOCALTIMESTAMP(2) WHERE id = $1;
 
 -- name: DeleteUser :exec
 DELETE FROM users WHERE id = $1;

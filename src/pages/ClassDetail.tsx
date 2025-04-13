@@ -32,7 +32,6 @@ type Class = {
   ID: number;
   ClassName: string;
   ClassDescription: string;
-  JoinCode?: string;
   CreatedAt: string;
   UpdatedAt: string;
   Role: string;
