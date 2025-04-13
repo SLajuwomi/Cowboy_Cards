@@ -92,7 +92,7 @@ func (h *DBHandler) GetClassLeaderboard(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	scores, err := query.GetClassScores(ctx, classID)
+	scores, err := query.GetClassLeaderboard(ctx, classID)
 	if err != nil {
 		logAndSendError(w, err, "Error getting scores", http.StatusInternalServerError)
 		return
