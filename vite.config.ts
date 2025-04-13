@@ -36,9 +36,7 @@ function manualChunks(id: string) {
     return 'corebig2';
   } else if (id.includes('core')) {
     return 'core';
-  } else if (id.includes('react-dom')) {
-    return 'reactdom';
-  } else if (id.includes('react-')) {
+  } else if (id.includes('react')) {
     return 'react';
   } else if (id.includes('tailwind') || id.includes('carousel')) {
     return 'twcar';
