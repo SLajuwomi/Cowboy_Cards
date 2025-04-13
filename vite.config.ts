@@ -4,7 +4,7 @@ import path from 'path';
 import { defineConfig } from 'vite';
 
 function manualChunks(id: string) {
-   if (id.includes('ion-')) {
+  if (id.includes('ion-')) {
     return 'ion';
   } else if (id.includes('core')) {
     return 'core';
@@ -32,9 +32,9 @@ export default defineConfig(({ mode }) => ({
       //   vendor_react: ['react', 'react-dom', 'react-router-dom'],
       //   vendor_lll: ['@ionic/react'],
       // },
-      output: {
-        manualChunks,
-      },
+      //   output: {
+      //     manualChunks,
+      //   },
     },
     sourcemap: true,
   },
