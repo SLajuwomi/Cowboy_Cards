@@ -14,7 +14,14 @@ import { addOutline, trashOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
+type Flashcard = {
+  ID: number;
+  Front: string;
+  Back: string;
+  SetID: number;
+  CreatedAt: string;
+  UpdatedAt: string;
+};
 
 type FlashcardSet = {
   ID: number;
@@ -24,14 +31,23 @@ type FlashcardSet = {
   UpdatedAt: string;
 };
 
+const blankCard: Flashcard = {
+  ID: -1,
+  Front: '',
+  Back: '',
+  SetID: -1,
+  CreatedAt: '',
+  UpdatedAt: '',
+};
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
 const CreateSet = () => {
   const { id } = useParams<{ id?: string }>();
   const history = useHistory();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [cards, setCards] = useState<
-    { id?: number; front: string; back: string }[]
-  >([{ front: '', back: '' }]);
+  const [cards, setCards] = useState<Flashcard[]>([blankCard]);
   const [errors, setErrors] = useState({ title: '', description: '' });
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -52,15 +68,9 @@ const CreateSet = () => {
           console.log(data);
           const cardsData = Array.isArray(data) ? data : [];
           if (cardsData.length === 0) {
-            setCards([{ front: '', back: '' }]); // ensure at least one blank card
+            setCards([blankCard]); // ensure at least one blank card
           } else {
-            setCards(
-              cardsData.map((card: any) => ({
-                id: card.ID, // Map the ID from API to the state
-                front: card.Front, // Map the Front from API to the state
-                back: card.Back, // Map the Back from API to the state
-              }))
-            );
+            setCards(cardsData);
           }
         } catch (error) {
           console.error('Error fetching flashcards:', error);
@@ -68,6 +78,7 @@ const CreateSet = () => {
       };
       fetchCards();
 
+      //refactor with makehttpcall
       const fetchSet = async () => {
         try {
           const res = await fetch(`${API_BASE}/api/flashcards/sets/`, {
@@ -94,7 +105,7 @@ const CreateSet = () => {
   }, [id, history]);
 
   const addCard = () => {
-    setCards([...cards, { front: '', back: '' }]);
+    setCards([...cards, blankCard]);
   };
 
   const removeCard = (index: number) => {
@@ -134,10 +145,11 @@ const CreateSet = () => {
     }
 
     const cleanedCards = cards.filter(
-      (card) => card.front.trim() !== '' || card.back.trim() !== ''
+      (card) => card.Front.trim() !== '' || card.Back.trim() !== ''
     );
 
     // If ID is provided, update the set
+    // needs refactoring, should use promise.all or debounce or settimeout etc to handle many http calls in a loop until we get batch insert going
     if (id) {
       try {
         // Update the set name
@@ -159,7 +171,7 @@ const CreateSet = () => {
         });
 
         // Get existing cards
-        const existingCards = await makeHttpCall<any[]>(
+        const existingCards = await makeHttpCall<Flashcard[]>(
           `${API_BASE}/api/flashcards/list`,
           {
             method: 'GET',
@@ -170,21 +182,21 @@ const CreateSet = () => {
         );
 
         for (const card of cleanedCards) {
-          if (card.id) {
+          if (card.ID) {
             // Update the front of the card
             await makeHttpCall(`${API_BASE}/api/flashcards/front`, {
               method: 'PUT',
               headers: {
-                id: card.id.toString(),
-                front: card.front,
+                id: card.ID.toString(),
+                front: card.Front,
               },
             });
             // Update the back of the card
             await makeHttpCall(`${API_BASE}/api/flashcards/back`, {
               method: 'PUT',
               headers: {
-                id: card.id.toString(),
-                back: card.back,
+                id: card.ID.toString(),
+                back: card.Back,
               },
             });
           } else {
@@ -192,8 +204,8 @@ const CreateSet = () => {
             await makeHttpCall(`${API_BASE}/api/flashcards`, {
               method: 'POST',
               headers: {
-                front: card.front.trim(),
-                back: card.back.trim(),
+                front: card.Front.trim(),
+                back: card.Back.trim(),
                 set_id: id.toString(),
               },
             });
@@ -221,7 +233,7 @@ const CreateSet = () => {
 
         if (!setResponse.ok)
           throw new Error(`HTTP error! Status: ${setResponse.status}`);
-        const setData = await setResponse.json();
+        const setData: FlashcardSet = await setResponse.json();
         const setId = setData.ID;
 
         // 2. Create flashcards
@@ -229,8 +241,8 @@ const CreateSet = () => {
           await fetch(`${API_BASE}/flashcards`, {
             method: 'POST',
             headers: {
-              front: card.front,
-              back: card.back,
+              front: card.Front,
+              back: card.Back,
               set_id: setId.toString(),
             },
           });
@@ -250,7 +262,7 @@ const CreateSet = () => {
   const deleteSet = () => {
     setTitle('');
     setDescription('');
-    setCards([{ front: '', back: '' }]);
+    setCards([blankCard]);
     setErrors({ title: '', description: '' });
     console.log('Flashcard set deleted');
   };
@@ -316,7 +328,7 @@ const CreateSet = () => {
               </div>
               <IonTextarea
                 placeholder="Front of card"
-                value={card.front}
+                value={card.Front}
                 onIonChange={(e) => updateCard(index, 'front', e.detail.value!)}
                 rows={1}
                 autoGrow
@@ -325,7 +337,7 @@ const CreateSet = () => {
               />
               <IonTextarea
                 placeholder="Back of card"
-                value={card.back}
+                value={card.Back}
                 onIonChange={(e) => updateCard(index, 'back', e.detail.value!)}
                 rows={1}
                 autoGrow
