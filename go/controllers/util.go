@@ -18,14 +18,17 @@ type DBHandler struct {
 // User represents the user data that will be sent to the client
 type User struct {
 	// ID        int32
-	Username  string `json:"username"`
-	Email     string `json:"email"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	CreatedAt string `json:"created_at"`
+	Username    string `json:"username"`
+	Email       string `json:"email"`
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
+	LoginStreak int32  `json:"login_streak"`
+	CreatedAt   string `json:"created_at"`
 	// UpdatedAt time.Time
-	NumClasses int `json:"numClasses"`
-	CardsSeen  int `json:"cardsSeen"`
+	NumClasses     int `json:"numClasses"`
+	CardsStudied   int `json:"cardsStudied"`
+	CardsMastered  int `json:"cardsMastered"`
+	TotalCardViews int `json:"totalCardViews"`
 }
 
 // Class represents the class data that will be sent to the client in a getclassbyid req

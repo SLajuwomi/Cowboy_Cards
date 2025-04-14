@@ -73,9 +73,21 @@ func (h *DBHandler) GetUserById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cardsSeen, err := qtx.GetCardsSeen(ctx, userID)
+	cardsStudied, err := qtx.GetCardsStudied(ctx, userID)
 	if err != nil {
-		logAndSendError(w, err, "Error getting cards seen", http.StatusInternalServerError)
+		logAndSendError(w, err, "Error getting cards studied", http.StatusInternalServerError)
+		return
+	}
+
+	cardsMastered, err := qtx.GetCardsMastered(ctx, userID)
+	if err != nil {
+		logAndSendError(w, err, "Error getting cards mastered", http.StatusInternalServerError)
+		return
+	}
+
+	totalCardViews, err := qtx.GetTotalCardViews(ctx, userID)
+	if err != nil {
+		logAndSendError(w, err, "Error getting total card views", http.StatusInternalServerError)
 		return
 	}
 
@@ -87,14 +99,17 @@ func (h *DBHandler) GetUserById(w http.ResponseWriter, r *http.Request) {
 
 	response := User{
 		// ID:        user.ID,
-		Username:  user.Username,
-		Email:     user.Email,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-		CreatedAt: user.CreatedAt.Time.Format(time.DateTime),
+		Username:    user.Username,
+		Email:       user.Email,
+		FirstName:   user.FirstName,
+		LastName:    user.LastName,
+		LoginStreak: user.LoginStreak,
+		CreatedAt:   user.CreatedAt.Time.Format(time.DateTime),
 		// UpdatedAt: user.UpdatedAt.Time,
-		NumClasses: len(classes),
-		CardsSeen:  int(cardsSeen),
+		NumClasses:     len(classes),
+		CardsStudied:   int(cardsStudied),
+		CardsMastered:  int(cardsMastered),
+		TotalCardViews: int(totalCardViews),
 	}
 
 	w.Header().Set("Content-Type", "application/json")

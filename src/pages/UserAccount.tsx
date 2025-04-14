@@ -1,31 +1,14 @@
 import { Navbar } from '@/components/navbar';
 import { useTheme } from '@/contexts/ThemeContext';
-import { EditableField } from '@/components/EditableField';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
-  IonAlert,
   IonButton,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
   IonContent,
   IonIcon,
-  IonInput,
-  IonItem,
-  IonLabel,
-  IonList,
-  IonSelect,
-  IonSelectOption,
   IonSpinner,
   useIonToast,
 } from '@ionic/react';
-import {
-  arrowBackOutline,
-  chevronDownOutline,
-  chevronUpOutline,
-  createOutline,
-} from 'ionicons/icons';
+import { arrowBackOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import UserAccountFirstRow from '../components/UserAccountFirstRow';
 import UserAccountSecondRow from '../components/UserAccountSecondRow';
@@ -35,9 +18,11 @@ type User = {
   email: string;
   first_name: string;
   last_name: string;
+  login_streak: number;
   created_at: string;
   numClasses: number;
-  cardsSeen: number;
+  cardsStudied: number;
+  cardsMastered: number;
   totalCardViews: number;
 };
 
@@ -48,7 +33,7 @@ const UserAccount = () => {
   const [userInfo, setUserInfo] = useState<User>();
   const [loading, setLoading] = useState(true); // Start loading initially
   const [error, setError] = useState<string | null>(null);
-  
+
   // const [classHistory, setClassHistory] = useState([
   //   {
   //     id: 1,
@@ -256,8 +241,32 @@ const UserAccount = () => {
         {/* Content: Only show if not loading and no error */}
         {!loading && !error && userInfo && (
           <>
-            <UserAccountFirstRow isEditing={isEditing} errors={errors} handleChange={handleChange} handleSave={handleSave} updatedInfo={updatedInfo} userInfo={userInfo} handleEdit={handleEdit} />
-            <UserAccountSecondRow isEditing={isEditing} errors={errors} handleChange={handleChange} handleSave={handleSave} updatedInfo={updatedInfo} userInfo={userInfo} expandedClass={expandedClass} toggleClassDetails={toggleClassDetails} showPasswordAlert={showPasswordAlert} setShowPasswordAlert={setShowPasswordAlert} showDeleteAlert={showDeleteAlert} setShowDeleteAlert={setShowDeleteAlert} theme={theme} setTheme={setTheme} presentToast={presentToast} />
+            <UserAccountFirstRow
+              isEditing={isEditing}
+              errors={errors}
+              handleChange={handleChange}
+              handleSave={handleSave}
+              updatedInfo={updatedInfo}
+              userInfo={userInfo}
+              handleEdit={handleEdit}
+            />
+            <UserAccountSecondRow
+              isEditing={isEditing}
+              errors={errors}
+              handleChange={handleChange}
+              handleSave={handleSave}
+              updatedInfo={updatedInfo}
+              userInfo={userInfo}
+              expandedClass={expandedClass}
+              toggleClassDetails={toggleClassDetails}
+              showPasswordAlert={showPasswordAlert}
+              setShowPasswordAlert={setShowPasswordAlert}
+              showDeleteAlert={showDeleteAlert}
+              setShowDeleteAlert={setShowDeleteAlert}
+              theme={theme}
+              setTheme={setTheme}
+              presentToast={presentToast}
+            />
           </>
         )}
       </div>
