@@ -18,6 +18,7 @@ import {
   IonSegmentButton,
   IonSpinner,
 } from '@ionic/react';
+import { set } from 'date-fns';
 import {
   arrowBackOutline,
   bookOutline,
@@ -137,8 +138,6 @@ const ClassDetail = () => {
     // Define the fields to be updated
     const fieldsToUpdate = ['class_name', 'class_description'];
 
-    // NOT WORKING YET
-
     try {
       // Identify which fields have changed and create API call promises
       const updatePromises = fieldsToUpdate
@@ -208,7 +207,7 @@ const ClassDetail = () => {
         {
           method: 'GET',
           headers: {
-            class_id: id,
+            id: id,
           },
         }
       );
@@ -334,17 +333,46 @@ const ClassDetail = () => {
   // }, []);
 
   // Should hold the id of the student to be deleted and the state of the alert
-  const [showDeleteAlert, setShowDeleteAlert] = useState({
+  const [showDeleteStudentAlert, setShowDeleteStudentAlert] = useState({
     isOpen: false,
     studentId: null,
   });
 
-  const showDeleteStudentAlert = (studentId) => {
-    setShowDeleteAlert((prev) => ({
+  const onDeleteStudentClicked = (studentId) => {
+    setShowDeleteStudentAlert((prev) => ({
       ...prev,
       isOpen: true,
       studentId: studentId,
     }));
+  };
+
+  const [showDeleteSetAlert, setShowDeleteSetAlert] = useState({
+    isOpen: false,
+    setId: null,
+  });
+
+  const onDeleteSetClicked = (setID) => {
+    setShowDeleteSetAlert((prev) => ({
+      ...prev,
+      isOpen: true,
+      setId: setID,
+    }));
+  };
+
+  // Handler to delete a flashcard set
+  const handleDeleteSet = (setId) => {
+    try {
+      makeHttpCall(`${API_BASE}/api/class_set/`, {
+        method: 'DELETE',
+        headers: {
+          id: id,
+          set_id: setId,
+        },
+      });
+    } catch (error) {
+      console.error('Error deleting flashcard set:', error);
+      setError('Error deleting flashcard set');
+    }
   };
 
   // Handler to delete a student
@@ -510,6 +538,8 @@ const ClassDetail = () => {
             flashcardSets={flashcardSets}
             currentCardIndex={currentCardIndex}
             setApi={setCarouselApi}
+            isTeacher={isTeacher}
+            onDeleteSet={onDeleteSetClicked}
           />
         )}
 
@@ -518,17 +548,17 @@ const ClassDetail = () => {
             <StudentList
               isTeacher={isTeacher}
               students={classUsers}
-              onDeleteStudent={showDeleteStudentAlert}
+              onDeleteStudent={onDeleteStudentClicked}
             />
           </div>
         )}
       </div>
 
-      {/* Delete Account Alert */}
+      {/* Delete Student Alert */}
       <IonAlert
-        isOpen={showDeleteAlert.isOpen}
+        isOpen={showDeleteStudentAlert.isOpen}
         onDidDismiss={() =>
-          setShowDeleteAlert((prev) => ({
+          setShowDeleteStudentAlert((prev) => ({
             ...prev,
             isOpen: false,
             studentId: null,
@@ -542,7 +572,7 @@ const ClassDetail = () => {
             role: 'cancel',
             handler: () => {
               console.log('Cancel clicked');
-              setShowDeleteAlert((prev) => ({
+              setShowDeleteStudentAlert((prev) => ({
                 ...prev,
                 isOpen: false,
                 studentId: null,
@@ -553,11 +583,52 @@ const ClassDetail = () => {
             text: 'Delete',
             handler: () => {
               // Add your delete account logic here
-              handleDeleteStudent(showDeleteAlert.studentId);
-              setShowDeleteAlert((prev) => ({
+              handleDeleteStudent(showDeleteStudentAlert.studentId);
+              setShowDeleteStudentAlert((prev) => ({
                 ...prev,
                 isOpen: false,
                 studentId: null,
+              }));
+              console.log('Account deleted');
+            },
+          },
+        ]}
+      />
+
+      {/* Delete Set Alert */}
+      <IonAlert
+        isOpen={showDeleteSetAlert.isOpen}
+        onDidDismiss={() =>
+          setShowDeleteSetAlert((prev) => ({
+            ...prev,
+            isOpen: false,
+            setId: null,
+          }))
+        }
+        header="Confirm Deletion"
+        message="Are you sure you want to delete this Set? This action cannot be undone."
+        buttons={[
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            handler: () => {
+              console.log('Cancel clicked');
+              setShowDeleteSetAlert((prev) => ({
+                ...prev,
+                isOpen: false,
+                setId: null,
+              }));
+            },
+          },
+          {
+            text: 'Delete',
+            handler: () => {
+              // Add your delete account logic here
+              handleDeleteSet(showDeleteSetAlert.setId);
+              setShowDeleteSetAlert((prev) => ({
+                ...prev,
+                isOpen: false,
+                setId: null,
               }));
               console.log('Account deleted');
             },
