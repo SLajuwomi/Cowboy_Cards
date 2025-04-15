@@ -22,7 +22,7 @@ import { Link } from 'react-router-dom';
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 type Class = {
-  ID: number;
+  ClassID: number;
   ClassName: string;
   ClassDescription: string;
   CreatedAt: string;
@@ -30,7 +30,7 @@ type Class = {
 };
 
 type Set = {
-  ID: number;
+  SetID: number;
   SetName: string;
   SetDescription: string;
   CreatedAt: string;
@@ -54,7 +54,7 @@ const Home = () => {
         const data = await makeHttpCall<Class[]>(
           `${API_BASE}/api/class_user/classes`
         );
-        console.log(data);
+        console.log('Classes: ', data);
         setClasses(data);
       } catch (error) {
         setError(`Error fetching classes: ${error.message}`);
@@ -67,6 +67,7 @@ const Home = () => {
       setSetsLoading(true);
       try {
         const data = await makeHttpCall<Set[]>(`${API_BASE}/api/set_user/list`);
+        console.log('Sets: ', data);
         setSets(data);
       } catch (error) {
         setError(`Error fetching sets: ${error.message}`);
@@ -143,7 +144,7 @@ const Home = () => {
             ) : (
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {classes.map((cls) => (
-                  <Link key={cls.ID} to={`/class/${cls.ID}`}>
+                  <Link key={cls.ClassID} to={`/class/${cls.ClassID}`}>
                     <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-transform-shadow duration-200 rounded-lg border shadow-sm">
                       <IonCardHeader className="flex flex-col space-y-1.5 p-6">
                         <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
@@ -177,7 +178,7 @@ const Home = () => {
             ) : (
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {sets.map((set) => (
-                  <Link key={set.ID} to={`/set/${set.ID}`}>
+                  <Link key={set.SetID} to={`/set/${set.SetID}`}>
                     <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-transform-shadow duration-200 rounded-lg border shadow-sm">
                       <IonCardHeader className="flex flex-col space-y-1.5 p-6">
                         <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
