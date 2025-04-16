@@ -109,7 +109,7 @@ func (h *DBHandler) GetUserById(w http.ResponseWriter, r *http.Request) {
 		NumClasses:     len(classes),
 		CardsStudied:   int(cardsStudied),
 		CardsMastered:  int(cardsMastered),
-		TotalCardViews: int(totalCardViews),
+		TotalCardViews: totalCardViews.(int),
 	}
 
 	w.Header().Set("Content-Type", "application/json")
