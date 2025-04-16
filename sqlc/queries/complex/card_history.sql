@@ -25,4 +25,4 @@ SELECT COUNT(card_id) FROM card_history WHERE user_id = $1;
 SELECT COUNT(is_mastered) FROM card_history WHERE user_id = $1 AND is_mastered = TRUE;
 
 -- name: GetTotalCardViews :one
-SELECT SUM(times_attempted) FROM card_history WHERE user_id = $1;
+SELECT COALESCE(SUM(times_attempted), 0) FROM card_history WHERE user_id = $1;

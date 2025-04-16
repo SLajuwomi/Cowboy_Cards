@@ -107,14 +107,14 @@ func (q *Queries) GetScoresInASet(ctx context.Context, arg GetScoresInASetParams
 }
 
 const getTotalCardViews = `-- name: GetTotalCardViews :one
-SELECT SUM(times_attempted) FROM card_history WHERE user_id = $1
+SELECT COALESCE(SUM(times_attempted), 0) FROM card_history WHERE user_id = $1
 `
 
-func (q *Queries) GetTotalCardViews(ctx context.Context, userID int32) (int64, error) {
+func (q *Queries) GetTotalCardViews(ctx context.Context, userID int32) (interface{}, error) {
 	row := q.db.QueryRow(ctx, getTotalCardViews, userID)
-	var sum int64
-	err := row.Scan(&sum)
-	return sum, err
+	var coalesce interface{}
+	err := row.Scan(&coalesce)
+	return coalesce, err
 }
 
 const upsertCorrectFlashcardScore = `-- name: UpsertCorrectFlashcardScore :exec
