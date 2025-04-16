@@ -32,7 +32,7 @@ const StudentList = ({ students, isTeacher, onDeleteStudent }) => {
                   icon={trashOutline}
                   color="danger"
                   className="cursor-pointer"
-                  onClick={() => onDeleteStudent(student.id)}
+                  onClick={() => onDeleteStudent(student.UserID)}
                 />
               )}
             </IonItem>
