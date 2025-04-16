@@ -106,15 +106,7 @@ const ClassDetailHeader: React.FC<ClassDetailHeaderProps> = ({
           </div>
         </>
       ) : loading ? (
-        // Loading State (Display Mode)
-        <>
-          <IonCardTitle>
-            <IonSkeletonText animated style={{ width: '60%' }} />
-          </IonCardTitle>
-          <IonCardSubtitle>
-            <IonSkeletonText animated style={{ width: '80%' }} />
-          </IonCardSubtitle>
-        </>
+        <div>Loading...</div>
       ) : classData ? (
         // Display Mode (Data Loaded)
         <>

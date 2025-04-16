@@ -70,7 +70,9 @@ const FlashcardCarousel = (props) => {
 
   return (
     <div className="mt-6">
-      {selectedSet === null ? (
+      {props.loading ? (
+        <div>Loading...</div>
+      ) : selectedSet === null ? (
         props.flashcardSets?.length ? (
           <IonGrid>
             <IonRow>
