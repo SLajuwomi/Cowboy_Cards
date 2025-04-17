@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flashcard } from '@/types/flashcards';
+import { Flashcard } from '@/types/globalTypes';
 import {
   IonCard,
   IonCardContent,

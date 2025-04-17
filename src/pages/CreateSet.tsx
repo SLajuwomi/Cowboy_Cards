@@ -1,6 +1,6 @@
 import { Navbar } from '@/components/Navbar';
 import { makeHttpCall } from '@/utils/makeHttpCall';
-import { FlashcardSet } from '@/types/flashcards';
+import { FlashcardSet } from '@/types/globalTypes';
 import {
   IonButton,
   IonCard,

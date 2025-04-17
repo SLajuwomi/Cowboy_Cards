@@ -1,5 +1,5 @@
 import { Navbar } from '@/components/Navbar';
-import { Flashcard, FlashcardSet } from '@/types/flashcards';
+import { Flashcard, FlashcardSet } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonAlert,

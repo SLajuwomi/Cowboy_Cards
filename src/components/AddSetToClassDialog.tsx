@@ -17,7 +17,7 @@ import {
   useIonToast,
 } from '@ionic/react';
 import { makeHttpCall } from '@/utils/makeHttpCall';
-import { SetUser } from '@/types/flashcards';
+import { SetUser } from '@/types/globalTypes';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 

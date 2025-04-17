@@ -4,7 +4,7 @@
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { makeHttpCall } from '@/utils/makeHttpCall';
-import { Flashcard, FlashcardSet } from '@/types/flashcards';
+import { Flashcard, FlashcardSet } from '@/types/globalTypes';
 import {
   IonContent,
   IonLoading,

@@ -23,6 +23,7 @@ const UserAccountFirstRow = (props) => {
           {props.isEditing ? (
             <div className="space-y-4">
               <EditableField
+                type="text"
                 label="First Name"
                 name="first_name"
                 value={props.updatedInfo?.first_name || ''}
@@ -30,6 +31,7 @@ const UserAccountFirstRow = (props) => {
                 onChange={props.handleChange}
               />
               <EditableField
+                type="text"
                 label="Last Name"
                 name="last_name"
                 value={props.updatedInfo?.last_name || ''}
@@ -37,6 +39,7 @@ const UserAccountFirstRow = (props) => {
                 onChange={props.handleChange}
               />
               <EditableField
+                type="text"
                 label="Username"
                 name="username"
                 value={props.updatedInfo?.username || ''}
@@ -44,6 +47,7 @@ const UserAccountFirstRow = (props) => {
                 onChange={props.handleChange}
               />
               <EditableField
+                type="email"
                 label="Email"
                 name="email"
                 value={props.updatedInfo?.email || ''}
