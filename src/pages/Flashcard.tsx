@@ -12,19 +12,18 @@ import { useHistory, useParams } from 'react-router-dom';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
-// Define card type including ID
 type Card = {
   id: number;
   front: string;
   back: string;
 };
 
+//TODO: add summary after going through all cards of cards missed, cards correct, etc
 const Flashcard = () => {
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  // Use the Card type for state
   const [cards, setCards] = useState<Card[]>([]);
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -56,7 +55,6 @@ const Flashcard = () => {
         setCards(
           Array.isArray(data)
             ? data.map((card: any) => ({
-                // Map the ID from the response
                 id: card.ID,
                 front: card.Front,
                 back: card.Back,
@@ -145,7 +143,6 @@ const Flashcard = () => {
                         front={card.front}
                         back={card.back}
                         onAdvance={handleAdvance}
-                        // Pass cardId and a placeholder userId
                         cardId={card.id}
                       />
                     </CarouselItem>

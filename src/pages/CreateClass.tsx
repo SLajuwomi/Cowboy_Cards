@@ -84,13 +84,6 @@ const CreateClass = () => {
     <IonContent>
       <Navbar />
       <div id="main-content" className="container mx-auto px-4 py-8">
-        {/*<IonText color="warning">
-          <p>
-            Database only accepts a teacher ID of 12. <br />
-            So I have not included an input for that, it will automatically be
-            passed
-          </p>
-        </IonText>*/}
         {error && <div className="text-red-500 mt-2">{error}</div>}
         <form>
           <IonCard className="mb-6 rounded-lg border shadow-sm">

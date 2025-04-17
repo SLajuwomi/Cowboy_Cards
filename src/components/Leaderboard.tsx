@@ -12,11 +12,6 @@ type LeaderboardEntry = {
   totalScore: number;
 };
 
-// type LeaderboardProps = {
-//   leaderboard: LeaderboardEntry[];
-//   classUsers: any[];
-// };
-
 const Leaderboard = ({ leaderboard }) => {
   return (
     <IonCard className="rounded-lg border shadow-sm">

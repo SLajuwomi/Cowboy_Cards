@@ -13,7 +13,6 @@ import InfoRow from '@/utils/InfoRow';
 const UserAccountFirstRow = (props) => {
   return (
     <div className="flex flex-col md:flex-row gap-6">
-      {/* Account Information Card */}
       <IonCard className="w-full md:w-1/2 rounded-lg border shadow-sm">
         <IonCardHeader className="p-6">
           <IonCardTitle className="text-xl font-semibold text-primary">
@@ -21,8 +20,6 @@ const UserAccountFirstRow = (props) => {
           </IonCardTitle>
         </IonCardHeader>
         <IonCardContent className="p-6 pt-0">
-          {/* TODO: Make this into an EditingField component where you can pass whatever label or field you want. */}
-
           {props.isEditing ? (
             <div className="space-y-4">
               <EditableField

@@ -1,14 +1,6 @@
 import { AuthForm } from '@/components/auth/AuthForm';
 import { IonContent } from '@ionic/react';
 
-// type Class = {
-//   ID: string;
-//   ClassName: string;
-//   ClassDescription: string;
-//   CreatedAt: string;
-//   UpdatedAt: string;
-// };
-
 const Index = () => {
   return (
     <IonContent>

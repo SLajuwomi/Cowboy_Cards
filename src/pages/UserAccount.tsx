@@ -31,33 +31,8 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL;
 const UserAccount = () => {
   const { theme, setTheme } = useTheme();
   const [userInfo, setUserInfo] = useState<User>();
-  const [loading, setLoading] = useState(true); // Start loading initially
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // const [classHistory, setClassHistory] = useState([
-  //   {
-  //     id: 1,
-  //     title: "Introduction to Computer Science",
-  //     startDate: "2024-01-15",
-  //     endDate: "2024-05-30",
-  //     link: "/class/1"
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "Data Structures and Algorithms",
-  //     startDate: "2023-09-01",
-  //     endDate: "2023-12-15",
-  //     link: "/class/2"
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "Web Development Fundamentals",
-  //     startDate: "2023-06-01",
-  //     endDate: "2023-08-15",
-  //     link: "/class/3"
-  //   }
-  // ]);
-
   const [expandedClass, setExpandedClass] = useState<number | null>(null);
   const [showPasswordAlert, setShowPasswordAlert] = useState(false);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
@@ -74,40 +49,33 @@ const UserAccount = () => {
   };
 
   const handleSave = async () => {
-    // Validate form before submission
     if (!validateForm()) {
       return;
     }
 
-    // Define the fields that can be updated
     const fieldsToUpdate = ['first_name', 'last_name', 'username', 'email'];
 
     try {
-      // Identify which fields have changed and create API call promises
       const updatePromises = fieldsToUpdate
-        .filter((field) => updatedInfo[field] !== userInfo[field]) // Only include modified fields
+        .filter((field) => updatedInfo[field] !== userInfo[field])
         .map((field) =>
           makeHttpCall<User>(`${API_BASE}/api/users/${field}`, {
             method: 'PUT',
             headers: {
-              [field]: updatedInfo[field], // New value for the field
+              [field]: updatedInfo[field],
             },
           })
         );
 
-      // Wait for all API calls to complete successfully
       await Promise.all(updatePromises);
-      // If all updates succeed, update the local state and exit editing mode
       setUserInfo(updatedInfo);
       setIsEditing(false);
     } catch (error) {
-      // Log the error and notify the user if any update fails
       console.error(error);
       alert('Failed to update some fields. Please try again.');
     }
   };
 
-  // Basic validation before submitting
   const validateForm = () => {
     const newErrors: {
       first_name?: string;
@@ -117,19 +85,16 @@ const UserAccount = () => {
     } = {};
     let isValid = true;
 
-    // First name validation
     if (!updatedInfo.first_name) {
       newErrors.first_name = 'First name is required';
       isValid = false;
     }
 
-    // Last name validation
     if (!updatedInfo.last_name) {
       newErrors.last_name = 'Last name is required';
       isValid = false;
     }
 
-    // Email validation
     if (!updatedInfo.email) {
       newErrors.email = 'Email is required';
       isValid = false;
@@ -138,13 +103,11 @@ const UserAccount = () => {
       isValid = false;
     }
 
-    // Username validation
     if (!updatedInfo.username) {
       newErrors.username = 'Username is required';
       isValid = false;
     }
 
-    // Trim whitespace from the input values
     updatedInfo.first_name = updatedInfo.first_name.trim();
     updatedInfo.last_name = updatedInfo.last_name.trim();
     updatedInfo.email = updatedInfo.email.trim();
@@ -154,7 +117,6 @@ const UserAccount = () => {
     return isValid;
   };
 
-  // Form validation
   const [errors, setErrors] = useState<{
     first_name?: string;
     last_name?: string;
@@ -193,12 +155,8 @@ const UserAccount = () => {
     };
 
     fetchUserData();
-
-    // cleanup func not necessary here
-    // https://blog.logrocket.com/understanding-react-useeffect-cleanup-function/
   }, []);
 
-  // Hook for showing toast messages, used for password change
   const [presentToast] = useIonToast();
 
   return (
@@ -206,14 +164,12 @@ const UserAccount = () => {
       <Navbar />
 
       <div id="main-content" className="container mx-auto px-4 py-8">
-        {/* Header Section */}
         <div className="mb-8">
           <p className="text-xl font-semibold text-primary">
             Welcome back, {userInfo?.username || 'User'}!
           </p>
         </div>
 
-        {/* Back Button */}
         <IonButton
           onClick={() => window.history.back()}
           fill="outline"
@@ -223,7 +179,6 @@ const UserAccount = () => {
           Back
         </IonButton>
 
-        {/* Loading State */}
         {loading && (
           <div className="flex justify-center items-center p-8">
             <IonSpinner name="circular" />
@@ -231,14 +186,12 @@ const UserAccount = () => {
           </div>
         )}
 
-        {/* Error State */}
         {error && !loading && (
           <div className="text-red-500 text-center p-4 border border-red-500 rounded-md">
             {error}
           </div>
         )}
 
-        {/* Content: Only show if not loading and no error */}
         {!loading && !error && userInfo && (
           <>
             <UserAccountFirstRow

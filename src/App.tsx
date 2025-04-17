@@ -19,7 +19,6 @@ import NotFound from './pages/NotFound';
 import PublicCards from './pages/PublicCards';
 import PublicClasses from './pages/PublicClasses';
 import SetOverview from './pages/SetOverview';
-import TeacherDashboard from './pages/TeacherDashboard';
 import UserAccount from './pages/UserAccount';
 import EditSet from './pages/EditSet';
 
@@ -62,7 +61,6 @@ function App() {
                   <Route exact path="/" component={Index} />
                   <Route exact path="/home" component={Home} />
                   <Route exact path="/class/:id" component={ClassDetail} />
-                  <Route exact path="/teacher" component={TeacherDashboard} />
                   <Route exact path="/auth" component={AuthForm} />
                   <Route exact path="/reset-password" component={ResetPass} />
                   <Route exact path="/public-cards" component={PublicCards} />

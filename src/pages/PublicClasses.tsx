@@ -11,6 +11,7 @@ import {
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+//TODO: move to global types/import from
 type Class = {
   ID: number;
   ClassName: string;
@@ -20,29 +21,7 @@ type Class = {
 };
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
-// const mockClasses = [
-//   {
-//     ID: 1,
-//     ClassName: 'Biology 101',
-//     ClassDescription: 'Biology',
-//     CreatedAt: '2023-01-15',
-//     UpdatedAt: '2023-05-20',
-//   },
-//   {
-//     ID: 2,
-//     ClassName: 'Chemistry 101',
-//     ClassDescription: 'Chemistry',
-//     CreatedAt: '2025-01-15',
-//     UpdatedAt: '2023-05-20',
-//   },
-//   {
-//     ID: 3,
-//     ClassName: 'physic 101',
-//     ClassDescription: 'physic',
-//     CreatedAt: '2023-01-11',
-//     UpdatedAt: '2023-05-10',
-//   },
-// ]
+
 const PublicClasses = () => {
   const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(false);

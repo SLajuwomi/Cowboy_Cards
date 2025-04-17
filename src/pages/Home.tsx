@@ -48,7 +48,6 @@ const Home = () => {
     console.log('Classes state updated:', classes);
   }, [classes]);
 
-  // Currently getting all classes, but should be getting only the classes the user is in. waiting on backend to implement this.
   useEffect(() => {
     const fetchClassesOfUser = async () => {
       setClassesLoading(true);
@@ -82,15 +81,6 @@ const Home = () => {
     fetchClassesOfUser();
     fetchSetsOfUser();
   }, []);
-
-  // const suggestedFlashcardSets = [
-  //   { id: 1, name: 'Physics Essentials', cards: 18 },
-  //   { id: 2, name: 'Spanish Phrases', cards: 22 },
-  //   { id: 3, name: 'World Capitals', cards: 12 },
-  //   { id: 4, name: 'Algebraic Equations', cards: 20 },
-  //   { id: 5, name: 'Shakespearean Plays', cards: 14 },
-  //   { id: 6, name: 'Ancient Civilizations', cards: 9 },
-  // ];
 
   return (
     <>

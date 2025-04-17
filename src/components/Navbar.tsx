@@ -31,18 +31,15 @@ const Navbar = () => {
   const router = useIonRouter();
   const { theme, setTheme } = useTheme();
 
-  // Function to toggle dark mode
   const toggleDarkMode = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
 
   return (
     <>
-      {/* Sidebar Navigation (IonMenu) */}
       <IonMenu side="start" contentId="main-content">
         <IonHeader>
           <IonToolbar>
-            {/* Close icon will automatically show when the menu is open */}
             <IonButtons slot="start">
               <IonMenuToggle>
                 <IonButton>
@@ -79,12 +76,9 @@ const Navbar = () => {
         </IonContent>
       </IonMenu>
 
-      {/* Navbar */}
       <IonHeader>
         <IonToolbar>
-          {/* Left Side (Menu Button) */}
           <IonButtons slot="start">
-            {/* Left Side (Menu Button - FIXED) */}
             <IonMenuToggle>
               <IonButton>
                 <IonIcon icon={menu} />
@@ -92,7 +86,6 @@ const Navbar = () => {
             </IonMenuToggle>
           </IonButtons>
 
-          {/* Middle Section (Title / Children) */}
           <IonTitle
             color="primary"
             className="text-lg md:text-xl lg:text-2xl font-bold hover:translate-x-1 transition-all duration-300 cursor-pointer"
@@ -101,12 +94,10 @@ const Navbar = () => {
             Cowboy Cards
           </IonTitle>
 
-          {/* Theme Toggle Button */}
           <IonButtons slot="end">
             <IonButton onClick={openPopover}>
               <IonIcon icon={add} className="text-[32px] stroke-[2]" />
             </IonButton>
-            {/* Popover for Create Options */}
             <IonPopover
               event={popoverEvent}
               isOpen={!!popoverEvent}
@@ -152,7 +143,6 @@ const Navbar = () => {
             </IonButton>
           </IonButtons>
 
-          {/* Profile Icon */}
           <IonButtons slot="end">
             <IonButton routerLink="/user-account">
               <IonIcon icon={personCircle} size="large" />

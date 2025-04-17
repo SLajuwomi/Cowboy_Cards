@@ -22,7 +22,6 @@ export const FlashCard = ({
   const [isFlipped, setIsFlipped] = useState(false);
 
   const handleScoreUpdate = async (endpoint: string) => {
-    // TODO: user_id should be from context
     try {
       const result = await makeHttpCall(`${API_BASE}${endpoint}`, {
         method: 'POST',
@@ -31,12 +30,9 @@ export const FlashCard = ({
         },
       });
       console.log(`Score update successful for card ${cardId}:`, result);
-      onAdvance?.(); // Advance card after successful API call
+      onAdvance?.();
     } catch (error) {
       console.error(`Failed to update score for card ${cardId}:`, error);
-      // Optionally handle the error, e.g., show a notification
-      // Decide if you still want to advance the card on error
-      // onAdvance?.();
     }
   };
 

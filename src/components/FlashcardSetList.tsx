@@ -1,7 +1,6 @@
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonButton,
-  IonButtons,
   IonCard,
   IonCardContent,
   IonCardHeader,
@@ -9,16 +8,9 @@ import {
   IonCol,
   IonGrid,
   IonIcon,
-  IonRouterLink,
   IonRow,
 } from '@ionic/react';
-import {
-  arrowBackOutline,
-  createOutline,
-  trashBin,
-  trashBinOutline,
-  trashOutline,
-} from 'ionicons/icons';
+import { arrowBackOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import {
   Carousel,
@@ -29,8 +21,8 @@ import {
 } from '@/components/ui/carousel';
 import { FlashCard } from '@/components/FlashCard';
 import { useHistory } from 'react-router-dom';
-import { Link } from 'lucide-react';
 
+//TODO: move to global types/import from
 type Flashcards = {
   ID: number;
   Front: string;
@@ -42,7 +34,6 @@ type Flashcards = {
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
-// We probably should make the flashcards have an independent page, so we can show loading states and errors
 const FlashcardCarousel = (props) => {
   const history = useHistory();
   const [flashcards, setFlashcards] = useState<Flashcards[]>([]);
@@ -93,9 +84,6 @@ const FlashcardCarousel = (props) => {
                         <p className="text-muted-foreground mb-2">
                           {set.SetDescription}
                         </p>
-                        {/* <p className="text-muted-foreground">
-                                            {set.cards.length} cards
-                                        </p> */}
                       </IonCardContent>
                     </IonCard>
                   </IonCol>
@@ -124,7 +112,6 @@ const FlashcardCarousel = (props) => {
               <CarouselContent className="-mt-1 h-[400px]">
                 {flashcards.map((card) => (
                   <CarouselItem key={card.ID}>
-                    {/* TODO: user_id should be from context */}
                     <FlashCard
                       front={card.Front}
                       back={card.Back}
