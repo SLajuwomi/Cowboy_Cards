@@ -30,7 +30,7 @@ export interface Flashcard {
  */
 export interface FlashcardSet {
   /** Corresponds to `db.FlashcardSet.ID` (int32) */
-  SetID: number;
+  ID: number;
   /** Corresponds to `db.FlashcardSet.SetName` (string) */
   SetName: string;
   /** Corresponds to `db.FlashcardSet.SetDescription` (string) */

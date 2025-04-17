@@ -13,11 +13,8 @@ import { arrowBackOutline, createOutline, addOutline } from 'ionicons/icons';
  * Props will be added in subsequent steps as needed (e.g., isTeacher, handlers).
  */
 interface ClassDetailControlsProps {
-  /** Flag indicating if the current user is a teacher. */
   isTeacher: boolean;
-  /** The ID of the current class, needed for the create set link. */
   classId: string | undefined;
-  /** Callback function to open the Add Set dialog. */
   onAddSetClick: () => void;
 }
 
@@ -59,6 +56,7 @@ const ClassDetailControls: React.FC<ClassDetailControlsProps> = ({
               color="secondary"
               disabled={!classId} // Disable if classId isn't available yet
             >
+              {/* TODO: Fix colors on this button */}
               <IonIcon slot="start" icon={addOutline} />
               Add Existing Set
             </IonButton>

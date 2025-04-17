@@ -1,4 +1,4 @@
-import { Navbar } from '@/components/navbar';
+import { Navbar } from '@/components/Navbar';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import { FlashcardSet } from '@/types/flashcards';
 import {
@@ -14,7 +14,6 @@ import { useHistory } from 'react-router-dom';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
 /**
  * CreateSet Component
  *

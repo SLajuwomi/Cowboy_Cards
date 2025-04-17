@@ -1,4 +1,4 @@
-import { Navbar } from '@/components/navbar';
+import { Navbar } from '@/components/Navbar';
 import { useTheme } from '@/contexts/ThemeContext';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {

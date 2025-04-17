@@ -18,7 +18,6 @@ type Class = {
   ID: number;
   ClassName: string;
   ClassDescription: string;
-  JoinCode?: string; // Optional as it might not always be present/needed here
   CreatedAt: string; // Keep for potential future use
   UpdatedAt: string; // Keep for potential future use
   Role: string; // Keep for potential future use (though isTeacher prop is derived from this)
@@ -28,25 +27,15 @@ type Class = {
  * Props for the ClassDetailHeader component.
  */
 interface ClassDetailHeaderProps {
-  /** The class data object containing name, description, etc. Optional during loading. */
   classData?: Class;
-  /** Flag indicating if the current user is a teacher for this class. */
   isTeacher: boolean;
-  /** Flag indicating if the class data is currently being loaded. */
   loading: boolean;
-  /** Callback function to trigger the editing mode. */
   handleEdit: () => void;
-  /** Flag indicating if the header is currently in editing mode. */
   isEditing: boolean;
-  /** State object containing the updated class name and description during editing. */
   updatedInfo: { class_name: string; class_description: string };
-  /** State object containing validation errors for the editing form. */
   errors: { className?: string; classDescription?: string; general?: string };
-  /** Callback function to handle changes in the input fields during editing. */
   handleChange: (e: CustomEvent) => void;
-  /** Callback function to save the edited class information. */
   handleSave: () => void;
-  /** Callback function to cancel the editing mode. */
   handleCancel: () => void;
 }
 
@@ -113,7 +102,9 @@ const ClassDetailHeader: React.FC<ClassDetailHeaderProps> = ({
           <div className="flex items-center">
             {' '}
             {/* Flex container for title and icon */}
-            <IonCardTitle>{classData.ClassName}</IonCardTitle>
+            <h1 className="text-2xl font-bold">
+              {loading ? 'Loading...' : classData.ClassName}
+            </h1>
             {isTeacher && !isEditing && (
               <IonIcon
                 icon={createOutline}
@@ -124,7 +115,9 @@ const ClassDetailHeader: React.FC<ClassDetailHeaderProps> = ({
               ></IonIcon>
             )}
           </div>
-          <IonCardSubtitle>{classData.ClassDescription}</IonCardSubtitle>
+          <p className="text-gray-600">
+            {loading ? 'Loading...' : classData.ClassDescription}
+          </p>
         </>
       ) : (
         // Fallback if not loading and no data (Display Mode)

@@ -5,6 +5,7 @@
  */
 
 //TODO: Add a back button to the page
+//TODO: fix redirecting from this page. It's not working.
 
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
