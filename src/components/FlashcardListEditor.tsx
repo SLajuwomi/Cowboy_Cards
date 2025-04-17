@@ -1,5 +1,3 @@
-import React from 'react';
-import { Flashcard } from '@/types/globalTypes';
 import {
   IonCard,
   IonCardContent,
@@ -9,27 +7,11 @@ import {
 } from '@ionic/react';
 import { addOutline, trashOutline } from 'ionicons/icons';
 
-interface FlashcardListEditorProps {
-  cards: Flashcard[];
-  onAddCard: () => void;
-  onRemoveCard: (index: number) => void;
-  onUpdateCard: (
-    index: number,
-    field: 'Front' | 'Back',
-    value: string | null | undefined
-  ) => void;
-}
-
-const FlashcardListEditor: React.FC<FlashcardListEditorProps> = ({
-  cards,
-  onAddCard,
-  onRemoveCard,
-  onUpdateCard,
-}) => {
+const FlashcardListEditor = (props) => {
   return (
     <>
       <h2 className="text-xl font-semibold mb-2">Edit Cards</h2>
-      {cards.map((card, index) => (
+      {props.cards.map((card, index) => (
         <IonCard key={card.ID} className="mb-4 rounded-lg border shadow-sm">
           <IonCardContent>
             <div className="flex justify-between items-start mb-2">
@@ -40,7 +22,7 @@ const FlashcardListEditor: React.FC<FlashcardListEditorProps> = ({
                 fill="clear"
                 color="danger"
                 size="small"
-                onClick={() => onRemoveCard(index)}
+                onClick={() => props.onRemoveCard(index)}
                 className="-mt-2 -mr-2"
               >
                 <IonIcon slot="icon-only" icon={trashOutline} />
@@ -51,7 +33,9 @@ const FlashcardListEditor: React.FC<FlashcardListEditorProps> = ({
               labelPlacement="stacked"
               placeholder="Front of card"
               value={card.Front}
-              onIonChange={(e) => onUpdateCard(index, 'Front', e.detail.value)}
+              onIonChange={(e) =>
+                props.onUpdateCard(index, 'Front', e.detail.value)
+              }
               rows={2}
               autoGrow
               className="mb-3"
@@ -62,7 +46,9 @@ const FlashcardListEditor: React.FC<FlashcardListEditorProps> = ({
               labelPlacement="stacked"
               placeholder="Back of card"
               value={card.Back}
-              onIonChange={(e) => onUpdateCard(index, 'Back', e.detail.value)}
+              onIonChange={(e) =>
+                props.onUpdateCard(index, 'Back', e.detail.value)
+              }
               rows={2}
               autoGrow
               style={{ resize: 'none' }}
@@ -72,7 +58,7 @@ const FlashcardListEditor: React.FC<FlashcardListEditorProps> = ({
       ))}
 
       <div className="flex justify-center mt-4 mb-6">
-        <IonButton onClick={onAddCard} fill="outline">
+        <IonButton onClick={props.onAddCard} fill="outline">
           <IonIcon slot="start" icon={addOutline} /> Add Card
         </IonButton>
       </div>

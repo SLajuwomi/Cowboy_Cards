@@ -6,19 +6,7 @@ import { useState } from 'react';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
-interface FlashCardProps {
-  front: string;
-  back: string;
-  onAdvance?: () => void;
-  cardId: number;
-}
-
-export const FlashCard = ({
-  front,
-  back,
-  onAdvance,
-  cardId,
-}: FlashCardProps) => {
+export const FlashCard = (props) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
   const handleScoreUpdate = async (endpoint: string) => {
@@ -26,13 +14,13 @@ export const FlashCard = ({
       const result = await makeHttpCall(`${API_BASE}${endpoint}`, {
         method: 'POST',
         headers: {
-          card_id: cardId.toString(),
+          card_id: props.cardId.toString(),
         },
       });
-      console.log(`Score update successful for card ${cardId}:`, result);
-      onAdvance?.();
+      console.log(`Score update successful for card ${props.cardId}:`, result);
+      props.onAdvance?.();
     } catch (error) {
-      console.error(`Failed to update score for card ${cardId}:`, error);
+      console.error(`Failed to update score for card ${props.cardId}:`, error);
     }
   };
 
@@ -51,10 +39,10 @@ export const FlashCard = ({
         onClick={() => setIsFlipped(!isFlipped)}
       >
         <Card className="flip-card-front p-8 min-h-[300px] flex items-center justify-center text-center">
-          <p className="text-xl">{front}</p>
+          <p className="text-xl">{props.front}</p>
         </Card>
         <Card className="flip-card-back p-8 min-h-[300px] flex items-center justify-center text-center absolute top-0 w-full">
-          <p className="text-xl">{back}</p>
+          <p className="text-xl">{props.back}</p>
         </Card>
       </div>
 

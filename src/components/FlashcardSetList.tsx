@@ -21,28 +21,19 @@ import {
 } from '@/components/ui/carousel';
 import { FlashCard } from '@/components/FlashCard';
 import { useHistory } from 'react-router-dom';
-
-//TODO: move to global types/import from
-type Flashcards = {
-  ID: number;
-  Front: string;
-  Back: string;
-  SetID: number;
-  CreatedAt: string;
-  UpdatedAt: string;
-};
+import { Flashcard } from '@/types/globalTypes';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const FlashcardCarousel = (props) => {
   const history = useHistory();
-  const [flashcards, setFlashcards] = useState<Flashcards[]>([]);
+  const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
   const [selectedSet, setSelectedSet] = useState<number | null>(null);
 
   useEffect(() => {
     async function fetchFlashcards() {
       console.log('selectedSet', selectedSet);
-      const cards = await makeHttpCall<Flashcards[]>(
+      const cards = await makeHttpCall<Flashcard[]>(
         `${API_BASE}/api/flashcards/list`,
         {
           method: 'GET',

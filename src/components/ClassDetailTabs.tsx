@@ -1,20 +1,11 @@
-import React from 'react';
 import { IonIcon, IonLabel, IonSegment, IonSegmentButton } from '@ionic/react';
 import { bookOutline, trophyOutline, peopleOutline } from 'ionicons/icons';
 
-interface ClassDetailTabsProps {
-  selectedTab: string;
-  onTabChange: (value: string) => void;
-}
-
-const ClassDetailTabs: React.FC<ClassDetailTabsProps> = ({
-  selectedTab,
-  onTabChange,
-}) => {
+const ClassDetailTabs = (props) => {
   return (
     <IonSegment
-      value={selectedTab}
-      onIonChange={(e) => onTabChange(e.detail.value as string)}
+      value={props.selectedTab}
+      onIonChange={(e) => props.onTabChange(e.detail.value as string)}
       className="w-full mb-6"
     >
       <IonSegmentButton value="flashcards">

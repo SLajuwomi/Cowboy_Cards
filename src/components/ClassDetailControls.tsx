@@ -1,18 +1,7 @@
-import React from 'react';
 import { IonButton, IonIcon, IonCardContent } from '@ionic/react';
 import { arrowBackOutline, createOutline, addOutline } from 'ionicons/icons';
 
-interface ClassDetailControlsProps {
-  isTeacher: boolean;
-  classId: string | undefined;
-  onAddSetClick: () => void;
-}
-
-const ClassDetailControls: React.FC<ClassDetailControlsProps> = ({
-  isTeacher,
-  classId,
-  onAddSetClick,
-}) => {
+const ClassDetailControls = (props) => {
   return (
     <IonCardContent>
       <div className="flex justify-between items-center mb-4">
@@ -20,12 +9,12 @@ const ClassDetailControls: React.FC<ClassDetailControlsProps> = ({
           <IonIcon slot="start" icon={arrowBackOutline} />
           Back
         </IonButton>
-        {isTeacher && (
+        {props.isTeacher && (
           <div className="flex gap-2">
             <IonButton
-              onClick={onAddSetClick}
-              color="secondary"
-              disabled={!classId}
+              onClick={props.onAddSetClick}
+              color="primary"
+              disabled={!props.classId}
             >
               {/* TODO: Fix colors on this button */}
               <IonIcon slot="start" icon={addOutline} />
@@ -34,9 +23,9 @@ const ClassDetailControls: React.FC<ClassDetailControlsProps> = ({
 
             {/* TODO: Confirm create-set route and query param handling */}
             <IonButton
-              routerLink={`/create-set?classId=${classId}`}
+              routerLink={`/create-set?classId=${props.classId}`}
               color="primary"
-              disabled={!classId}
+              disabled={!props.classId}
             >
               <IonIcon slot="start" icon={createOutline} />
               Create New Set
