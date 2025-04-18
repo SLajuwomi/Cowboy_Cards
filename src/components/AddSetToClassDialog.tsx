@@ -2,28 +2,26 @@
  * @file src/components/class-detail/AddSetToClassDialog.tsx
  * Purpose: Provides a dialog modal for teachers to add existing flashcard sets to the current class.
  */
-import React, { useState, useEffect, useCallback } from 'react';
+import { SetUser } from '@/types/flashcards'; // Assuming this type exists and includes ID
+import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
-  IonModal,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonRadio,
-  IonRadioGroup,
   IonButton,
   IonButtons,
+  IonContent,
+  IonHeader,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonModal,
+  IonRadio,
+  IonRadioGroup,
   IonSpinner,
   IonText,
+  IonTitle,
+  IonToolbar,
   useIonToast,
 } from '@ionic/react';
-import { makeHttpCall } from '@/utils/makeHttpCall';
-import { FlashcardSet, SetUser } from '@/types/flashcards'; // Assuming this type exists and includes ID
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
+import React, { useCallback, useEffect, useState } from 'react';
 
 interface AddSetToClassDialogProps {
   isOpen: boolean;
@@ -62,10 +60,10 @@ const AddSetToClassDialog: React.FC<AddSetToClassDialogProps> = ({
     setError(null);
     try {
       // Assuming /api/set_user/list returns sets owned/editable by the user
-      const fetchedSets = await makeHttpCall<SetUser[]>(
-        `${API_BASE}/api/set_user/list`,
-        { method: 'GET', headers: {} }
-      );
+      const fetchedSets = await makeHttpCall<SetUser[]>(`/api/set_user/list`, {
+        method: 'GET',
+        headers: {},
+      });
       setUserSets(fetchedSets || []);
     } catch (err) {
       console.error('Failed to fetch user sets:', err);
@@ -117,7 +115,7 @@ const AddSetToClassDialog: React.FC<AddSetToClassDialogProps> = ({
     setIsLoading(true);
     setError(null);
     try {
-      await makeHttpCall<string>(`${API_BASE}/api/class_set/`, {
+      await makeHttpCall<string>(`/api/class_set/`, {
         method: 'POST',
         headers: {
           id: classId, // This header name might be 'class_id' depending on backend - CHECKING BACKEND now, backend uses 'id' for class id here

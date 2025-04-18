@@ -6,13 +6,20 @@ interface FetchOptions {
   method: HttpMethod;
   headers: any;
   credentials?: CredentialOptions;
+  body?: string; //JSON
 }
 
 const defaultOpts: FetchOptions = {
   method: 'GET',
   headers: {},
-  credentials: 'include', //dev only
+  credentials: 'include', //dev only, remove in prod same origin
 };
+
+// *****************************
+// comment one, uncomment the other:
+const API_BASE = import.meta.env.VITE_API_BASE_LIVE;
+// const API_BASE = import.meta.env.VITE_API_BASE_LOCAL;
+// *****************************
 
 /**
  * Universal fetch utility for making HTTP requests
@@ -34,10 +41,21 @@ export async function makeHttpCall<T>(
   };
   try {
     // Make the actual HTTP request
-    const response = await fetch(url, finalOpts);
+    const response = await fetch(API_BASE + url, finalOpts);
 
     // Check if the response was successful (status 200-299)
     if (!response.ok) {
+      console.log('resp', response);
+      // Handle specific auth error types
+      //   if (data.code === 'duplicate_email') {
+      //     throw new Error('This email is already registered');
+      //   } else if (data.code === 'duplicate_username') {
+      //     throw new Error('This username is already taken');
+      //   } else if (data.code === 'invalid_credentials') {
+      //     throw new Error('Invalid email or password');
+      //   } else {
+      //     throw new Error(data.message || 'Authentication failed');
+      //   }
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 

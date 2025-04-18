@@ -1,18 +1,17 @@
 {
   "name": "cowboy_cards",
   "private": true,
-  "version": "0.0.1",
+  "version": "1.0.1",
   "description": "Flashcard app for HSU 2025 CSCI Senior Project class",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "backend": "go run go/main.go",
+    "FE_dev": "vite",
+    "LOCAL_backend": "go run go/main.go",
     "sqlc:gen": "sqlc generate -f sqlc/sqlc.yaml",
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "start": "vite"
+    "preview": "vite preview"
   },
   "author": "senior project class",
   "homepage": "https://github.com/HSU-Senior-Project-2025/Cowboy_Cards#readme",

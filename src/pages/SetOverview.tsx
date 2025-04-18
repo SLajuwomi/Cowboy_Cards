@@ -14,8 +14,6 @@ import {
 import { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
-
 const SetOverview = () => {
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
@@ -38,7 +36,7 @@ const SetOverview = () => {
     const fetchSetDetails = async () => {
       try {
         const setRes = await makeHttpCall<FlashcardSet>(
-          `${API_BASE}/api/flashcards/sets/`,
+          `/api/flashcards/sets/`,
           {
             method: 'GET',
             headers: { id: id },
@@ -54,13 +52,10 @@ const SetOverview = () => {
     const fetchCards = async () => {
       setLoadingCards(true);
       try {
-        const res = await makeHttpCall<Flashcard[]>(
-          `${API_BASE}/api/flashcards/list`,
-          {
-            method: 'GET',
-            headers: { set_id: id },
-          }
-        );
+        const res = await makeHttpCall<Flashcard[]>(`/api/flashcards/list`, {
+          method: 'GET',
+          headers: { set_id: id },
+        });
         // Store the full Flashcard objects, assuming the API returns Flashcard[]
         setCards(Array.isArray(res) ? res : []);
       } catch (error) {
@@ -89,7 +84,7 @@ const SetOverview = () => {
     try {
       // Send DELETE request to the backend API
       await makeHttpCall<void>( // Expecting no content on successful delete
-        `${API_BASE}/api/flashcards/sets/`,
+        `/api/flashcards/sets/`,
         {
           method: 'DELETE',
           headers: {

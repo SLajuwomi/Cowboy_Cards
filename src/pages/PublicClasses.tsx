@@ -19,7 +19,6 @@ type Class = {
   UpdatedAt: string;
 };
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
 // const mockClasses = [
 //   {
 //     ID: 1,
@@ -53,7 +52,7 @@ const PublicClasses = () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await makeHttpCall<Class[]>(`${API_BASE}/api/classes/list`);
+        const res = await makeHttpCall<Class[]>(`/api/classes/list`);
         setClasses(res);
         setLoading(false);
       } catch (error) {
@@ -92,16 +91,13 @@ const PublicClasses = () => {
                     // TODO: Use state instead of onClick
                     onClick={async () => {
                       try {
-                        const response = await makeHttpCall(
-                          `${API_BASE}/api/class_user`,
-                          {
-                            method: 'POST',
-                            headers: {
-                              class_id: classItem.ID,
-                              role: 'student',
-                            },
-                          }
-                        );
+                        const response = await makeHttpCall(`/api/class_user`, {
+                          method: 'POST',
+                          headers: {
+                            class_id: classItem.ID,
+                            role: 'student',
+                          },
+                        });
                         console.log('Join class response:', response);
                       } catch (error) {
                         console.error('Error joining class:', error);

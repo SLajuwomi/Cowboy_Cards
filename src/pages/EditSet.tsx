@@ -7,27 +7,24 @@
 //TODO: Add a back button to the page
 //TODO: fix redirecting from this page. It's not working.
 
-import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
-import { makeHttpCall } from '@/utils/makeHttpCall';
+import { Navbar } from '@/components/Navbar';
 import { Flashcard, FlashcardSet } from '@/types/flashcards';
+import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
+  IonButton,
   IonContent,
   IonLoading,
-  IonText,
   IonPage,
-  IonButton,
+  IonText,
   useIonToast,
 } from '@ionic/react';
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 // Import the extracted components
-import SetMetadataEditor from '@/components/edit-set/SetMetadataEditor';
 import FlashcardListEditor from '@/components/edit-set/FlashcardListEditor';
-
-// Base URL for the API, likely from environment variables
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
+import SetMetadataEditor from '@/components/edit-set/SetMetadataEditor';
 
 /**
  * EditSet Component
@@ -88,11 +85,11 @@ const EditSet = () => {
     setSaveError(null);
     try {
       const [fetchedSetDetails, fetchedCards] = await Promise.all([
-        makeHttpCall<FlashcardSet>(`${API_BASE}/api/flashcards/sets/`, {
+        makeHttpCall<FlashcardSet>(`/api/flashcards/sets/`, {
           method: 'GET',
           headers: { id: id },
         }),
-        makeHttpCall<Flashcard[]>(`${API_BASE}/api/flashcards/list`, {
+        makeHttpCall<Flashcard[]>(`/api/flashcards/list`, {
           method: 'GET',
           headers: { set_id: id },
         }),
@@ -208,7 +205,7 @@ const EditSet = () => {
     // Step 1: Check for Set Detail Updates
     if (editedSetName !== originalSetDetails.SetName) {
       apiPromises.push(
-        makeHttpCall(`${API_BASE}/api/flashcards/sets/set_name`, {
+        makeHttpCall(`/api/flashcards/sets/set_name`, {
           method: 'PUT',
           headers: { id: originalSetDetails.ID, set_name: editedSetName },
         })
@@ -216,7 +213,7 @@ const EditSet = () => {
     }
     if (editedSetDescription !== originalSetDetails.SetDescription) {
       apiPromises.push(
-        makeHttpCall(`${API_BASE}/api/flashcards/sets/set_description`, {
+        makeHttpCall(`/api/flashcards/sets/set_description`, {
           method: 'PUT',
           headers: {
             id: originalSetDetails.ID,
@@ -234,7 +231,7 @@ const EditSet = () => {
       originalCards.forEach((originalCard) => {
         if (!currentCardIds.has(originalCard.ID)) {
           apiPromises.push(
-            makeHttpCall(`${API_BASE}/api/flashcards`, {
+            makeHttpCall(`/api/flashcards`, {
               method: 'DELETE',
               headers: { id: originalCard.ID },
             })
@@ -247,7 +244,7 @@ const EditSet = () => {
       if (card.ID <= 0) {
         // Case: New Card - Queue POST request
         apiPromises.push(
-          makeHttpCall<Flashcard>(`${API_BASE}/api/flashcards`, {
+          makeHttpCall<Flashcard>(`/api/flashcards`, {
             method: 'POST',
             headers: {
               front: card.Front,
@@ -263,7 +260,7 @@ const EditSet = () => {
           // Subcase: Front updated - Queue PUT request
           if (card.Front !== originalCard.Front) {
             apiPromises.push(
-              makeHttpCall(`${API_BASE}/api/flashcards/front`, {
+              makeHttpCall(`/api/flashcards/front`, {
                 method: 'PUT',
                 headers: { id: card.ID, front: card.Front },
               })
@@ -272,7 +269,7 @@ const EditSet = () => {
           // Subcase: Back updated - Queue PUT request
           if (card.Back !== originalCard.Back) {
             apiPromises.push(
-              makeHttpCall(`${API_BASE}/api/flashcards/back`, {
+              makeHttpCall(`/api/flashcards/back`, {
                 method: 'PUT',
                 headers: { id: card.ID, back: card.Back },
               })

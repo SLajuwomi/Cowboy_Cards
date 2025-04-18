@@ -1,25 +1,4 @@
-import { makeHttpCall } from '@/utils/makeHttpCall';
-import {
-  IonButton,
-  IonButtons,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
-  IonCol,
-  IonGrid,
-  IonIcon,
-  IonRouterLink,
-  IonRow,
-} from '@ionic/react';
-import {
-  arrowBackOutline,
-  createOutline,
-  trashBin,
-  trashBinOutline,
-  trashOutline,
-} from 'ionicons/icons';
-import { useEffect, useState } from 'react';
+import { FlashCard } from '@/components/FlashCard';
 import {
   Carousel,
   CarouselContent,
@@ -27,9 +6,21 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import { FlashCard } from '@/components/FlashCard';
+import { makeHttpCall } from '@/utils/makeHttpCall';
+import {
+  IonButton,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardTitle,
+  IonCol,
+  IonGrid,
+  IonIcon,
+  IonRow,
+} from '@ionic/react';
+import { arrowBackOutline } from 'ionicons/icons';
+import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Link } from 'lucide-react';
 
 type Flashcards = {
   ID: number;
@@ -40,8 +31,6 @@ type Flashcards = {
   UpdatedAt: string;
 };
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
-
 // We probably should make the flashcards have an independent page, so we can show loading states and errors
 const FlashcardCarousel = (props) => {
   const history = useHistory();
@@ -51,15 +40,12 @@ const FlashcardCarousel = (props) => {
   useEffect(() => {
     async function fetchFlashcards() {
       console.log('selectedSet', selectedSet);
-      const cards = await makeHttpCall<Flashcards[]>(
-        `${API_BASE}/api/flashcards/list`,
-        {
-          method: 'GET',
-          headers: {
-            set_id: selectedSet,
-          },
-        }
-      );
+      const cards = await makeHttpCall<Flashcards[]>(`/api/flashcards/list`, {
+        method: 'GET',
+        headers: {
+          set_id: selectedSet,
+        },
+      });
       console.log('cards', cards);
       setFlashcards(cards);
     }

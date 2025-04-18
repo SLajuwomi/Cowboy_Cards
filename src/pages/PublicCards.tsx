@@ -17,8 +17,6 @@ type FlashcardSet = {
   SetDescription: string;
 };
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
-
 const PublicFlashcards = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -36,7 +34,7 @@ const PublicFlashcards = () => {
       setError(null);
       try {
         const res = await makeHttpCall<FlashcardSet[]>(
-          `${API_BASE}/api/flashcards/sets/list`
+          `/api/flashcards/sets/list`
         );
         setFlashcardSets(res);
       } catch (error) {

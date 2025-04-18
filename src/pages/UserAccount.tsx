@@ -26,8 +26,6 @@ type User = {
   totalCardViews: number;
 };
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
-
 const UserAccount = () => {
   const { theme, setTheme } = useTheme();
   const [userInfo, setUserInfo] = useState<User>();
@@ -87,7 +85,7 @@ const UserAccount = () => {
       const updatePromises = fieldsToUpdate
         .filter((field) => updatedInfo[field] !== userInfo[field]) // Only include modified fields
         .map((field) =>
-          makeHttpCall<User>(`${API_BASE}/api/users/${field}`, {
+          makeHttpCall<User>(`/api/users/${field}`, {
             method: 'PUT',
             headers: {
               [field]: updatedInfo[field], // New value for the field
@@ -177,7 +175,7 @@ const UserAccount = () => {
       setLoading(true);
       setError(null);
       try {
-        const data = await makeHttpCall<User>(`${API_BASE}/api/users/`, {
+        const data = await makeHttpCall<User>(`/api/users/`, {
           method: 'GET',
           headers: {},
         });

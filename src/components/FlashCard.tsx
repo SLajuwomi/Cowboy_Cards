@@ -4,8 +4,6 @@ import { makeHttpCall } from '@/utils/makeHttpCall';
 import { Check, X } from 'lucide-react';
 import { useState } from 'react';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
-
 interface FlashCardProps {
   front: string;
   back: string;
@@ -24,7 +22,7 @@ export const FlashCard = ({
   const handleScoreUpdate = async (endpoint: string) => {
     // TODO: user_id should be from context
     try {
-      const result = await makeHttpCall(`${API_BASE}${endpoint}`, {
+      const result = await makeHttpCall(`${endpoint}`, {
         method: 'POST',
         headers: {
           card_id: cardId.toString(),

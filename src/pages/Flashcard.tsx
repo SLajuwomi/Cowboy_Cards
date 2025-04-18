@@ -6,18 +6,11 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
+import type { Flashcard, FlashcardSet } from '@/types/flashcards';
+import { makeHttpCall } from '@/utils/makeHttpCall';
 import { IonButton, IonContent, IonSpinner } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
-
-// Define card type including ID
-type Card = {
-  id: number;
-  front: string;
-  back: string;
-};
 
 const Flashcard = () => {
   const { id } = useParams<{ id: string }>();
@@ -25,7 +18,7 @@ const Flashcard = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   // Use the Card type for state
-  const [cards, setCards] = useState<Card[]>([]);
+  const [cards, setCards] = useState<Flashcard[]>([]);
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -33,13 +26,13 @@ const Flashcard = () => {
   useEffect(() => {
     const fetchSetDetails = async () => {
       try {
-        const setRes = await fetch(`${API_BASE}/api/flashcards/sets/`, {
+        const data = await makeHttpCall<FlashcardSet>(`/api/flashcards/sets`, {
           method: 'GET',
           headers: { id },
         });
-        const setData = await setRes.json();
-        setTitle(setData.SetName);
-        setDescription(setData.SetDescription);
+
+        setTitle(data.SetName);
+        setDescription(data.SetDescription);
       } catch (error) {
         console.error('Failed to fetch set info', error);
       }
@@ -48,21 +41,12 @@ const Flashcard = () => {
     const fetchCards = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`${API_BASE}/api/flashcards/list`, {
+        const data = await makeHttpCall<Flashcard>(`/api/flashcards/list`, {
           method: 'GET',
           headers: { set_id: id },
         });
-        const data = await res.json();
-        setCards(
-          Array.isArray(data)
-            ? data.map((card: any) => ({
-                // Map the ID from the response
-                id: card.ID,
-                front: card.Front,
-                back: card.Back,
-              }))
-            : []
-        );
+
+        setCards(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Failed to fetch cards', error);
         setCards([]);
@@ -142,11 +126,11 @@ const Flashcard = () => {
                   {cards.map((card, index) => (
                     <CarouselItem key={index}>
                       <FlashCard
-                        front={card.front}
-                        back={card.back}
+                        front={card.Front}
+                        back={card.Back}
                         onAdvance={handleAdvance}
                         // Pass cardId and a placeholder userId
-                        cardId={card.id}
+                        cardId={card.ID}
                       />
                     </CarouselItem>
                   ))}
