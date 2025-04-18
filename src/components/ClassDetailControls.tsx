@@ -16,7 +16,6 @@ const ClassDetailControls = (props) => {
               color="primary"
               disabled={!props.classId}
             >
-              {/* TODO: Fix colors on this button */}
               <IonIcon slot="start" icon={addOutline} />
               Add Existing Set
             </IonButton>
