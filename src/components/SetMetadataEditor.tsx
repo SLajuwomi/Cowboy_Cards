@@ -1,19 +1,6 @@
-import React from 'react';
 import { IonCard, IonCardContent, IonTextarea } from '@ionic/react';
 
-interface SetMetadataEditorProps {
-  setName: string;
-  setDescription: string;
-  onNameChange: (value: string | null | undefined) => void;
-  onDescriptionChange: (value: string | null | undefined) => void;
-}
-
-const SetMetadataEditor: React.FC<SetMetadataEditorProps> = ({
-  setName,
-  setDescription,
-  onNameChange,
-  onDescriptionChange,
-}) => {
+const SetMetadataEditor = (props) => {
   return (
     <IonCard className="mb-6 rounded-lg border shadow-sm">
       <IonCardContent>
@@ -21,8 +8,8 @@ const SetMetadataEditor: React.FC<SetMetadataEditorProps> = ({
           label="Set Title"
           labelPlacement="stacked"
           placeholder="Enter set title"
-          value={setName}
-          onIonChange={(e) => onNameChange(e.detail.value)}
+          value={props.setName}
+          onIonChange={(e) => props.onNameChange(e.detail.value)}
           rows={1}
           autoGrow
           className="w-full text-xl font-bold mb-2"
@@ -33,8 +20,8 @@ const SetMetadataEditor: React.FC<SetMetadataEditorProps> = ({
           label="Set Description"
           labelPlacement="stacked"
           placeholder="Enter set description"
-          value={setDescription}
-          onIonChange={(e) => onDescriptionChange(e.detail.value)}
+          value={props.setDescription}
+          onIonChange={(e) => props.onDescriptionChange(e.detail.value)}
           rows={2}
           autoGrow
           className="w-full text-base mt-4"

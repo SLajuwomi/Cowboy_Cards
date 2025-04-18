@@ -77,7 +77,6 @@ const UserAccountFirstRow = (props) => {
         </IonCardContent>
       </IonCard>
 
-      {/* Account Stats Card */}
       <IonCard className="w-full md:w-1/2 rounded-lg border shadow-sm">
         <IonCardHeader className="p-6">
           <IonCardTitle className="text-xl font-semibold text-primary">

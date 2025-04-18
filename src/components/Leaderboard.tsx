@@ -7,12 +7,7 @@ import {
   IonList,
 } from '@ionic/react';
 
-type LeaderboardEntry = {
-  name: string;
-  totalScore: number;
-};
-
-const Leaderboard = ({ leaderboard }) => {
+const Leaderboard = (props) => {
   return (
     <IonCard className="rounded-lg border shadow-sm">
       <IonCardHeader>
@@ -22,10 +17,10 @@ const Leaderboard = ({ leaderboard }) => {
       </IonCardHeader>
       <IonCardContent>
         <IonList className="space-y-3" lines="none">
-          {leaderboard === null ? (
+          {props.leaderboard === null ? (
             <h1 className="text-center text-gray-500">No scores available</h1>
           ) : (
-            leaderboard.map((entry) => (
+            props.leaderboard.map((entry) => (
               <IonItem key={entry.UserID} className="muted-item p-3">
                 <div className="flex items-center gap-3">
                   <span className="font-medium text-lg">{entry.Username}</span>
