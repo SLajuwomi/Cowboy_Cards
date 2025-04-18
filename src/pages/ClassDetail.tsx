@@ -215,15 +215,17 @@ const ClassDetail = () => {
   }, [fetchDataForClass]);
 
   const handleDeleteStudent = async (studentId: number | null) => {
+    // studentId =
     if (studentId === null) return;
     try {
       await makeHttpCall(`${API_BASE}/api/class_user/`, {
         method: 'DELETE',
         headers: {
-          class_id: id,
           student_id: studentId,
+          id: id,
         },
       });
+      fetchDataForClass();
     } catch (error) {
       console.error('Error deleting student:', error);
       setError('Error deleting student');
