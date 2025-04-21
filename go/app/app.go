@@ -89,8 +89,7 @@ func Init() {
 
 	port, ok := os.LookupEnv("PORT")
 	if !ok {
-		// port = "8000"
-		port = "80"
+		port = "8000"
 	}
 	log.Println("server running on port " + port)
 
