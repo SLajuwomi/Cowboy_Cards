@@ -13,7 +13,7 @@ import (
 
 var (
 	Cors = cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:3000", "http://localhost:5173", "http://localhost:8080", "http://localhost:8100", "http://localhost:8000", "http://10.84.16.34:8080"}, // this last one is for mobile, it's the IP from the second line ("Network") of the output of 'npm run dev' that runs the Vite front-end dev server
+		AllowedOrigins: []string{"https://cowboy-cards.org","http://localhost:3000", "http://localhost:5173", "http://localhost:8080", "http://localhost:8100", "http://localhost:8000", "http://10.84.16.34:8080"}, // this last one is for mobile, it's the IP from the second line ("Network") of the output of 'npm run dev' that runs the Vite front-end dev server
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{"*"},
 		ExposedHeaders: []string{"Link"},
@@ -22,7 +22,7 @@ var (
 		Debug:            false,
 		MaxAge:           300,
 	})
-	allowList = []string{"http://localhost:8080", "http://10.84.16.34:8080"} // last one is mobile dev only, should change every time, so check
+	allowList = []string{"https://cowboy-cards.org", "http://localhost:8080", "http://10.84.16.34:8080"} // last one is mobile dev only, should change every time, so check
 )
 
 func SetCacheControlHeader(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
