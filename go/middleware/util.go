@@ -25,6 +25,7 @@ type setIDKey string
 type userRoleKey string
 
 var errContext error = errors.New("error retrieving from context")
+var errHeader error = errors.New("error retrieving from headers")
 
 const (
 	userKey      userIDKey      = "userID"
@@ -95,7 +96,7 @@ func GetHeaderVals(r *http.Request, headers ...string) (map[string]string, error
 		}
 	}
 	if len(vals) != len(headers) {
-		return nil, errors.New("header(s) missing")
+		return nil, errHeader
 	}
 
 	return vals, nil

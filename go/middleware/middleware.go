@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"path"
+	"slices"
 	"strings"
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
@@ -22,7 +23,7 @@ var (
 		Debug:            false,
 		MaxAge:           300,
 	})
-	allowList = []string{"http://localhost:8080", "http://10.84.16.34:8080"} // last one is mobile dev only, should change every time, so check
+	allowList = []string{"https://cowboy-cards.org", "https://cowboy-cards.dsouth.org", "http://localhost:8080", "http://10.84.16.34:8080"} // last one is mobile dev only, should change every time, so check
 )
 
 func SetCacheControlHeader(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
@@ -41,20 +42,17 @@ func SetCacheControlHeader(w http.ResponseWriter, r *http.Request, next http.Han
 func SetCredsHeaders(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	originList, ok := r.Header["Origin"]
 	if !ok {
+		LogAndSendError(w, errHeader, "Origin header not set", http.StatusInternalServerError)
 		return
 	}
 
-	log.Println("ol: ", originList)
-
 	origin := originList[0]
 
-	log.Println("o: ", origin)
-
-	if origin == allowList[0] || origin == allowList[1] {
-		log.Println("here")
+	if slices.Contains(allowList, origin) {
 		w.Header().Set("Access-Control-Allow-Origin", origin)
 	} else {
-		log.Println("else")
+		log.Println("orgn: ", originList, origin)
+		LogAndSendError(w, errHeader, "Origin missing", http.StatusInternalServerError)
 		return
 	}
 

@@ -57,6 +57,7 @@ type SignupRequest struct {
 }
 
 var errContext error = errors.New("error retrieving from context")
+var errHeader error = errors.New("error retrieving from headers")
 
 const (
 	back              string = "back"

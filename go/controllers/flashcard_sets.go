@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 	"path"
 
@@ -162,7 +161,7 @@ func (h *DBHandler) UpdateFlashcardSet(w http.ResponseWriter, r *http.Request) {
 			ID:             setID,
 		})
 	default:
-		logAndSendError(w, errors.New("invalid column"), "Improper header", http.StatusBadRequest)
+		logAndSendError(w, errHeader, "Improper header", http.StatusBadRequest)
 		return
 	}
 
