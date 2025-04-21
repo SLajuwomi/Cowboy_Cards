@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { makeHttpCall } from '@/utils/makeHttpCall';
-import { IonButton, IonIcon, useIonRouter } from '@ionic/react';
+import { useIonRouter } from '@ionic/react';
 import { AlertCircle, LogIn } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -293,7 +293,7 @@ export const AuthForm = () => {
               ? 'Need an account? Sign up'
               : 'Already have an account? Sign in'}
           </Button>
-          <IonButton
+          {/* <IonButton
             expand="block"
             fill="outline"
             className="flex items-center justify-center space-x-2"
@@ -314,7 +314,7 @@ export const AuthForm = () => {
               src="https://www.gstatic.com/marketing-cms/assets/images/d5/dc/cfe9ce8b4425b410b49b7f2dd3f3/g.webp=s96-fcrop64=1,00000000ffffffff-rw"
               className="h-10 w-10"
             />
-          </IonButton>
+          </IonButton> */}
         </CardFooter>
       </form>
     </Card>
