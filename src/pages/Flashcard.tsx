@@ -6,7 +6,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
-import { FlashcardSet } from '@/types/globalTypes';
+import type { Flashcard, FlashcardSet } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import { IonButton, IonContent, IonSpinner } from '@ionic/react';
 import { useEffect, useState } from 'react';
@@ -14,19 +14,13 @@ import { useHistory, useParams } from 'react-router-dom';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
-type Card = {
-  id: number;
-  front: string;
-  back: string;
-};
-
 //TODO: add summary after going through all cards of cards missed, cards correct, etc
 const Flashcard = () => {
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [cards, setCards] = useState<Card[]>([]);
+  const [cards, setCards] = useState<Flashcard[]>([]);
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -52,7 +46,7 @@ const Flashcard = () => {
     const fetchCards = async () => {
       setLoading(true);
       try {
-        const res = await makeHttpCall<FlashcardSet[]>(
+        const res = await makeHttpCall<Flashcard[]>(
           `${API_BASE}/api/flashcards/list`,
           {
             method: 'GET',
@@ -61,10 +55,13 @@ const Flashcard = () => {
         );
         setCards(
           Array.isArray(res)
-            ? res.map((card: any) => ({
-                id: card.ID,
-                front: card.Front,
-                back: card.Back,
+            ? res.map((card: Flashcard) => ({
+                ID: card.ID,
+                Front: card.Front,
+                Back: card.Back,
+                SetID: card.SetID,
+                CreatedAt: card.CreatedAt,
+                UpdatedAt: card.UpdatedAt,
               }))
             : []
         );
@@ -150,7 +147,7 @@ const Flashcard = () => {
                         front={card.Front}
                         back={card.Back}
                         onAdvance={handleAdvance}
-                        cardId={card.id}
+                        cardId={card.ID}
                       />
                     </CarouselItem>
                   ))}

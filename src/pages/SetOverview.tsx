@@ -13,6 +13,7 @@ import {
 import { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 const SetOverview = () => {
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
@@ -42,13 +43,10 @@ const SetOverview = () => {
     const fetchCards = async () => {
       setLoadingCards(true);
       try {
-        const res = await makeHttpCall<Flashcard[]>(
-          `${API_BASE}/api/flashcards/list`,
-          {
-            method: 'GET',
-            headers: { set_id: id },
-          }
-        );
+        const res = await makeHttpCall<Flashcard[]>(`/api/flashcards/list`, {
+          method: 'GET',
+          headers: { set_id: id },
+        });
         setCards(Array.isArray(res) ? res : []);
       } catch (error) {
         console.error('Failed to fetch cards', error);
@@ -70,7 +68,7 @@ const SetOverview = () => {
       return;
     }
     try {
-      await makeHttpCall<void>(`${API_BASE}/api/flashcards/sets/`, {
+      await makeHttpCall<void>(`/api/flashcards/sets/`, {
         method: 'DELETE',
         headers: {
           id: id,

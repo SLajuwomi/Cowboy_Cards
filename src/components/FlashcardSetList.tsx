@@ -19,7 +19,6 @@ import {
   IonRow,
 } from '@ionic/react';
 import { arrowBackOutline } from 'ionicons/icons';
-import { arrowBackOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Flashcard } from '@/types/globalTypes';

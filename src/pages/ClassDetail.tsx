@@ -2,7 +2,7 @@ import AddSetToClassDialog from '@/components/AddSetToClassDialog';
 import ClassDetailControls from '@/components/ClassDetailControls';
 import ClassDetailHeader from '@/components/ClassDetailHeader';
 import ClassDetailTabs from '@/components/ClassDetailTabs';
-import FlashcardTab from '@/components/FlashcardTab';
+import FlashcardSetList from '@/components/FlashcardSetList';
 import { Footer } from '@/components/Footer';
 import LeaderboardTab from '@/components/LeaderboardTab';
 import { Navbar } from '@/components/Navbar';
@@ -12,13 +12,6 @@ import { makeHttpCall } from '@/utils/makeHttpCall';
 import { IonContent } from '@ionic/react';
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import ClassDetailHeader from '@/components/ClassDetailHeader';
-import ClassDetailControls from '@/components/ClassDetailControls';
-import ClassDetailTabs from '@/components/ClassDetailTabs';
-import LeaderboardTab from '@/components/LeaderboardTab';
-import StudentTab from '@/components/StudentTab';
-import AddSetToClassDialog from '@/components/AddSetToClassDialog';
-import FlashcardSetList from '@/components/FlashcardSetList';
 
 type Class = {
   ID: number;

@@ -1,4 +1,6 @@
 import {
+  IonAlert,
+  IonButton,
   IonCard,
   IonCardContent,
   IonCardHeader,
@@ -6,31 +8,10 @@ import {
   IonItem,
   IonSelect,
   IonSelectOption,
-  IonButton,
-  IonAlert,
 } from '@ionic/react';
 import StreakFlameCard from './StreakFlameCard';
 
-interface Props {
-  streak: number;
-  theme: 'light' | 'dark';
-  setTheme: (theme: 'light' | 'dark') => void;
-  showPasswordAlert: boolean;
-  setShowPasswordAlert: (show: boolean) => void;
-  showDeleteAlert: boolean;
-  setShowDeleteAlert: (show: boolean) => void;
-  presentToast: (options: any) => void;
-  isEditing: boolean;
-  errors: { [key: string]: string | undefined };
-  handleChange: (e: CustomEvent) => void;
-  handleSave: () => Promise<void>;
-  updatedInfo: any;
-  userInfo: any;
-  expandedClass: number | null;
-  toggleClassDetails: (classID: number) => void;
-}
-
-const UserAccountSecondRow = (props: Props) => {
+const UserAccountSecondRow = (props) => {
   return (
     <>
       <div className="flex flex-col md:flex-row gap-6 py-6">
