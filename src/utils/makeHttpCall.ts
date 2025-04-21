@@ -17,8 +17,7 @@ const defaultOpts: FetchOptions = {
 
 // *****************************
 // comment one, uncomment the other:
-// const API_BASE = import.meta.env.VITE_API_BASE_LIVE;
-const API_BASE = import.meta.env.VITE_API_BASE_OLD;
+const API_BASE = import.meta.env.VITE_API_BASE_LIVE;
 // const API_BASE = import.meta.env.VITE_API_BASE_LOCAL;
 // *****************************
 
