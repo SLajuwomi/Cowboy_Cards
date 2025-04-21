@@ -8,7 +8,6 @@ import {
 } from '@ionic/react';
 import { home } from 'ionicons/icons';
 
-//TODO: Figure out how to not show this on mobile
 const Footer = () => {
   return (
     <IonFooter className="hidden md:block ion-no-border fixed bottom-0 w-full">
