@@ -2,7 +2,7 @@ import AddSetToClassDialog from '@/components/AddSetToClassDialog';
 import ClassDetailControls from '@/components/ClassDetailControls';
 import ClassDetailHeader from '@/components/ClassDetailHeader';
 import ClassDetailTabs from '@/components/ClassDetailTabs';
-import FlashcardTab from '@/components/FlashcardTab';
+import FlashcardSetList from '@/components/FlashcardSetList';
 import { Footer } from '@/components/Footer';
 import LeaderboardTab from '@/components/LeaderboardTab';
 import { Navbar } from '@/components/Navbar';
@@ -210,15 +210,17 @@ const ClassDetail = () => {
   }, [fetchDataForClass]);
 
   const handleDeleteStudent = async (studentId: number | null) => {
+    // studentId =
     if (studentId === null) return;
     try {
       await makeHttpCall(`/api/class_user/`, {
         method: 'DELETE',
         headers: {
-          class_id: id,
           student_id: studentId,
+          id: id,
         },
       });
+      fetchDataForClass();
     } catch (error) {
       console.error('Error deleting student:', error);
       setError('Error deleting student');
@@ -271,7 +273,7 @@ const ClassDetail = () => {
           )}
 
           {tab === 'flashcards' && (
-            <FlashcardTab
+            <FlashcardSetList
               flashcardSets={flashcardSets}
               currentCardIndex={currentCardIndex}
               setApi={setCarouselApi}

@@ -10,7 +10,7 @@ import {
 
 import { trashOutline } from 'ionicons/icons';
 
-const StudentList = ({ students, isTeacher, onDeleteStudent }) => {
+const StudentList = (props) => {
   return (
     <IonCard className="mt-6">
       <IonCardHeader>
@@ -20,19 +20,21 @@ const StudentList = ({ students, isTeacher, onDeleteStudent }) => {
       </IonCardHeader>
       <IonCardContent>
         <IonList className="space-y-3" lines="none">
-          {students.map((student) => (
+          {props.students.map((student) => (
             <IonItem key={student.UserID} className="muted-item p-3">
-              <span className="font-medium">{student.FirstName} {student.LastName}</span>
+              <span className="font-medium">
+                {student.FirstName} {student.LastName}
+              </span>
               <span slot="end" className="text-muted-foreground">
                 {student.email}
               </span>
-              {isTeacher && (
+              {props.isTeacher && (
                 <IonIcon
                   slot="end"
                   icon={trashOutline}
                   color="danger"
                   className="cursor-pointer"
-                  onClick={() => onDeleteStudent(student.UserID)}
+                  onClick={() => props.onDeleteStudent(student.UserID)}
                 />
               )}
             </IonItem>

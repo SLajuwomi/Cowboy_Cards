@@ -6,6 +6,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
+import { Flashcard } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonButton,
@@ -22,25 +23,15 @@ import { arrowBackOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
-type Flashcards = {
-  ID: number;
-  Front: string;
-  Back: string;
-  SetID: number;
-  CreatedAt: string;
-  UpdatedAt: string;
-};
-
-// We probably should make the flashcards have an independent page, so we can show loading states and errors
 const FlashcardCarousel = (props) => {
   const history = useHistory();
-  const [flashcards, setFlashcards] = useState<Flashcards[]>([]);
+  const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
   const [selectedSet, setSelectedSet] = useState<number | null>(null);
 
   useEffect(() => {
     async function fetchFlashcards() {
       console.log('selectedSet', selectedSet);
-      const cards = await makeHttpCall<Flashcards[]>(`/api/flashcards/list`, {
+      const cards = await makeHttpCall<Flashcard[]>(`/api/flashcards/list`, {
         method: 'GET',
         headers: {
           set_id: selectedSet,
@@ -79,9 +70,6 @@ const FlashcardCarousel = (props) => {
                         <p className="text-muted-foreground mb-2">
                           {set.SetDescription}
                         </p>
-                        {/* <p className="text-muted-foreground">
-                                            {set.cards.length} cards
-                                        </p> */}
                       </IonCardContent>
                     </IonCard>
                   </IonCol>
@@ -110,7 +98,6 @@ const FlashcardCarousel = (props) => {
               <CarouselContent className="-mt-1 h-[400px]">
                 {flashcards.map((card) => (
                   <CarouselItem key={card.ID}>
-                    {/* TODO: user_id should be from context */}
                     <FlashCard
                       front={card.Front}
                       back={card.Back}

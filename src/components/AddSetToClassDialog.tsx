@@ -1,8 +1,4 @@
-/**
- * @file src/components/class-detail/AddSetToClassDialog.tsx
- * Purpose: Provides a dialog modal for teachers to add existing flashcard sets to the current class.
- */
-import { SetUser } from '@/types/flashcards'; // Assuming this type exists and includes ID
+import { SetUser } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonButton,
@@ -21,32 +17,9 @@ import {
   IonToolbar,
   useIonToast,
 } from '@ionic/react';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-interface AddSetToClassDialogProps {
-  isOpen: boolean;
-  onDidDismiss: () => void;
-  classId: string | undefined;
-  existingSetIds: number[]; // IDs of sets already in the class
-  onSetAdded: () => void; // Callback to refresh data in ClassDetail
-}
-
-/**
- * AddSetToClassDialog Component
- *
- * Renders a modal dialog allowing teachers to select one of their owned
- * flashcard sets and add it to the currently viewed class.
- *
- * @param {AddSetToClassDialogProps} props - Component properties.
- * @returns {JSX.Element} The rendered dialog component.
- */
-const AddSetToClassDialog: React.FC<AddSetToClassDialogProps> = ({
-  isOpen,
-  onDidDismiss,
-  classId,
-  existingSetIds,
-  onSetAdded,
-}) => {
+const AddSetToClassDialog = (props) => {
   const [userSets, setUserSets] = useState<SetUser[]>([]);
   const [availableSets, setAvailableSets] = useState<SetUser[]>([]);
   const [selectedSetId, setSelectedSetId] = useState<number | null>(null);
@@ -54,12 +27,10 @@ const AddSetToClassDialog: React.FC<AddSetToClassDialogProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [presentToast] = useIonToast();
 
-  // Fetch user's sets when the dialog opens
   const fetchUserSets = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      // Assuming /api/set_user/list returns sets owned/editable by the user
       const fetchedSets = await makeHttpCall<SetUser[]>(`/api/set_user/list`, {
         method: 'GET',
         headers: {},
@@ -78,33 +49,27 @@ const AddSetToClassDialog: React.FC<AddSetToClassDialogProps> = ({
     }
   }, []);
 
-  // Effect to fetch sets when the dialog becomes visible
   useEffect(() => {
-    if (isOpen) {
+    if (props.isOpen) {
       fetchUserSets();
     } else {
-      // Reset state when dialog closes
       setUserSets([]);
       setAvailableSets([]);
       setSelectedSetId(null);
       setError(null);
       setIsLoading(false);
     }
-  }, [isOpen, fetchUserSets]);
+  }, [props.isOpen, fetchUserSets]);
 
-  // Effect to filter available sets once user sets are loaded and existing IDs are known
   useEffect(() => {
     const setsNotInClass = userSets.filter(
-      (set) => !existingSetIds.includes(set.SetID)
+      (set) => !props.existingSetIds.includes(set.SetID)
     );
     setAvailableSets(setsNotInClass);
-  }, [userSets, existingSetIds]);
+  }, [userSets, props.existingSetIds]);
 
-  /**
-   * Handles adding the selected set to the class via API call.
-   */
   const handleAddSet = async () => {
-    if (!selectedSetId || !classId) {
+    if (!selectedSetId || !props.classId) {
       presentToast({
         message: 'Please select a set to add.',
         duration: 2000,
@@ -118,7 +83,7 @@ const AddSetToClassDialog: React.FC<AddSetToClassDialogProps> = ({
       await makeHttpCall<string>(`/api/class_set/`, {
         method: 'POST',
         headers: {
-          id: classId, // This header name might be 'class_id' depending on backend - CHECKING BACKEND now, backend uses 'id' for class id here
+          id: props.classId,
           set_id: selectedSetId.toString(),
         },
       });
@@ -127,8 +92,8 @@ const AddSetToClassDialog: React.FC<AddSetToClassDialogProps> = ({
         duration: 2000,
         color: 'success',
       });
-      onSetAdded(); // Trigger refresh in parent
-      onDidDismiss(); // Close the dialog
+      props.onSetAdded();
+      props.onDidDismiss();
     } catch (err) {
       console.error('Failed to add set to class:', err);
       const errorMessage = `Failed to add set: ${
@@ -145,17 +110,17 @@ const AddSetToClassDialog: React.FC<AddSetToClassDialogProps> = ({
     }
   };
 
-  console.log(selectedSetId);
+  console.log('selectedSetId', selectedSetId);
 
   console.log('availableSets', availableSets);
 
   return (
-    <IonModal isOpen={isOpen} onDidDismiss={onDidDismiss}>
+    <IonModal isOpen={props.isOpen} onDidDismiss={props.onDidDismiss}>
       <IonHeader>
         <IonToolbar>
           <IonTitle>Add Set to Class</IonTitle>
           <IonButtons slot="end">
-            <IonButton onClick={onDidDismiss} color="medium">
+            <IonButton onClick={props.onDidDismiss} color="medium">
               Cancel
             </IonButton>
           </IonButtons>

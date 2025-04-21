@@ -1,72 +1,29 @@
-/**
- * @file ClassDetailControls.tsx
- * Purpose: Defines the control buttons component for the Class Detail page.
- * This component will house actions like navigating back or creating related items (e.g., flashcard sets).
- */
-
-import React from 'react';
 import { IonButton, IonIcon, IonCardContent } from '@ionic/react';
 import { arrowBackOutline, createOutline, addOutline } from 'ionicons/icons';
 
-/**
- * Props for the ClassDetailControls component.
- * Props will be added in subsequent steps as needed (e.g., isTeacher, handlers).
- */
-interface ClassDetailControlsProps {
-  isTeacher: boolean;
-  classId: string | undefined;
-  onAddSetClick: () => void;
-}
-
-/**
- * ClassDetailControls Component
- *
- * Renders the main control buttons for the Class Detail page, such as the
- * 'Back' button and conditional buttons like 'Create Flashcard Set'.
- * The actual buttons and logic will be moved here from ClassDetail.tsx in Step 7.
- *
- * @param {ClassDetailControlsProps} props - Component properties.
- * @returns {JSX.Element} The rendered control buttons component.
- */
-const ClassDetailControls: React.FC<ClassDetailControlsProps> = ({
-  isTeacher,
-  classId,
-  onAddSetClick,
-}) => {
-  // Render the Back button and, conditionally, the Create Set button.
-  // Using IonCardContent for consistent padding/margin with other sections.
+const ClassDetailControls = (props) => {
   return (
     <IonCardContent>
-      {' '}
-      {/* Wrapper for padding */}
       <div className="flex justify-between items-center mb-4">
-        {' '}
-        {/* Flex container for alignment */}
-        {/* Back Button */}
         <IonButton routerLink="/home" color="medium">
           <IonIcon slot="start" icon={arrowBackOutline} />
           Back
         </IonButton>
-        {/* Create Set Button (Only for Teachers) */}
-        {isTeacher && (
+        {props.isTeacher && (
           <div className="flex gap-2">
-            {/* Add Existing Set Button */}
             <IonButton
-              onClick={onAddSetClick}
-              color="secondary"
-              disabled={!classId} // Disable if classId isn't available yet
+              onClick={props.onAddSetClick}
+              color="primary"
+              disabled={!props.classId}
             >
-              {/* TODO: Fix colors on this button */}
               <IonIcon slot="start" icon={addOutline} />
               Add Existing Set
             </IonButton>
 
-            {/* Create New Set Button */}
-            {/* TODO: Confirm create-set route and query param handling */}
             <IonButton
-              routerLink={`/create-set?classId=${classId}`}
+              routerLink={`/create-set?classId=${props.classId}`}
               color="primary"
-              disabled={!classId} // Disable if classId isn't available yet
+              disabled={!props.classId}
             >
               <IonIcon slot="start" icon={createOutline} />
               Create New Set
