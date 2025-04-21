@@ -13,8 +13,9 @@ import (
 )
 
 var (
-	Cors = cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:3000", "http://localhost:5173", "http://localhost:8080", "http://localhost:8100", "http://localhost:8000", "http://10.84.16.34:8080"}, // this last one is for mobile, it's the IP from the second line ("Network") of the output of 'npm run dev' that runs the Vite front-end dev server
+	allowList = []string{"https://cowboy-cards.org", "https://cowboy-cards.dsouth.org", "http://localhost:8080", "http://10.84.16.34:8080"} // last one is mobile dev only, should change every time, so check
+	Cors      = cors.New(cors.Options{
+		AllowedOrigins: allowList,
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{"*"},
 		ExposedHeaders: []string{"Link"},
@@ -23,7 +24,6 @@ var (
 		Debug:            false,
 		MaxAge:           300,
 	})
-	allowList = []string{"https://cowboy-cards.org", "https://cowboy-cards.dsouth.org", "http://localhost:8080", "http://10.84.16.34:8080"} // last one is mobile dev only, should change every time, so check
 )
 
 func SetCacheControlHeader(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
@@ -40,24 +40,25 @@ func SetCacheControlHeader(w http.ResponseWriter, r *http.Request, next http.Han
 }
 
 func SetCredsHeaders(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+
 	originList, ok := r.Header["Origin"]
 	if !ok {
-		LogAndSendError(w, errHeader, "Origin header not set", http.StatusInternalServerError)
-		return
-	}
-
-	origin := originList[0]
-
-	if slices.Contains(allowList, origin) {
-		w.Header().Set("Access-Control-Allow-Origin", origin)
+		log.Printf("Origin header not set: %s %s\n", r.Method, r.URL)
 	} else {
-		log.Println("orgn: ", originList, origin)
-		LogAndSendError(w, errHeader, "Origin missing", http.StatusInternalServerError)
-		return
+		origin := originList[0]
+
+		if slices.Contains(allowList, origin) {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+		} else {
+			log.Printf("disallowed origin: %s not in %s\n", origin, originList)
+			LogAndSendError(w, errHeader, "disallowed origin", http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Vary", "Origin")
 	}
 
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.Header().Set("Vary", "Origin")
 	next(w, r)
 }
 
