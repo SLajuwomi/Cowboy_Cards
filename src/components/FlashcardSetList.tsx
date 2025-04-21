@@ -1,3 +1,11 @@
+import { FlashCard } from '@/components/FlashCard';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonButton,
@@ -11,15 +19,8 @@ import {
   IonRow,
 } from '@ionic/react';
 import { arrowBackOutline } from 'ionicons/icons';
+import { arrowBackOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from '@/components/ui/carousel';
-import { FlashCard } from '@/components/FlashCard';
 import { useHistory } from 'react-router-dom';
 import { Flashcard } from '@/types/globalTypes';
 

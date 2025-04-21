@@ -19,8 +19,6 @@ import { addOutline, bookOutline, listOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
-
 type Class = {
   ClassID: number;
   Role: string;
@@ -53,9 +51,7 @@ const Home = () => {
       setClassesLoading(true);
       setError(null);
       try {
-        const data = await makeHttpCall<Class[]>(
-          `${API_BASE}/api/class_user/classes`
-        );
+        const data = await makeHttpCall<Class[]>(`/api/class_user/classes`);
         console.log('Classes: ', data);
         setClasses(data);
       } catch (error) {
@@ -68,7 +64,7 @@ const Home = () => {
     const fetchSetsOfUser = async () => {
       setSetsLoading(true);
       try {
-        const data = await makeHttpCall<Set[]>(`${API_BASE}/api/set_user/list`);
+        const data = await makeHttpCall<Set[]>(`/api/set_user/list`);
         console.log('Sets: ', data);
         setSets(data);
       } catch (error) {
@@ -172,6 +168,10 @@ const Home = () => {
                 <div className="flex justify-center items-center p-8">
                   <IonSpinner name="circular" />
                   <span className="ml-2">Loading sets...</span>
+                </div>
+              ) : sets === null ? (
+                <div className="text-center p-8 text-gray-600">
+                  You are not part of any sets. Join a set to get started.
                 </div>
               ) : (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

@@ -11,12 +11,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
+import { makeHttpCall } from '@/utils/makeHttpCall';
 import { IonButton, IonIcon, useIonRouter } from '@ionic/react';
 import { AlertCircle, LogIn } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -91,11 +90,11 @@ export const AuthForm = () => {
     setErrors({});
 
     try {
-      let response;
+      let data;
 
       if (isLogin) {
         // Login request
-        response = await fetch(`${API_BASE}/login`, {
+        data = await makeHttpCall(`/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -108,7 +107,7 @@ export const AuthForm = () => {
         });
       } else {
         // Signup request
-        response = await fetch(`${API_BASE}/signup`, {
+        data = await makeHttpCall(`/signup`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -124,26 +123,6 @@ export const AuthForm = () => {
         });
       }
 
-      if (!response.ok) {
-        const errorData = await response.json();
-
-        // Handle specific error types
-        if (errorData.code === 'duplicate_email') {
-          setErrors({ email: 'This email is already registered' });
-          throw new Error('This email is already registered');
-        } else if (errorData.code === 'duplicate_username') {
-          setErrors({ username: 'This username is already taken' });
-          throw new Error('This username is already taken');
-        } else if (errorData.code === 'invalid_credentials') {
-          setErrors({ general: 'Invalid email or password' });
-          throw new Error('Invalid email or password');
-        } else {
-          throw new Error(errorData.message || 'Authentication failed');
-        }
-      }
-
-      const data = await response.json();
-
       // Show success message
       toast({
         title: isLogin ? 'Welcome back!' : 'Account created',
@@ -156,6 +135,7 @@ export const AuthForm = () => {
       ionRouter.push('/home');
     } catch (error) {
       console.error('Authentication error:', error);
+      setErrors(error);
 
       // If no specific error was set, set a general error
       if (Object.keys(errors).length === 0) {

@@ -11,7 +11,7 @@ export const FlashCard = (props) => {
 
   const handleScoreUpdate = async (endpoint: string) => {
     try {
-      const result = await makeHttpCall(`${API_BASE}${endpoint}`, {
+      const result = await makeHttpCall(`${endpoint}`, {
         method: 'POST',
         headers: {
           card_id: props.cardId.toString(),

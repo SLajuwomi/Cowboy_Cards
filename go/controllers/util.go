@@ -28,7 +28,7 @@ type User struct {
 	NumClasses     int `json:"numClasses"`
 	CardsStudied   int `json:"cardsStudied"`
 	CardsMastered  int `json:"cardsMastered"`
-	TotalCardViews int `json:"totalCardViews"`
+	TotalCardViews any `json:"totalCardViews"`
 }
 
 // Class represents the class data that will be sent to the client in a getclassbyid req

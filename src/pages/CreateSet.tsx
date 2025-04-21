@@ -1,6 +1,6 @@
 import { Navbar } from '@/components/Navbar';
+import { FlashcardSet } from '@/types/flashcards';
 import { makeHttpCall } from '@/utils/makeHttpCall';
-import { FlashcardSet } from '@/types/globalTypes';
 import {
   IonButton,
   IonCard,
@@ -50,7 +50,7 @@ const CreateSet = () => {
 
     try {
       const setResponse = await makeHttpCall<FlashcardSet>(
-        `${API_BASE}/api/flashcards/sets`,
+        `/api/flashcards/sets`,
         {
           method: 'POST',
           headers: {

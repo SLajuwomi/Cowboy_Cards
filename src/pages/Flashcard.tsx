@@ -6,11 +6,11 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
+import { FlashcardSet } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import { IonButton, IonContent, IonSpinner } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { FlashcardSet } from '@/types/globalTypes';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
@@ -147,8 +147,8 @@ const Flashcard = () => {
                   {cards.map((card, index) => (
                     <CarouselItem key={index}>
                       <FlashCard
-                        front={card.front}
-                        back={card.back}
+                        front={card.Front}
+                        back={card.Back}
                         onAdvance={handleAdvance}
                         cardId={card.id}
                       />

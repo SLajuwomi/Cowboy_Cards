@@ -16,8 +16,6 @@ type Class = {
   ClassDescription: string;
 };
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
-
 const CreateClass = () => {
   const [buttonClicked, setButtonClicked] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -49,7 +47,7 @@ const CreateClass = () => {
       setError(null);
 
       try {
-        const data = await makeHttpCall<Class>(`${API_BASE}/api/classes`, {
+        const data = await makeHttpCall<Class>(`/api/classes`, {
           method: 'POST',
           headers: {
             class_name: formData.className,

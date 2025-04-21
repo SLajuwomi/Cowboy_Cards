@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  IonModal,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonRadio,
-  IonRadioGroup,
   IonButton,
   IonButtons,
+  IonContent,
+  IonHeader,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonModal,
+  IonRadio,
+  IonRadioGroup,
   IonSpinner,
   IonText,
+  IonTitle,
+  IonToolbar,
   useIonToast,
 } from '@ionic/react';
 import { makeHttpCall } from '@/utils/makeHttpCall';
@@ -82,7 +82,7 @@ const AddSetToClassDialog = (props) => {
     setIsLoading(true);
     setError(null);
     try {
-      await makeHttpCall<string>(`${API_BASE}/api/class_set/`, {
+      await makeHttpCall<string>(`/api/class_set/`, {
         method: 'POST',
         headers: {
           id: props.classId,

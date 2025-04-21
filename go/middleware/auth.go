@@ -12,12 +12,22 @@ import (
 	"github.com/gorilla/sessions"
 )
 
+// ***************************
+// *  LIVE backend           *
+// ***************************
 var (
-  	sessionKey = os.Getenv("SESSION_KEY")
-  	sKey, _    = hex.DecodeString(sessionKey)
+	sessionKey = os.Getenv("SESSION_KEY")
+	sKey, _    = hex.DecodeString(sessionKey)
 	store      = sessions.NewCookieStore(sKey)
-	// store = sessions.NewCookieStore([]byte{95, 65, 12, 40})// dev only
 )
+
+// ************************************************
+// * uncomment this block and comment out the one *
+// * above to dev with the LOCAL backend          *
+// ************************************************
+// var (
+// 	store = sessions.NewCookieStore([]byte{95, 65, 12, 40})
+// )
 
 func init() {
 	log.Println("init")
@@ -26,16 +36,31 @@ func init() {
 	// deleted after the browser session ends.
 	// MaxAge<0 means delete cookie immediately.
 	// MaxAge>0 means Max-Age attribute present and given in seconds.
+
+	// ******************************
+	// * LIVE and LOCAL WEB backend *
+	// ******************************
+
 	store.Options = &sessions.Options{
 		Path:     "/",
 		MaxAge:   0,
 		Secure:   true,
-		// Secure:   false,//mobile dev only
 		HttpOnly: true,
 		// SameSite: http.SameSiteStrictMode,//prod
-		// SameSite: http.SameSiteLaxMode, //mobile dev only
-		SameSite: http.SameSiteNoneMode, //web dev only
+		SameSite: http.SameSiteNoneMode,
 	}
+
+	// **********************************************************
+	// uncomment this and comment the one above to dev MOBILE
+	// **********************************************************
+	//
+	//	store.Options = &sessions.Options{
+	//		Path:     "/",
+	//		MaxAge:   0,
+	//		Secure:   false,
+	//		HttpOnly: true,
+	//		SameSite: http.SameSiteLaxMode,
+	//	}
 }
 
 func Auth(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {

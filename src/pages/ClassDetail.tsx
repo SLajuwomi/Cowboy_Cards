@@ -1,9 +1,16 @@
+import AddSetToClassDialog from '@/components/AddSetToClassDialog';
+import ClassDetailControls from '@/components/ClassDetailControls';
+import ClassDetailHeader from '@/components/ClassDetailHeader';
+import ClassDetailTabs from '@/components/ClassDetailTabs';
+import FlashcardTab from '@/components/FlashcardTab';
 import { Footer } from '@/components/Footer';
+import LeaderboardTab from '@/components/LeaderboardTab';
 import { Navbar } from '@/components/Navbar';
+import StudentTab from '@/components/StudentTab';
 import { type CarouselApi } from '@/components/ui/carousel';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import { IonContent } from '@ionic/react';
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import ClassDetailHeader from '@/components/ClassDetailHeader';
 import ClassDetailControls from '@/components/ClassDetailControls';
@@ -43,8 +50,6 @@ type GetClassScoresRow = {
   Username: string;
   ClassScore: number;
 };
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const ClassDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -119,7 +124,7 @@ const ClassDetail = () => {
 
     try {
       const updatePromises = fieldsToUpdate.map((field) =>
-        makeHttpCall<Class>(`${API_BASE}/api/classes/${field}`, {
+        makeHttpCall<Class>(`/api/classes/${field}`, {
           method: 'PUT',
           headers: {
             id: id,
@@ -160,28 +165,25 @@ const ClassDetail = () => {
     setError(null);
     try {
       const [classDetails, sets, users, scores] = await Promise.all([
-        makeHttpCall<Class>(`${API_BASE}/api/classes/`, {
+        makeHttpCall<Class>(`/api/classes/`, {
           method: 'GET',
           headers: { id: id },
         }),
 
-        makeHttpCall<FlashcardSet[]>(`${API_BASE}/api/class_set/list_sets`, {
+        makeHttpCall<FlashcardSet[]>(`/api/class_set/list_sets`, {
           method: 'GET',
           headers: { id: id },
         }),
 
-        makeHttpCall<ClassUser[]>(`${API_BASE}/api/class_user/members`, {
+        makeHttpCall<ClassUser[]>(`/api/class_user/members`, {
           method: 'GET',
           headers: { class_id: id },
         }),
 
-        makeHttpCall<GetClassScoresRow[]>(
-          `${API_BASE}/api/classes/leaderboard`,
-          {
-            method: 'GET',
-            headers: { id: id },
-          }
-        ),
+        makeHttpCall<GetClassScoresRow[]>(`/api/classes/leaderboard`, {
+          method: 'GET',
+          headers: { id: id },
+        }),
       ]);
 
       console.log('data', classDetails);
@@ -218,7 +220,7 @@ const ClassDetail = () => {
     // studentId =
     if (studentId === null) return;
     try {
-      await makeHttpCall(`${API_BASE}/api/class_user/`, {
+      await makeHttpCall(`/api/class_user/`, {
         method: 'DELETE',
         headers: {
           student_id: studentId,
