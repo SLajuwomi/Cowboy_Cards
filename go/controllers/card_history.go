@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 	"path"
 
@@ -51,7 +50,7 @@ func (h *DBHandler) UpdateFlashcardScore(w http.ResponseWriter, r *http.Request)
 			CardID: cardID,
 		})
 	default:
-		logAndSendError(w, errors.New("invalid column"), "Improper header", http.StatusBadRequest)
+		logAndSendError(w, errHeader, "Improper header", http.StatusBadRequest)
 		return
 	}
 	if err != nil {

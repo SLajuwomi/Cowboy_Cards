@@ -1,0 +1,10 @@
+cowboy-cards.org {
+	@backend path /login /signup /api/*
+	encode
+	reverse_proxy @backend localhost:8000
+	handle {
+		root * /srv
+		try_files {path} {path}/ /index.html
+		file_server
+	}
+}

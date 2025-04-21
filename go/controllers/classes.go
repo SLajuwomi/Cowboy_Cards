@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 	"path"
 	"time"
@@ -213,7 +212,7 @@ func (h *DBHandler) UpdateClass(w http.ResponseWriter, r *http.Request) {
 			ID:               classID,
 		})
 	default:
-		logAndSendError(w, errors.New("invalid column"), "Improper header", http.StatusBadRequest)
+		logAndSendError(w, errHeader, "Improper header", http.StatusBadRequest)
 		return
 	}
 
