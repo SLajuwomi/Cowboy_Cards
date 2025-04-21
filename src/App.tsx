@@ -39,7 +39,7 @@ import '@ionic/react/css/text-alignment.css';
 import '@ionic/react/css/text-transformation.css';
 
 /* Theme variables */
-import './theme/variables.css';
+// import './theme/variables.css'; Removed this import
 
 setupIonicReact();
 

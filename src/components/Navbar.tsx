@@ -86,13 +86,22 @@ const Navbar = () => {
             </IonMenuToggle>
           </IonButtons>
 
-          <IonTitle
-            color="primary"
-            className="text-lg md:text-xl lg:text-2xl font-bold hover:translate-x-1 transition-all duration-300 cursor-pointer"
+          <div
+            className="flex items-center cursor-pointer"
             onClick={() => router.push('/home')}
           >
-            Cowboy Cards
-          </IonTitle>
+            <img
+              src="https://www.hsutx.edu/wp-content/uploads/2018/06/Spirit-Cowboy-Profile-Only.png"
+              alt="Cowboy Cards Logo"
+              className="h-8 w-auto md:hidden"
+            />
+            <IonTitle
+              color="primary"
+              className="hidden md:inline-block text-lg md:text-xl lg:text-2xl font-bold hover:translate-x-1 transition-all duration-300"
+            >
+              Cowboy Cards
+            </IonTitle>
+          </div>
 
           <IonButtons slot="end">
             <IonButton onClick={openPopover}>
