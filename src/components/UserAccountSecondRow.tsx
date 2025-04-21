@@ -9,12 +9,32 @@ import {
   IonButton,
   IonAlert,
 } from '@ionic/react';
+import StreakFlameCard from './StreakFlameCard';
 
-const UserAccountSecondRow = (props) => {
+interface Props {
+  streak: number;
+  theme: 'light' | 'dark';
+  setTheme: (theme: 'light' | 'dark') => void;
+  showPasswordAlert: boolean;
+  setShowPasswordAlert: (show: boolean) => void;
+  showDeleteAlert: boolean;
+  setShowDeleteAlert: (show: boolean) => void;
+  presentToast: (options: any) => void;
+  isEditing: boolean;
+  errors: { [key: string]: string | undefined };
+  handleChange: (e: CustomEvent) => void;
+  handleSave: () => Promise<void>;
+  updatedInfo: any;
+  userInfo: any;
+  expandedClass: number | null;
+  toggleClassDetails: (classID: number) => void;
+}
+
+const UserAccountSecondRow = (props: Props) => {
   return (
     <>
       <div className="flex flex-col md:flex-row gap-6 py-6">
-        {/* TODO: Add a component to track user streaks */}
+        <StreakFlameCard streak={props.streak} />
         <IonCard className="w-full md:w-1/2 rounded-lg border shadow-sm">
           <IonCardHeader className="p-6">
             <IonCardTitle className="text-xl font-semibold text-primary">

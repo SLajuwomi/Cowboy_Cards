@@ -6,9 +6,11 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
+import { makeHttpCall } from '@/utils/makeHttpCall';
 import { IonButton, IonContent, IonSpinner } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
+import { FlashcardSet } from '@/types/globalTypes';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
@@ -30,15 +32,18 @@ const Flashcard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    //TODO: Fix this, currently only the owner can see the set details
     const fetchSetDetails = async () => {
       try {
-        const setRes = await fetch(`${API_BASE}/api/flashcards/sets/`, {
-          method: 'GET',
-          headers: { id },
-        });
-        const setData = await setRes.json();
-        setTitle(setData.SetName);
-        setDescription(setData.SetDescription);
+        const setRes = await makeHttpCall<FlashcardSet>(
+          `${API_BASE}/api/flashcards/sets/`,
+          {
+            method: 'GET',
+            headers: { id },
+          }
+        );
+        setTitle(setRes.SetName);
+        setDescription(setRes.SetDescription);
       } catch (error) {
         console.error('Failed to fetch set info', error);
       }
@@ -47,14 +52,16 @@ const Flashcard = () => {
     const fetchCards = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`${API_BASE}/api/flashcards/list`, {
-          method: 'GET',
-          headers: { set_id: id },
-        });
-        const data = await res.json();
+        const res = await makeHttpCall<FlashcardSet[]>(
+          `${API_BASE}/api/flashcards/list`,
+          {
+            method: 'GET',
+            headers: { set_id: id },
+          }
+        );
         setCards(
-          Array.isArray(data)
-            ? data.map((card: any) => ({
+          Array.isArray(res)
+            ? res.map((card: any) => ({
                 id: card.ID,
                 front: card.Front,
                 back: card.Back,

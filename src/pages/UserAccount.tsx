@@ -204,6 +204,7 @@ const UserAccount = () => {
               handleEdit={handleEdit}
             />
             <UserAccountSecondRow
+              streak={userInfo?.login_streak ?? 0}
               isEditing={isEditing}
               errors={errors}
               handleChange={handleChange}

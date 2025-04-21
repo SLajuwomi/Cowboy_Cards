@@ -20,7 +20,6 @@ const ClassDetailControls = (props) => {
               Add Existing Set
             </IonButton>
 
-            {/* TODO: Confirm create-set route and query param handling */}
             <IonButton
               routerLink={`/create-set?classId=${props.classId}`}
               color="primary"

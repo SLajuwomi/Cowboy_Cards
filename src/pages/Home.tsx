@@ -100,7 +100,7 @@ const Home = () => {
                 color="primary"
                 className="rounded-lg"
                 style={{ '--border-radius': '0.5rem' }}
-                href={tab === 'classes' ? '/class/create' : '/set/create'}
+                href={tab === 'classes' ? '/class/create' : '/create-set'}
               >
                 <IonIcon slot="start" icon={addOutline} />{' '}
                 {tab === 'classes' ? 'Add Class' : 'Add Set'}
