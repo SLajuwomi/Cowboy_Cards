@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { SetUser } from '@/types/globalTypes';
+import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonButton,
   IonButtons,
@@ -16,10 +17,7 @@ import {
   IonToolbar,
   useIonToast,
 } from '@ionic/react';
-import { makeHttpCall } from '@/utils/makeHttpCall';
-import { SetUser } from '@/types/globalTypes';
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
+import { useCallback, useEffect, useState } from 'react';
 
 const AddSetToClassDialog = (props) => {
   const [userSets, setUserSets] = useState<SetUser[]>([]);
@@ -33,10 +31,10 @@ const AddSetToClassDialog = (props) => {
     setIsLoading(true);
     setError(null);
     try {
-      const fetchedSets = await makeHttpCall<SetUser[]>(
-        `${API_BASE}/api/set_user/list`,
-        { method: 'GET', headers: {} }
-      );
+      const fetchedSets = await makeHttpCall<SetUser[]>(`/api/set_user/list`, {
+        method: 'GET',
+        headers: {},
+      });
       setUserSets(fetchedSets || []);
     } catch (err) {
       console.error('Failed to fetch user sets:', err);

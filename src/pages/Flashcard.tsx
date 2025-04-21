@@ -12,8 +12,6 @@ import { IonButton, IonContent, IonSpinner } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
-
 //TODO: add summary after going through all cards of cards missed, cards correct, etc
 const Flashcard = () => {
   const { id } = useParams<{ id: string }>();
@@ -30,7 +28,7 @@ const Flashcard = () => {
     const fetchSetDetails = async () => {
       try {
         const setRes = await makeHttpCall<FlashcardSet>(
-          `${API_BASE}/api/flashcards/sets/`,
+          `/api/flashcards/sets/`,
           {
             method: 'GET',
             headers: { id },
@@ -46,13 +44,10 @@ const Flashcard = () => {
     const fetchCards = async () => {
       setLoading(true);
       try {
-        const res = await makeHttpCall<Flashcard[]>(
-          `${API_BASE}/api/flashcards/list`,
-          {
-            method: 'GET',
-            headers: { set_id: id },
-          }
-        );
+        const res = await makeHttpCall<Flashcard[]>(`/api/flashcards/list`, {
+          method: 'GET',
+          headers: { set_id: id },
+        });
         setCards(
           Array.isArray(res)
             ? res.map((card: Flashcard) => ({

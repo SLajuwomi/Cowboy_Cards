@@ -6,6 +6,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
+import { Flashcard } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonButton,
@@ -21,9 +22,6 @@ import {
 import { arrowBackOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Flashcard } from '@/types/globalTypes';
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const FlashcardCarousel = (props) => {
   const history = useHistory();
@@ -33,15 +31,12 @@ const FlashcardCarousel = (props) => {
   useEffect(() => {
     async function fetchFlashcards() {
       console.log('selectedSet', selectedSet);
-      const cards = await makeHttpCall<Flashcard[]>(
-        `${API_BASE}/api/flashcards/list`,
-        {
-          method: 'GET',
-          headers: {
-            set_id: selectedSet,
-          },
-        }
-      );
+      const cards = await makeHttpCall<Flashcard[]>(`/api/flashcards/list`, {
+        method: 'GET',
+        headers: {
+          set_id: selectedSet,
+        },
+      });
       console.log('cards', cards);
       setFlashcards(cards);
     }
