@@ -6,33 +6,36 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
-import type { Flashcard, FlashcardSet } from '@/types/flashcards';
+import type { Flashcard, FlashcardSet } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import { IonButton, IonContent, IonSpinner } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
+//TODO: add summary after going through all cards of cards missed, cards correct, etc
 const Flashcard = () => {
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  // Use the Card type for state
   const [cards, setCards] = useState<Flashcard[]>([]);
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    //TODO: Fix this, currently only the owner can see the set details
     const fetchSetDetails = async () => {
       try {
-        const data = await makeHttpCall<FlashcardSet>(`/api/flashcards/sets`, {
-          method: 'GET',
-          headers: { id },
-        });
-
-        setTitle(data.SetName);
-        setDescription(data.SetDescription);
+        const setRes = await makeHttpCall<FlashcardSet>(
+          `/api/flashcards/sets/`,
+          {
+            method: 'GET',
+            headers: { id },
+          }
+        );
+        setTitle(setRes.SetName);
+        setDescription(setRes.SetDescription);
       } catch (error) {
         console.error('Failed to fetch set info', error);
       }
@@ -41,12 +44,22 @@ const Flashcard = () => {
     const fetchCards = async () => {
       setLoading(true);
       try {
-        const data = await makeHttpCall<Flashcard>(`/api/flashcards/list`, {
+        const res = await makeHttpCall<Flashcard[]>(`/api/flashcards/list`, {
           method: 'GET',
           headers: { set_id: id },
         });
-
-        setCards(Array.isArray(data) ? data : []);
+        setCards(
+          Array.isArray(res)
+            ? res.map((card: Flashcard) => ({
+                ID: card.ID,
+                Front: card.Front,
+                Back: card.Back,
+                SetID: card.SetID,
+                CreatedAt: card.CreatedAt,
+                UpdatedAt: card.UpdatedAt,
+              }))
+            : []
+        );
       } catch (error) {
         console.error('Failed to fetch cards', error);
         setCards([]);
@@ -129,7 +142,6 @@ const Flashcard = () => {
                         front={card.Front}
                         back={card.Back}
                         onAdvance={handleAdvance}
-                        // Pass cardId and a placeholder userId
                         cardId={card.ID}
                       />
                     </CarouselItem>

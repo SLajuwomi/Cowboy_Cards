@@ -1,4 +1,5 @@
 import { EditableField } from '@/utils/EditableField';
+import InfoRow from '@/utils/InfoRow';
 import {
   IonButton,
   IonCard,
@@ -8,12 +9,10 @@ import {
   IonIcon,
 } from '@ionic/react';
 import { createOutline } from 'ionicons/icons';
-import InfoRow from '@/utils/InfoRow';
 
 const UserAccountFirstRow = (props) => {
   return (
     <div className="flex flex-col md:flex-row gap-6">
-      {/* Account Information Card */}
       <IonCard className="w-full md:w-1/2 rounded-lg border shadow-sm">
         <IonCardHeader className="p-6">
           <IonCardTitle className="text-xl font-semibold text-primary">
@@ -21,11 +20,10 @@ const UserAccountFirstRow = (props) => {
           </IonCardTitle>
         </IonCardHeader>
         <IonCardContent className="p-6 pt-0">
-          {/* TODO: Make this into an EditingField component where you can pass whatever label or field you want. */}
-
           {props.isEditing ? (
             <div className="space-y-4">
               <EditableField
+                type="text"
                 label="First Name"
                 name="first_name"
                 value={props.updatedInfo?.first_name || ''}
@@ -33,6 +31,7 @@ const UserAccountFirstRow = (props) => {
                 onChange={props.handleChange}
               />
               <EditableField
+                type="text"
                 label="Last Name"
                 name="last_name"
                 value={props.updatedInfo?.last_name || ''}
@@ -40,6 +39,7 @@ const UserAccountFirstRow = (props) => {
                 onChange={props.handleChange}
               />
               <EditableField
+                type="text"
                 label="Username"
                 name="username"
                 value={props.updatedInfo?.username || ''}
@@ -47,6 +47,7 @@ const UserAccountFirstRow = (props) => {
                 onChange={props.handleChange}
               />
               <EditableField
+                type="email"
                 label="Email"
                 name="email"
                 value={props.updatedInfo?.email || ''}
@@ -76,7 +77,6 @@ const UserAccountFirstRow = (props) => {
         </IonCardContent>
       </IonCard>
 
-      {/* Account Stats Card */}
       <IonCard className="w-full md:w-1/2 rounded-lg border shadow-sm">
         <IonCardHeader className="p-6">
           <IonCardTitle className="text-xl font-semibold text-primary">
