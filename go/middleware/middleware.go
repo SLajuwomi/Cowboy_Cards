@@ -44,11 +44,17 @@ func SetCredsHeaders(w http.ResponseWriter, r *http.Request, next http.HandlerFu
 		return
 	}
 
+	log.Println("ol: ", originList)
+
 	origin := originList[0]
 
+	log.Println("o: ", origin)
+
 	if origin == allowList[0] || origin == allowList[1] {
+		log.Println("here")
 		w.Header().Set("Access-Control-Allow-Origin", origin)
 	} else {
+		log.Println("else")
 		return
 	}
 
