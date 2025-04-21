@@ -22,6 +22,7 @@ var (
 		Debug:            false,
 		MaxAge:           300,
 	})
+	allowList = []string{"http://localhost:8080", "http://10.84.16.34:8080"} // last one is mobile dev only, should change every time, so check
 )
 
 func SetCacheControlHeader(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
@@ -38,9 +39,20 @@ func SetCacheControlHeader(w http.ResponseWriter, r *http.Request, next http.Han
 }
 
 func SetCredsHeaders(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+	originList, ok := r.Header["Origin"]
+	if !ok {
+		return
+	}
+
+	origin := originList[0]
+
+	if origin == allowList[0] || origin == allowList[1] {
+		w.Header().Set("Access-Control-Allow-Origin", origin)
+	} else {
+		return
+	}
+
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
-	w.Header().Set("Access-Control-Allow-Origin", "http://10.84.16.34:8080") // mobile dev only, should change every time, so check
 	w.Header().Set("Vary", "Origin")
 	next(w, r)
 }
