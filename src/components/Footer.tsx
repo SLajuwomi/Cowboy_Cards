@@ -32,7 +32,7 @@ const Footer = () => {
         {/*    </IonButton>*/}
         {/*</IonButtons>*/}
 
-        <IonText className="mx-auto text-center text-sm text-gray-500">
+        <IonText className="mx-auto text-center text-sm">
           Cowboy Cards 2025. Built for learning and fun.
         </IonText>
       </IonToolbar>

@@ -23,12 +23,14 @@ http://ionicframework.com/docs/theming/ */
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   --ion-dynamic-font: var(--ion-default-dynamic-font);
   /** primary **/
-  --ion-color-primary: #6a40bf;
-  --ion-color-primary-rgb: 106, 64, 191;
+  --ion-color-primary: #4300ca;
+  --ion-color-primary-rgb: 67, 0, 202;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
   --ion-color-primary-shade: #5d3885;
   --ion-color-primary-tint: #7953c0;
+
+  --ion-text-color: #252626;
 
   /** secondary **/
   --ion-color-secondary: #2563eb;
@@ -102,12 +104,12 @@ http://ionicframework.com/docs/theming/ */
 
 :root.dark,
 body.dark {
-  --ion-color-primary: #6a40bf;
-  --ion-color-primary-rgb: 106, 64, 191;
-  --ion-color-primary-contrast: #ffffff;
-  --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #5d3885;
-  --ion-color-primary-tint: #7953c0;
+  --ion-color-primary: #ffd700; /* Bright Yellow */
+  --ion-color-primary-rgb: 255, 215, 0;
+  --ion-color-primary-contrast: #000000; /* Black text contrast */
+  --ion-color-primary-contrast-rgb: 0, 0, 0;
+  --ion-color-primary-shade: #e0bd00; /* Darker Yellow */
+  --ion-color-primary-tint: #ffde2a; /* Lighter Yellow */
 
   --ion-color-secondary: #ffffff;
   --ion-color-secondary-rgb: 37, 99, 235;
@@ -267,12 +269,12 @@ body.dark {
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 263 70% 50%;
+    --primary: 259.9 100% 39.61%;
     --primary-foreground: 210 40% 98%;
     --secondary: 217 91% 60%;
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted-foreground: 0, 0%, 33%;
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
@@ -290,19 +292,19 @@ body.dark {
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 263 70% 50%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 51 100% 50%; /* HSL for #FFD700 */
+    --primary-foreground: 240 6% 10%; /* Near black for contrast */
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted-foreground: 0 0% 75%;
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 263 70% 50%;
+    --ring: 51 100% 50%; /* HSL for #FFD700 */
   }
 }
 
@@ -340,4 +342,20 @@ body.dark {
   --background-hover: var(--ion-color-light-shade, #d7d8da);
   margin-bottom: 0.75rem;
   --border-radius: 0.5rem;
+}
+
+:root.dark ion-segment-button {
+  --color: var(--ion-text-color);
+}
+
+ion-segment-button {
+  --color: var(--ion-text-color);
+}
+
+:root.dark ion-card-title {
+  color: var(--ion-text-color);
+}
+
+ion-card-title {
+  color: var(--ion-text-color);
 }
