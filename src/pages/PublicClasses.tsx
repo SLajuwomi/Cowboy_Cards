@@ -20,8 +20,6 @@ type Class = {
   UpdatedAt: string;
 };
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
-
 const PublicClasses = () => {
   const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(false);

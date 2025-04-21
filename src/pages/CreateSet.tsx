@@ -12,8 +12,6 @@ import {
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
-
 //TODO: Decide if we want to have a CreateSet button on the ClassDetail page and be able to create sets and automatically link to class
 
 const CreateSet = () => {

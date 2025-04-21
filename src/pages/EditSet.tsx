@@ -18,8 +18,6 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
-
 const EditSet = () => {
   const { id } = useParams<{ id: string }>();
   const [presentToast] = useIonToast();

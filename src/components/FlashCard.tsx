@@ -4,8 +4,6 @@ import { makeHttpCall } from '@/utils/makeHttpCall';
 import { Check, X } from 'lucide-react';
 import { useState } from 'react';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
-
 export const FlashCard = (props) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
