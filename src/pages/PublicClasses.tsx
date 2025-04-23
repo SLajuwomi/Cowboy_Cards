@@ -59,7 +59,7 @@ const PublicClasses = () => {
                   <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
                     {classItem.ClassName}
                   </IonCardTitle>
-                  <IonCardSubtitle className="text-sm text-gray-600">
+                  <IonCardSubtitle className="text-sm ">
                     {classItem.ClassDescription || 'No description'}
                   </IonCardSubtitle>
                   <IonButton

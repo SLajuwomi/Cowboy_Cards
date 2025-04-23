@@ -53,7 +53,7 @@ const ClassDetailHeader = (props) => {
               ></IonIcon>
             )}
           </div>
-          <p className="text-gray-400">
+          <p className="text-gray-700 dark:text-gray-300">
             {props.loading ? 'Loading...' : props.classData.ClassDescription}
           </p>
         </>

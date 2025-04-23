@@ -83,6 +83,7 @@ const CreateClass = () => {
       <Navbar />
       <div id="main-content" className="container mx-auto px-4 py-8">
         {error && <div className="text-red-500 mt-2">{error}</div>}
+        <h1 className="text-3xl font-bold mb-6">Create New Class</h1>
         <form>
           <IonCard className="mb-6 rounded-lg border shadow-sm">
             <IonCardContent>

@@ -71,7 +71,7 @@ const PublicFlashcards = () => {
                   <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
                     {set.SetName}
                   </IonCardTitle>
-                  <IonCardSubtitle className="text-sm text-gray-600">
+                  <IonCardSubtitle className="text-sm ">
                     {set.SetDescription || 'No description'}
                   </IonCardSubtitle>
                 </IonCardHeader>
