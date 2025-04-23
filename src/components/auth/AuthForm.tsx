@@ -263,7 +263,7 @@ export const AuthForm = () => {
             )}
           </div>
           {isLogin && (
-            <Link to="/reset-password" className="text-sm text-purple-500">
+            <Link to="/reset-password" className="text-sm text-primary">
               Forgot password?
             </Link>
           )}

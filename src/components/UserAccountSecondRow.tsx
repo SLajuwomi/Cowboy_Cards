@@ -5,7 +5,6 @@ import {
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
-  IonItem,
   IonSelect,
   IonSelectOption,
 } from '@ionic/react';
@@ -24,35 +23,40 @@ const UserAccountSecondRow = (props) => {
           </IonCardHeader>
           <IonCardContent className="p-6 pt-0">
             <div className="space-y-4">
-              <IonItem>
-                <IonSelect
-                  label="Theme"
-                  value={props.theme}
-                  onIonChange={(e) =>
-                    props.setTheme(e.detail.value as 'light' | 'dark')
-                  }
-                  interface="popover"
-                  placeholder="Select Theme"
-                >
-                  <IonSelectOption value="light">Light</IonSelectOption>
-                  <IonSelectOption value="dark">Dark</IonSelectOption>
-                </IonSelect>
-              </IonItem>
+              <IonSelect
+                label="Theme"
+                value={props.theme}
+                onIonChange={(e) =>
+                  props.setTheme(e.detail.value as 'light' | 'dark')
+                }
+                interface="popover"
+                placeholder="Select Theme"
+              >
+                <IonSelectOption value="light">Light</IonSelectOption>
+                <IonSelectOption value="dark">Dark</IonSelectOption>
+              </IonSelect>
               <div className="flex justify-between items-center">
                 <div>
-                  <p className="text-sm font-medium">Change Your Password</p>
-                  <p className="text-xs text-gray-600">
+                  <p className="text-sm font-medium text-black dark:text-white">
+                    Change Your Password
+                  </p>
+                  <p className="text-xs dark:text-gray-300">
                     Reset your account password.
                   </p>
                 </div>
-                <IonButton onClick={() => props.setShowPasswordAlert(true)}>
+                <IonButton
+                  color="primary"
+                  onClick={() => props.setShowPasswordAlert(true)}
+                >
                   Change Password
                 </IonButton>
               </div>
               <div className="flex justify-between items-center">
                 <div>
-                  <p className="text-sm font-medium">Delete Your Account</p>
-                  <p className="text-xs text-gray-600">
+                  <p className="text-sm font-medium text-black dark:text-white">
+                    Delete Your Account
+                  </p>
+                  <p className="text-xs dark:text-gray-300">
                     This will delete all account data and can't be undone.
                   </p>
                 </div>
