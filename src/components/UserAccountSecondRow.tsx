@@ -5,7 +5,6 @@ import {
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
-  IonItem,
   IonSelect,
   IonSelectOption,
 } from '@ionic/react';
@@ -24,20 +23,18 @@ const UserAccountSecondRow = (props) => {
           </IonCardHeader>
           <IonCardContent className="p-6 pt-0">
             <div className="space-y-4">
-              <IonItem>
-                <IonSelect
-                  label="Theme"
-                  value={props.theme}
-                  onIonChange={(e) =>
-                    props.setTheme(e.detail.value as 'light' | 'dark')
-                  }
-                  interface="popover"
-                  placeholder="Select Theme"
-                >
-                  <IonSelectOption value="light">Light</IonSelectOption>
-                  <IonSelectOption value="dark">Dark</IonSelectOption>
-                </IonSelect>
-              </IonItem>
+              <IonSelect
+                label="Theme"
+                value={props.theme}
+                onIonChange={(e) =>
+                  props.setTheme(e.detail.value as 'light' | 'dark')
+                }
+                interface="popover"
+                placeholder="Select Theme"
+              >
+                <IonSelectOption value="light">Light</IonSelectOption>
+                <IonSelectOption value="dark">Dark</IonSelectOption>
+              </IonSelect>
               <div className="flex justify-between items-center">
                 <div>
                   <p className="text-sm font-medium text-black dark:text-white">
