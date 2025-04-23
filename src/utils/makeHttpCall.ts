@@ -15,12 +15,7 @@ const defaultOpts: FetchOptions = {
   credentials: 'include', //dev only, remove in prod same origin
 };
 
-// *****************************
-// comment one, uncomment the other:
-const API_BASE = import.meta.env.VITE_API_BASE_DS;
-// const API_BASE = import.meta.env.VITE_API_BASE_EC2;
-// const API_BASE = import.meta.env.VITE_API_BASE_LOCAL;
-// *****************************
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 /**
  * Universal fetch utility for making HTTP requests
