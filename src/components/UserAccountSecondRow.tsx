@@ -8,7 +8,7 @@ import {
   IonSelect,
   IonSelectOption,
 } from '@ionic/react';
-import StreakFlameCard from './StreakFlameCard';
+import StreakFlameCard from './LoginStreakCard';
 
 const UserAccountSecondRow = (props) => {
   return (

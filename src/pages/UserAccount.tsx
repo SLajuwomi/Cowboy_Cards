@@ -1,5 +1,6 @@
 import { Navbar } from '@/components/Navbar';
 import { useTheme } from '@/contexts/ThemeContext';
+import { User } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonButton,
@@ -12,19 +13,6 @@ import { arrowBackOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import UserAccountFirstRow from '../components/UserAccountFirstRow';
 import UserAccountSecondRow from '../components/UserAccountSecondRow';
-
-type User = {
-  username: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  login_streak: number;
-  created_at: string;
-  numClasses: number;
-  cardsStudied: number;
-  cardsMastered: number;
-  totalCardViews: number;
-};
 
 const UserAccount = () => {
   const { theme, setTheme } = useTheme();
