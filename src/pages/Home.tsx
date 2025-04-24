@@ -34,6 +34,7 @@ type Set = {
   UpdatedAt: string;
 };
 
+// TODO: When someone tries to access /home without being logged in, redirect to /auth
 const Home = () => {
   const [tab, setTab] = useState('classes');
   const [classes, setClasses] = useState<Class[]>([]);

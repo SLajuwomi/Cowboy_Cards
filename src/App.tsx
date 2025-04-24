@@ -1,4 +1,5 @@
 import { AuthForm } from '@/components/auth/AuthForm';
+import ConfirmResetPass from '@/components/auth/ConfirmResetPass';
 import ResetPass from '@/components/auth/ResetPass';
 import { Toaster as Sonner } from '@/components/ui/sonner';
 import { Toaster } from '@/components/ui/toaster';
@@ -63,6 +64,11 @@ function App() {
                   <Route exact path="/class/:id" component={ClassDetail} />
                   <Route exact path="/auth" component={AuthForm} />
                   <Route exact path="/reset-password" component={ResetPass} />
+                  <Route
+                    exact
+                    path="/confirm-reset-password"
+                    component={ConfirmResetPass}
+                  />
                   <Route exact path="/public-cards" component={PublicCards} />
                   <Route exact path="/user-account" component={UserAccount} />
                   <Route exact path="/flashcards/:id" component={Flashcard} />
