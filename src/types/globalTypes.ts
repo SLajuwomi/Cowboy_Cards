@@ -41,3 +41,16 @@ export interface Class {
   CreatedAt: string;
   UpdatedAt: string;
 }
+
+export interface User {
+  username: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  login_streak: number;
+  created_at: string;
+  numClasses: number;
+  cardsStudied: number;
+  cardsMastered: number;
+  totalCardViews: number;
+}

@@ -5,10 +5,12 @@
   "description": "Flashcard app for HSU 2025 CSCI Senior Project class",
   "type": "module",
   "scripts": {
-    "FE_dev": "vite",
-    "LOCAL_backend": "go run go/main.go",
+    "dev:live": "VITE_API_BASE=https://cowboy-cards.dsouth.org vite",
+    "dev:local": "VITE_API_BASE=http://localhost:8000 vite",
+    "go": "go run go/main.go",
     "sqlc:gen": "sqlc generate -f sqlc/sqlc.yaml",
-    "build": "vite build",
+    "build:staging": "VITE_API_BASE=https://cowboy-cards.dsouth.org vite build --mode staging",
+    "build:prod": "VITE_API_BASE=https://cowboy-cards.org vite build --mode production",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview"
