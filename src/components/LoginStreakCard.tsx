@@ -8,7 +8,7 @@ import { useRef } from 'react';
 import CountUp from 'react-countup';
 import GrowthAnimation from './BonsaiTree';
 
-export default function StreakFlameCard(props) {
+export default function LoginStreakCard(props) {
   const prev = useRef(props.streak);
 
   return (
