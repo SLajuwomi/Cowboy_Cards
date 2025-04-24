@@ -12,7 +12,7 @@ import (
 )
 
 const createResetToken = `-- name: CreateResetToken :exec
-UPDATE users SET reset_token = $1 WHERE id = $2
+UPDATE users SET reset_token = $1, updated_at = LOCALTIMESTAMP(2) WHERE id = $2
 `
 
 type CreateResetTokenParams struct {
@@ -268,7 +268,7 @@ func (q *Queries) UpdatePassword(ctx context.Context, arg UpdatePasswordParams) 
 }
 
 const updatePasswordAndClearResetToken = `-- name: UpdatePasswordAndClearResetToken :exec
-UPDATE users SET password = $1, reset_token = NULL WHERE id = $2
+UPDATE users SET password = $1, reset_token = NULL, updated_at = LOCALTIMESTAMP(2) WHERE id = $2
 `
 
 type UpdatePasswordAndClearResetTokenParams struct {
@@ -282,7 +282,7 @@ func (q *Queries) UpdatePasswordAndClearResetToken(ctx context.Context, arg Upda
 }
 
 const updateResetTokenAndExpiry = `-- name: UpdateResetTokenAndExpiry :exec
-UPDATE users SET reset_token = $2 WHERE email = $1
+UPDATE users SET reset_token = $2, updated_at = LOCALTIMESTAMP(2) WHERE email = $1
 `
 
 type UpdateResetTokenAndExpiryParams struct {

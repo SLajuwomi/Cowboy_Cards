@@ -78,10 +78,10 @@ func (h *DBHandler) Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// *************
-	// needs more validation here
-	// usual min pw len: 8, bcrypt max: 72 bytes
-	// *************
+	if err := CheckPasswordStrength(w, req.Password); err != nil {
+		logAndSendError(w, err, "Password strength error", http.StatusBadRequest)
+		return
+	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -200,7 +200,7 @@ The Cowboy Cards Team
 		ID:         user.ID,
 	})
 
-	if err := SendEmail(headerVals[email], "Cowboy Cards Password Reset", emailBody); err != nil {
+	if err := SendEmail(w, headerVals[email], "Cowboy Cards Password Reset", emailBody); err != nil {
 		http.Error(w, "Failed to send password reset email", http.StatusInternalServerError)
 		return
 	}
@@ -235,12 +235,23 @@ func (h *DBHandler) ResetPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := CheckPasswordStrength(w, headerVals[password]); err != nil {
+		logAndSendError(w, err, "Password strength error", http.StatusBadRequest)
+		return
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(headerVals[password]), bcrypt.DefaultCost)
+	if err != nil {
+		logAndSendError(w, err, "Error hashing password", http.StatusInternalServerError)
+		return
+	}
+
 	err = query.UpdatePasswordAndClearResetToken(ctx, db.UpdatePasswordAndClearResetTokenParams{
 		ID:       user.ID,
-		Password: headerVals[password],
+		Password: string(hashedPassword),
 	})
 	if err != nil {
-		http.Error(w, "Failed to update password", http.StatusInternalServerError)
+		logAndSendError(w, err, "Failed to update password", http.StatusBadRequest)
 		return
 	}
 }
@@ -254,7 +265,7 @@ func generateUniqueToken() (string, error) {
 	return base64.URLEncoding.EncodeToString(b), nil
 }
 
-func SendEmail(to, subject, body string) error {
+func SendEmail(w http.ResponseWriter, to, subject, body string) error {
 	fmt.Println(os.Getenv("SMTP_USERNAME"), os.Getenv("SMTP_PASSWORD"), os.Getenv("SMTP_HOST"), os.Getenv("SMTP_PORT"))
 	from := os.Getenv("SMTP_USERNAME")
 	password := os.Getenv("SMTP_PASSWORD")
@@ -267,9 +278,47 @@ func SendEmail(to, subject, body string) error {
 
 	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, []string{to}, message)
 	if err != nil {
-		fmt.Println("Error sending email:", err)
+		logAndSendError(w, err, "Error sending email", http.StatusBadRequest)
 		return err
 	}
-	fmt.Println("Email sent successfully to:", to)
+	return nil
+}
+
+func CheckPasswordStrength(w http.ResponseWriter, password string) error {
+	minLength := 8
+	if len(password) < minLength {
+		return fmt.Errorf("password must be at least %d characters long", minLength)
+	}
+
+	hasUpper := false
+	hasLower := false
+	hasDigit := false
+	hasSpecial := false
+	for _, char := range password {
+		switch {
+		case char >= 'A' && char <= 'Z':
+			hasUpper = true
+		case char >= 'a' && char <= 'z':
+			hasLower = true
+		case char >= '0' && char <= '9':
+			hasDigit = true
+		case strings.ContainsRune("!@#$%^&*()_-+={}[]|;:<>,.?/~`", char):
+			hasSpecial = true
+		}
+	}
+
+	if !hasUpper {
+		return fmt.Errorf("password must contain at least one uppercase letter")
+	}
+	if !hasLower {
+		return fmt.Errorf("password must contain at least one lowercase letter")
+	}
+	if !hasDigit {
+		return fmt.Errorf("password must contain at least one digit")
+	}
+	if !hasSpecial {
+		return fmt.Errorf("password must contain at least one special character")
+	}
+
 	return nil
 }
