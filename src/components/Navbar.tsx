@@ -91,7 +91,7 @@ const Navbar = () => {
             onClick={() => router.push('/home')}
           >
             <img
-              src="https://www.hsutx.edu/wp-content/uploads/2018/06/Spirit-Cowboy-Profile-Only.png"
+              src="src/assets/Spirit-Cowboy-Profile-Only.png"
               alt="Cowboy Cards Logo"
               className="h-8 w-auto md:hidden"
             />

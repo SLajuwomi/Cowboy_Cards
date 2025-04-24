@@ -8,13 +8,13 @@ import {
   IonSelect,
   IonSelectOption,
 } from '@ionic/react';
-import StreakFlameCard from './StreakFlameCard';
+import LoginStreakCard from './LoginStreakCard';
 
 const UserAccountSecondRow = (props) => {
   return (
     <>
       <div className="flex flex-col md:flex-row gap-6 py-6">
-        <StreakFlameCard streak={props.streak} />
+        <LoginStreakCard streak={props.streak} />
         <IonCard className="w-full md:w-1/2 rounded-lg border shadow-sm">
           <IonCardHeader className="p-6">
             <IonCardTitle className="text-xl font-semibold text-primary">
