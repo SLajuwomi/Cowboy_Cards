@@ -1,13 +1,20 @@
 package controllers
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
+	"net/smtp"
+	"os"
 	"strings"
+	"time"
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/middleware"
+	"github.com/jackc/pgx/v5/pgtype"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -147,3 +154,122 @@ func (h *DBHandler) Signup(w http.ResponseWriter, r *http.Request) {
 // 	w.WriteHeader(http.StatusOK)
 // 	json.NewEncoder(w).Encode(map[string]string{"message": "Successfully logged out"})
 // }
+
+func (h *DBHandler) SendResetPasswordToken(w http.ResponseWriter, r *http.Request) {
+	headerVals, err := getHeaderVals(r, email)
+	if err != nil {
+		logAndSendError(w, err, "Header error", http.StatusBadRequest)
+		return
+	}
+
+	resetToken, err := generateUniqueToken()
+	if err != nil {
+		http.Error(w, "Failed to generate reset token", http.StatusInternalServerError)
+		return
+	}
+
+	emailBody := fmt.Sprintf(`
+Howdy Partner!
+
+You've requested a password reset for Cowboy Cards. To reset your password, please copy the following token:
+%s
+
+This token will expire in 1 hour.
+
+If you did not request this password reset, please ignore this email.
+
+Yeehaw!
+The Cowboy Cards Team
+	`, resetToken)
+
+	query, ctx, conn, err := getQueryConnAndContext(r, h)
+	if err != nil {
+		logAndSendError(w, err, "Database connection error", http.StatusInternalServerError)
+		return
+	}
+	defer conn.Release()
+	user, err := query.GetUserByEmail(ctx, headerVals[email])
+	if err != nil {
+		logAndSendError(w, err, "Invalid email", http.StatusUnauthorized)
+		return
+	}
+
+	// Store the reset token in the database
+	err = query.CreateResetToken(ctx, db.CreateResetTokenParams{
+		ResetToken: pgtype.Text{resetToken, true},
+		ID:         user.ID,
+	})
+
+	if err := SendEmail(headerVals[email], "Cowboy Cards Password Reset", emailBody); err != nil {
+		http.Error(w, "Failed to send password reset email", http.StatusInternalServerError)
+		return
+	}
+}
+
+func (h *DBHandler) ResetPassword(w http.ResponseWriter, r *http.Request) {
+	headerVals, err := getHeaderVals(r, password, token, email)
+	if err != nil {
+		logAndSendError(w, err, "Header error", http.StatusBadRequest)
+		return
+	}
+
+	query, ctx, conn, err := getQueryConnAndContext(r, h)
+	if err != nil {
+		logAndSendError(w, err, "Database connection error", http.StatusInternalServerError)
+		return
+	}
+	defer conn.Release()
+	user, err := query.GetUserByEmail(ctx, headerVals[email])
+	if err != nil {
+		logAndSendError(w, err, "Invalid email", http.StatusUnauthorized)
+		return
+	}
+
+	if time.Now().After(user.UpdatedAt.Time.Add(time.Hour)) {
+		logAndSendError(w, err, "Reset token expired", http.StatusUnauthorized)
+		return
+	}
+
+	if user.ResetToken.String != headerVals[token] {
+		logAndSendError(w, err, "Invalid reset token", http.StatusUnauthorized)
+		return
+	}
+
+	err = query.UpdatePasswordAndClearResetToken(ctx, db.UpdatePasswordAndClearResetTokenParams{
+		ID:       user.ID,
+		Password: headerVals[password],
+	})
+	if err != nil {
+		http.Error(w, "Failed to update password", http.StatusInternalServerError)
+		return
+	}
+}
+
+func generateUniqueToken() (string, error) {
+	b := make([]byte, 32)
+	_, err := rand.Read(b)
+	if err != nil {
+		return "", err
+	}
+	return base64.URLEncoding.EncodeToString(b), nil
+}
+
+func SendEmail(to, subject, body string) error {
+	fmt.Println(os.Getenv("SMTP_USERNAME"), os.Getenv("SMTP_PASSWORD"), os.Getenv("SMTP_HOST"), os.Getenv("SMTP_PORT"))
+	from := os.Getenv("SMTP_USERNAME")
+	password := os.Getenv("SMTP_PASSWORD")
+	smtpHost := os.Getenv("SMTP_HOST")
+	smtpPort := os.Getenv("SMTP_PORT")
+
+	auth := smtp.PlainAuth("", from, password, smtpHost)
+
+	message := []byte(fmt.Sprintf("To: %s\r\nSubject: %s\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n%s\r\n", to, subject, body))
+
+	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, []string{to}, message)
+	if err != nil {
+		fmt.Println("Error sending email:", err)
+		return err
+	}
+	fmt.Println("Email sent successfully to:", to)
+	return nil
+}

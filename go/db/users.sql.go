@@ -11,8 +11,22 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const createResetToken = `-- name: CreateResetToken :exec
+UPDATE users SET reset_token = $1 WHERE id = $2
+`
+
+type CreateResetTokenParams struct {
+	ResetToken pgtype.Text
+	ID         int32
+}
+
+func (q *Queries) CreateResetToken(ctx context.Context, arg CreateResetTokenParams) error {
+	_, err := q.db.Exec(ctx, createResetToken, arg.ResetToken, arg.ID)
+	return err
+}
+
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (username, first_name, last_name, email, password) VALUES ($1, $2, $3, $4, $5) RETURNING id, username, first_name, last_name, email, password, last_login, login_streak, created_at, updated_at
+INSERT INTO users (username, first_name, last_name, email, password) VALUES ($1, $2, $3, $4, $5) RETURNING id, username, first_name, last_name, email, password, reset_token, last_login, login_streak, created_at, updated_at
 `
 
 type CreateUserParams struct {
@@ -39,6 +53,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.LastName,
 		&i.Email,
 		&i.Password,
+		&i.ResetToken,
 		&i.LastLogin,
 		&i.LoginStreak,
 		&i.CreatedAt,
@@ -57,7 +72,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, username, first_name, last_name, email, password, last_login, login_streak, created_at, updated_at FROM users WHERE email = $1
+SELECT id, username, first_name, last_name, email, password, reset_token, last_login, login_streak, created_at, updated_at FROM users WHERE email = $1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
@@ -70,6 +85,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.LastName,
 		&i.Email,
 		&i.Password,
+		&i.ResetToken,
 		&i.LastLogin,
 		&i.LoginStreak,
 		&i.CreatedAt,
@@ -248,6 +264,34 @@ type UpdatePasswordParams struct {
 
 func (q *Queries) UpdatePassword(ctx context.Context, arg UpdatePasswordParams) error {
 	_, err := q.db.Exec(ctx, updatePassword, arg.Password, arg.ID)
+	return err
+}
+
+const updatePasswordAndClearResetToken = `-- name: UpdatePasswordAndClearResetToken :exec
+UPDATE users SET password = $1, reset_token = NULL WHERE id = $2
+`
+
+type UpdatePasswordAndClearResetTokenParams struct {
+	Password string
+	ID       int32
+}
+
+func (q *Queries) UpdatePasswordAndClearResetToken(ctx context.Context, arg UpdatePasswordAndClearResetTokenParams) error {
+	_, err := q.db.Exec(ctx, updatePasswordAndClearResetToken, arg.Password, arg.ID)
+	return err
+}
+
+const updateResetTokenAndExpiry = `-- name: UpdateResetTokenAndExpiry :exec
+UPDATE users SET reset_token = $2 WHERE email = $1
+`
+
+type UpdateResetTokenAndExpiryParams struct {
+	Email      string
+	ResetToken pgtype.Text
+}
+
+func (q *Queries) UpdateResetTokenAndExpiry(ctx context.Context, arg UpdateResetTokenAndExpiryParams) error {
+	_, err := q.db.Exec(ctx, updateResetTokenAndExpiry, arg.Email, arg.ResetToken)
 	return err
 }
 
