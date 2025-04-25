@@ -60,13 +60,13 @@ func (h *DBHandler) GetFlashcardSetById(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	response := ClassAndSetData{
-		ID:               flashcard_set.ID,
-		ClassName:        flashcard_set.SetName,
-		ClassDescription: flashcard_set.SetDescription,
-		CreatedAt:        flashcard_set.CreatedAt.Time.Format(time.DateTime),
-		UpdatedAt:        flashcard_set.UpdatedAt.Time.Format(time.DateTime),
-		Role:             role,
+	response := FlashcardSet{
+		ID:             flashcard_set.ID,
+		SetName:        flashcard_set.SetName,
+		SetDescription: flashcard_set.SetDescription,
+		CreatedAt:      flashcard_set.CreatedAt.Time.Format(time.DateTime),
+		UpdatedAt:      flashcard_set.UpdatedAt.Time.Format(time.DateTime),
+		Role:           role,
 	}
 
 	w.Header().Set("Content-Type", "application/json")

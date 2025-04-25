@@ -24,11 +24,11 @@ const Navbar = () => {
   const closePopover = () => setPopoverEvent(null);
 
   const handleMenuItemClick = (route) => {
-    router.push(route);
+    ionRouter.push(route);
     document.querySelector('ion-menu')?.close();
   };
 
-  const router = useIonRouter();
+  const ionRouter = useIonRouter();
   const { theme, setTheme } = useTheme();
 
   const toggleDarkMode = () => {
@@ -88,7 +88,7 @@ const Navbar = () => {
 
           <div
             className="flex items-center cursor-pointer"
-            onClick={() => router.push('/home')}
+            onClick={() => ionRouter.push('/home')}
           >
             {/* TODO: image sometimes doesn't load */}
             <img
@@ -119,7 +119,7 @@ const Navbar = () => {
                     button
                     onClick={() => {
                       closePopover();
-                      router.push('/create-set');
+                      ionRouter.push('/create-set');
                     }}
                   >
                     Create Set
@@ -128,7 +128,7 @@ const Navbar = () => {
                     button
                     onClick={() => {
                       closePopover();
-                      router.push('/create-class');
+                      ionRouter.push('/create-class');
                     }}
                   >
                     Create Class
@@ -137,7 +137,7 @@ const Navbar = () => {
                     button
                     onClick={() => {
                       closePopover();
-                      router.push('/public-classes');
+                      ionRouter.push('/public-classes');
                     }}
                   >
                     Join Class

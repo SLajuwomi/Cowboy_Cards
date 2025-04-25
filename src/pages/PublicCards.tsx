@@ -1,4 +1,5 @@
 import { Navbar } from '@/components/Navbar';
+import type { FlashcardSet } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonCard,
@@ -10,12 +11,6 @@ import {
 } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-
-type FlashcardSet = {
-  ID: number;
-  SetName: string;
-  SetDescription: string;
-};
 
 const PublicFlashcards = () => {
   const [error, setError] = useState<string | null>(null);

@@ -7,9 +7,11 @@ import {
   IonCard,
   IonCardContent,
   IonContent,
+  IonIcon,
   IonSpinner,
   IonText,
 } from '@ionic/react';
+import { arrowBackOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
@@ -91,6 +93,7 @@ const SetOverview = () => {
               style={{ '--border-radius': '0.5rem' }}
               onClick={() => window.history.back()}
             >
+              <IonIcon slot="start" icon={arrowBackOutline} />
               Back
             </IonButton>
 

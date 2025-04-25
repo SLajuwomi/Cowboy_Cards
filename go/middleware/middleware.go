@@ -97,7 +97,7 @@ func (h *Handler) VerifyClassMemberMW(next http.Handler) http.Handler {
 			UserID:  userID,
 		})
 		if err != nil {
-			if strings.Contains(err.Error(), "no rows in set") {
+			if strings.Contains(err.Error(), "no rows in result set") {
 				ctx = context.WithValue(ctx, roleKey, no_role)
 			} else {
 				LogAndSendError(w, err, "Invalid permissions", http.StatusUnauthorized)
@@ -148,7 +148,7 @@ func (h *Handler) VerifySetMemberMW(next http.Handler) http.Handler {
 			UserID: userID,
 		})
 		if err != nil {
-			if strings.Contains(err.Error(), "no rows in set") {
+			if strings.Contains(err.Error(), "no rows in result set") {
 				ctx = context.WithValue(ctx, roleKey, no_role)
 			} else {
 				LogAndSendError(w, err, "Invalid permissions", http.StatusUnauthorized)

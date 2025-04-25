@@ -8,7 +8,8 @@ import {
 } from '@/components/ui/carousel';
 import type { Flashcard, FlashcardSet } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
-import { IonButton, IonContent, IonSpinner } from '@ionic/react';
+import { IonButton, IonContent, IonIcon, IonSpinner } from '@ionic/react';
+import { arrowBackOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
@@ -110,6 +111,7 @@ const Flashcard = () => {
             style={{ '--border-radius': '0.5rem' }}
             routerLink={`/set-overview/${id}`}
           >
+            <IonIcon slot="start" icon={arrowBackOutline} />
             Back
           </IonButton>
           <div>

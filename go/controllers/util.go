@@ -31,14 +31,22 @@ type User struct {
 	TotalCardViews any `json:"totalCardViews"`
 }
 
-// ClassAndSetData represents the classAndSet data that will be sent to the client in a getclass or flashcardSetbyid req
-type ClassAndSetData struct {
+type Class struct {
 	ID               int32
 	ClassName        string
 	ClassDescription string
 	CreatedAt        string
 	UpdatedAt        string
 	Role             string
+}
+
+type FlashcardSet struct {
+	ID             int32
+	SetName        string
+	SetDescription string
+	CreatedAt      string
+	UpdatedAt      string
+	Role           string
 }
 
 // LoginRequest represents the login request body
