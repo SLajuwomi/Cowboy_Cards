@@ -60,7 +60,7 @@ func (h *DBHandler) GetClassById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := Class{
+	response := ClassAndSetData{
 		ID:               class.ID,
 		ClassName:        class.ClassName,
 		ClassDescription: class.ClassDescription,

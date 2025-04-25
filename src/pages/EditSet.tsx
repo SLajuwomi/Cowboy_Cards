@@ -125,7 +125,7 @@ const EditSet = () => {
     if (!originalSetDetails || isSaving) return;
 
     setIsSaving(true);
-    setSaveError(null);
+    setSaveError(null); // eslint-disable-next-line
     const apiPromises: Promise<any>[] = [];
 
     if (editedSetName !== originalSetDetails.SetName) {

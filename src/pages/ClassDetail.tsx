@@ -8,41 +8,16 @@ import LeaderboardTab from '@/components/LeaderboardTab';
 import { Navbar } from '@/components/Navbar';
 import StudentTab from '@/components/StudentTab';
 import { type CarouselApi } from '@/components/ui/carousel';
+import {
+  Class,
+  ClassUser,
+  FlashcardSet,
+  GetClassScoresRow,
+} from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import { IonContent } from '@ionic/react';
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-
-type Class = {
-  ID: number;
-  ClassName: string;
-  ClassDescription: string;
-  CreatedAt: string;
-  UpdatedAt: string;
-  Role: string;
-};
-
-type FlashcardSet = {
-  ID: number;
-  SetName: string;
-  SetDescription: string;
-  CreatedAt: string;
-  UpdatedAt: string;
-};
-
-type ClassUser = {
-  UserID: number;
-  ClassID: number;
-  Role: string;
-  FirstName: string;
-  LastName: string;
-};
-
-type GetClassScoresRow = {
-  UserID: number;
-  Username: string;
-  ClassScore: number;
-};
 
 const ClassDetail = () => {
   const { id } = useParams<{ id: string }>();

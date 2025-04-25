@@ -1,30 +1,3 @@
-export interface Flashcard {
-  ID: number;
-  Front: string;
-  Back: string;
-  SetID: number;
-  CreatedAt: string;
-  UpdatedAt: string;
-}
-
-export interface FlashcardSet {
-  ID: number;
-  SetName: string;
-  SetDescription: string;
-  CreatedAt: string;
-  UpdatedAt: string;
-}
-
-export interface SetUser {
-  UserID: number;
-  SetID: number;
-  Role: string;
-  SetScore: number;
-  IsPrivate: boolean;
-  SetName: string;
-  SetDescription: string;
-}
-
 export interface CardHistory {
   UserID: number;
   CardID: number;
@@ -40,6 +13,49 @@ export interface Class {
   ClassDescription: string;
   CreatedAt: string;
   UpdatedAt: string;
+  Role: string;
+}
+
+export interface ClassUser {
+  UserID: number;
+  ClassID: number;
+  Role: string;
+  FirstName: string;
+  LastName: string;
+}
+
+export interface Flashcard {
+  ID: number;
+  Front: string;
+  Back: string;
+  SetID: number;
+  CreatedAt: string;
+  UpdatedAt: string;
+}
+
+export interface FlashcardSet {
+  ID: number;
+  SetName: string;
+  SetDescription: string;
+  CreatedAt: string;
+  UpdatedAt: string;
+  Role: string;
+}
+
+export interface GetClassScoresRow {
+  UserID: number;
+  Username: string;
+  ClassScore: number;
+}
+
+export interface SetUser {
+  UserID: number;
+  SetID: number;
+  Role: string;
+  SetScore: number;
+  IsPrivate: boolean;
+  SetName: string;
+  SetDescription: string;
 }
 
 export interface User {

@@ -24,7 +24,6 @@ const Flashcard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    //TODO: Fix this, currently only the owner can see the set details
     const fetchSetDetails = async () => {
       try {
         const setRes = await makeHttpCall<FlashcardSet>(
