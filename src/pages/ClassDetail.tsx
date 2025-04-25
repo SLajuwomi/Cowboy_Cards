@@ -8,7 +8,7 @@ import LeaderboardTab from '@/components/LeaderboardTab';
 import { Navbar } from '@/components/Navbar';
 import StudentTab from '@/components/StudentTab';
 import { type CarouselApi } from '@/components/ui/carousel';
-import {
+import type {
   Class,
   ClassUser,
   FlashcardSet,

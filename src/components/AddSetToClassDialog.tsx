@@ -1,4 +1,4 @@
-import { SetUser } from '@/types/globalTypes';
+import type { SetUser } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonButton,
