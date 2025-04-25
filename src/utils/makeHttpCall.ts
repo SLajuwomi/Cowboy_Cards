@@ -59,7 +59,12 @@ export async function makeHttpCall<T>(
       );
     }
 
-    // all GOOD responses should be json now
+    // Handle 204 No Content specifically
+    if (response.status === 204) {
+      return null as T; // Return null or appropriate value for no content
+    }
+
+    // For other successful responses, parse JSON
     const data = await response.json();
     return data as T;
   } catch (error) {

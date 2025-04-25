@@ -13,7 +13,6 @@ import { arrowBackOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
-//TODO: add summary after going through all cards of cards missed, cards correct, etc
 const Flashcard = () => {
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
@@ -123,10 +122,10 @@ const Flashcard = () => {
             ) : (
               <>
                 <h1 className="text-2xl font-bold">
-                  {flashcardSetData.SetName}
+                  {flashcardSetData?.SetName}
                 </h1>
                 <p className="text-gray-500">
-                  {flashcardSetData.SetDescription}
+                  {flashcardSetData?.SetDescription}
                 </p>
               </>
             )}
