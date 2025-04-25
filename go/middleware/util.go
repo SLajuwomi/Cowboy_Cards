@@ -35,6 +35,7 @@ const (
 	roleKey      userRoleKey    = "userRole"
 	sessionName  string         = "cowboy-cards-session"
 	id           string         = "id"
+	no_role      string         = "no role"
 )
 
 func LogAndSendError(w http.ResponseWriter, err error, msg string, statusCode int) {

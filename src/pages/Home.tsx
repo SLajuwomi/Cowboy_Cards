@@ -97,10 +97,10 @@ const Home = () => {
                 color="primary"
                 className="rounded-lg"
                 style={{ '--border-radius': '0.5rem' }}
-                href={tab === 'classes' ? '/create-class' : '/create-set'}
+                href={tab === 'classes' ? '/public-classes' : '/public-cards'}
               >
                 <IonIcon slot="start" icon={addOutline} />{' '}
-                {tab === 'classes' ? 'Add Class' : 'Add Set'}
+                {tab === 'classes' ? 'Join Class' : 'Join Set'}
               </IonButton>
             </div>
           </div>

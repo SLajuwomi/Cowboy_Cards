@@ -3,7 +3,7 @@ type CredentialOptions = 'include' | 'omit' | 'same-origin';
 
 // Interface defining the structure of options that can be passed to fetch requests
 interface FetchOptions {
-  method: HttpMethod;
+  method: HttpMethod; // eslint-disable-next-line
   headers: any;
   credentials?: CredentialOptions;
   body?: string; //JSON
@@ -39,7 +39,7 @@ export async function makeHttpCall<T>(
     // Make the actual HTTP request
     const response = await fetch(API_BASE + url, finalOpts);
 
-    // Check if the response was successful (status 200-299)
+    // Check if the req failed: 4xx, 5xx
     if (!response.ok) {
       console.log('resp', response);
       // Handle specific auth error types
@@ -52,10 +52,14 @@ export async function makeHttpCall<T>(
       //   } else {
       //     throw new Error(data.message || 'Authentication failed');
       //   }
-      throw new Error(`HTTP error! Status: ${response.status}`);
+      const msg = await response.text();
+
+      throw new Error(
+        `HTTP error! Status: ${response.status}, Message: ${msg}`
+      );
     }
 
-    // all responses should be json now
+    // all GOOD responses should be json now
     const data = await response.json();
     return data as T;
   } catch (error) {
