@@ -1,4 +1,5 @@
 import { Navbar } from '@/components/Navbar';
+import type { Class } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonButton,
@@ -10,15 +11,6 @@ import {
 } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-
-//TODO: move to global types/import from
-type Class = {
-  ID: number;
-  ClassName: string;
-  ClassDescription: string;
-  CreatedAt: string;
-  UpdatedAt: string;
-};
 
 const PublicClasses = () => {
   const [classes, setClasses] = useState<Class[]>([]);

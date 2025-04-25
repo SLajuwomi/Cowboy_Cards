@@ -48,6 +48,11 @@ export interface GetClassScoresRow {
   ClassScore: number;
 }
 
+export interface NewClass {
+  ClassName: string;
+  ClassDescription: string;
+}
+
 export interface SetUser {
   UserID: number;
   SetID: number;

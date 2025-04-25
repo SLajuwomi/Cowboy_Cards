@@ -1,4 +1,5 @@
 import { Navbar } from '@/components/Navbar';
+import type { NewClass } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonButton,
@@ -9,12 +10,6 @@ import {
   IonTextarea,
 } from '@ionic/react';
 import { useEffect, useState } from 'react';
-
-type Class = {
-  ID: number;
-  ClassName: string;
-  ClassDescription: string;
-};
 
 const CreateClass = () => {
   const [buttonClicked, setButtonClicked] = useState(false);
@@ -47,7 +42,7 @@ const CreateClass = () => {
       setError(null);
 
       try {
-        const data = await makeHttpCall<Class>(`/api/classes`, {
+        const data = await makeHttpCall<NewClass>(`/api/classes`, {
           method: 'POST',
           headers: {
             class_name: formData.className,

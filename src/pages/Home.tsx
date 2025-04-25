@@ -1,5 +1,6 @@
 import { Footer } from '@/components/Footer';
 import { Navbar } from '@/components/Navbar';
+import type { Class, FlashcardSet } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonButton,
@@ -19,25 +20,10 @@ import { addOutline, bookOutline, listOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-type Class = {
-  ClassID: number;
-  Role: string;
-  ClassName: string;
-  ClassDescription: string;
-};
-
-type Set = {
-  SetID: number;
-  SetName: string;
-  SetDescription: string;
-  CreatedAt: string;
-  UpdatedAt: string;
-};
-
 const Home = () => {
   const [tab, setTab] = useState('classes');
   const [classes, setClasses] = useState<Class[]>([]);
-  const [sets, setSets] = useState<Set[]>([]);
+  const [sets, setSets] = useState<FlashcardSet[]>([]);
   const [classesLoading, setClassesLoading] = useState(false);
   const [setsLoading, setSetsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -64,7 +50,7 @@ const Home = () => {
     const fetchSetsOfUser = async () => {
       setSetsLoading(true);
       try {
-        const data = await makeHttpCall<Set[]>(`/api/set_user/list`);
+        const data = await makeHttpCall<FlashcardSet[]>(`/api/set_user/list`);
         console.log('Sets: ', data);
         setSets(data);
       } catch (error) {
@@ -96,7 +82,9 @@ const Home = () => {
                 color="primary"
                 className="rounded-lg"
                 style={{ '--border-radius': '0.5rem' }}
-                href={tab === 'classes' ? '/public-classes' : '/public-cards'}
+                routerLink={
+                  tab === 'classes' ? '/public-classes' : '/public-cards'
+                }
               >
                 <IonIcon slot="start" icon={addOutline} />{' '}
                 {tab === 'classes' ? 'Join Class' : 'Join Set'}
@@ -139,7 +127,7 @@ const Home = () => {
               ) : (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                   {classes.map((cls) => (
-                    <Link key={cls.ClassID} to={`/class/${cls.ClassID}`}>
+                    <Link key={cls.ID} to={`/class/${cls.ID}`}>
                       <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-transform-shadow duration-200 rounded-lg border shadow-sm">
                         <IonCardHeader className="flex flex-col space-y-1.5 p-6">
                           <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
@@ -176,7 +164,7 @@ const Home = () => {
               ) : (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                   {sets.map((set) => (
-                    <Link key={set.SetID} to={`/set-overview/${set.SetID}`}>
+                    <Link key={set.ID} to={`/set-overview/${set.ID}`}>
                       <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-transform-shadow duration-200 rounded-lg border shadow-sm">
                         <IonCardHeader className="flex flex-col space-y-1.5 p-6">
                           <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
