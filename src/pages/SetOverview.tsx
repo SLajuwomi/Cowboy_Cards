@@ -23,6 +23,7 @@ const SetOverview = () => {
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
 
   useEffect(() => {
+    //TODO: only the owner can see the set details
     const fetchSetDetails = async () => {
       try {
         const setRes = await makeHttpCall<FlashcardSet>(

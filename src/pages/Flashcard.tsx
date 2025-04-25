@@ -116,8 +116,17 @@ const Flashcard = () => {
             Back
           </IonButton>
           <div>
-            <h1 className="text-2xl font-bold">{title}</h1>
-            <p className="text-gray-500">{description}</p>
+            {loading ? (
+              <div className="flex flex-col gap-2">
+                <IonSpinner name="dots" />
+                <IonSpinner name="dots" />
+              </div>
+            ) : (
+              <>
+                <h1 className="text-2xl font-bold">{title}</h1>
+                <p className="text-gray-500">{description}</p>
+              </>
+            )}
           </div>
         </div>
 
