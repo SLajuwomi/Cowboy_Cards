@@ -31,8 +31,8 @@ type User struct {
 	TotalCardViews any `json:"totalCardViews"`
 }
 
-// Class represents the class data that will be sent to the client in a getclassbyid req
-type Class struct {
+// ClassAndSetData represents the classAndSet data that will be sent to the client in a getclass or flashcardSetbyid req
+type ClassAndSetData struct {
 	ID               int32
 	ClassName        string
 	ClassDescription string

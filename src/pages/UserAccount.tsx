@@ -1,6 +1,6 @@
 import { Navbar } from '@/components/Navbar';
 import { useTheme } from '@/contexts/ThemeContext';
-import { User } from '@/types/globalTypes';
+import type { User } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonButton,

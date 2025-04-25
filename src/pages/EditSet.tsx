@@ -5,7 +5,7 @@ import FlashcardListEditor from '@/components/FlashcardListEditor';
 import { Footer } from '@/components/Footer';
 import { Navbar } from '@/components/Navbar';
 import SetMetadataEditor from '@/components/SetMetadataEditor';
-import { Flashcard, FlashcardSet } from '@/types/globalTypes';
+import type { Flashcard, FlashcardSet } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonButton,
@@ -125,7 +125,7 @@ const EditSet = () => {
     if (!originalSetDetails || isSaving) return;
 
     setIsSaving(true);
-    setSaveError(null);
+    setSaveError(null); // eslint-disable-next-line
     const apiPromises: Promise<any>[] = [];
 
     if (editedSetName !== originalSetDetails.SetName) {

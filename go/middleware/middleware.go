@@ -148,14 +148,18 @@ func (h *Handler) VerifySetMemberMW(next http.Handler) http.Handler {
 			UserID: userID,
 		})
 		if err != nil {
-			LogAndSendError(w, err, "Invalid permissions", http.StatusInternalServerError)
-			return
+			if strings.Contains(err.Error(), "no rows in set") {
+				ctx = context.WithValue(ctx, roleKey, no_role)
+			} else {
+				LogAndSendError(w, err, "Invalid permissions", http.StatusUnauthorized)
+				return
+			}
+		} else {
+			log.Println("set member: ", member)
+			ctx = context.WithValue(ctx, roleKey, member.Role)
 		}
 
-		log.Println("set member: ", member)
-
 		ctx = context.WithValue(ctx, setKey, setID)
-		ctx = context.WithValue(ctx, roleKey, member.Role)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

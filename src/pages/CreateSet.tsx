@@ -1,5 +1,5 @@
 import { Navbar } from '@/components/Navbar';
-import { FlashcardSet } from '@/types/globalTypes';
+import type { FlashcardSet } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonButton,

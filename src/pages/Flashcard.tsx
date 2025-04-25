@@ -16,26 +16,23 @@ import { useHistory, useParams } from 'react-router-dom';
 const Flashcard = () => {
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [flashcardSetData, setFlashcardSetData] = useState<FlashcardSet>();
   const [cards, setCards] = useState<Flashcard[]>([]);
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    //TODO: Fix this, currently only the owner can see the set details
     const fetchSetDetails = async () => {
       try {
-        const setRes = await makeHttpCall<FlashcardSet>(
+        const setDetails = await makeHttpCall<FlashcardSet>(
           `/api/flashcards/sets/`,
           {
             method: 'GET',
             headers: { id },
           }
         );
-        setTitle(setRes.SetName);
-        setDescription(setRes.SetDescription);
+        setFlashcardSetData(setDetails);
       } catch (error) {
         console.error('Failed to fetch set info', error);
       }
@@ -123,8 +120,12 @@ const Flashcard = () => {
               </div>
             ) : (
               <>
-                <h1 className="text-2xl font-bold">{title}</h1>
-                <p className="text-gray-500">{description}</p>
+                <h1 className="text-2xl font-bold">
+                  {flashcardSetData.SetName}
+                </h1>
+                <p className="text-gray-500">
+                  {flashcardSetData.SetDescription}
+                </p>
               </>
             )}
           </div>

@@ -57,7 +57,7 @@ const PublicFlashcards = () => {
           {loading && <div>Loading...</div>}
           {error && <div className="text-red-500 mt-2">{error}</div>}
           <IonSearchbar
-            value={searchText}
+            value={searchText} // eslint-disable-next-line
             onIonInput={(e: any) => setSearchText(e.target.value)} // Use onIonInput for real-time updates
             placeholder="Search flashcard sets"
             className="mb-4 w-1/2"

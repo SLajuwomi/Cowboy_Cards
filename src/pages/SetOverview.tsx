@@ -1,5 +1,5 @@
 import { Navbar } from '@/components/Navbar';
-import { Flashcard, FlashcardSet } from '@/types/globalTypes';
+import type { Flashcard, FlashcardSet } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonAlert,
@@ -16,8 +16,7 @@ import { useHistory, useParams } from 'react-router-dom';
 const SetOverview = () => {
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [flashcardSetData, setFlashcardSetData] = useState<FlashcardSet>();
   const [cards, setCards] = useState<Flashcard[]>([]);
   const [loadingCards, setLoadingCards] = useState(true);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
@@ -26,15 +25,14 @@ const SetOverview = () => {
     //TODO: only the owner can see the set details
     const fetchSetDetails = async () => {
       try {
-        const setRes = await makeHttpCall<FlashcardSet>(
+        const setDetails = await makeHttpCall<FlashcardSet>(
           `/api/flashcards/sets/`,
           {
             method: 'GET',
             headers: { id: id },
           }
         );
-        setTitle(setRes.SetName);
-        setDescription(setRes.SetDescription);
+        setFlashcardSetData(setDetails);
       } catch (error) {
         console.error('Failed to fetch set info', error);
       }
@@ -97,8 +95,10 @@ const SetOverview = () => {
             </IonButton>
 
             <div className="flex flex-col">
-              <h1 className="text-3xl font-bold">{title}</h1>
-              <p className="text-base mt-1 text-gray-700">{description}</p>
+              <h1 className="text-3xl font-bold">{flashcardSetData.SetName}</h1>
+              <p className="text-base mt-1 text-gray-700">
+                {flashcardSetData.SetDescription}
+              </p>
             </div>
           </div>
 
