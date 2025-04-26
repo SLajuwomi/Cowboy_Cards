@@ -19,6 +19,8 @@ import { IonContent } from '@ionic/react';
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
+//TODO: 504 Gateway Timeout when using live site, this happens due to Ionic's router remounting the component
+
 const ClassDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [currentCardIndex, setCurrentCardIndex] = useState(0);

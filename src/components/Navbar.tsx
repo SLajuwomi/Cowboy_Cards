@@ -90,7 +90,6 @@ const Navbar = () => {
             className="flex items-center cursor-pointer"
             onClick={() => ionRouter.push('/home')}
           >
-            {/* TODO: image sometimes doesn't load */}
             <img
               src="/Spirit-Cowboy-Profile-Only.png"
               alt="Cowboy Cards Logo"

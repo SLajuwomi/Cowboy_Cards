@@ -12,8 +12,6 @@ import {
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
-//TODO: Decide if we want to have a CreateSet button on the ClassDetail page and be able to create sets and automatically link to class
-
 const CreateSet = () => {
   const history = useHistory();
   const [title, setTitle] = useState('');

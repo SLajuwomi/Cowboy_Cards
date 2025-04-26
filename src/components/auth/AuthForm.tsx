@@ -17,9 +17,6 @@ import { AlertCircle, LogIn } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-//TODO: 504 Gateway Timeout when using live site
-//TODO: More descriptive error messages
-
 export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
