@@ -17,7 +17,7 @@ const UserAccountSecondRow = (props) => {
         <LoginStreakCard streak={props.streak} />
         <IonCard className="md:w-1/2 rounded-lg border shadow-sm">
           <IonCardHeader className="p-6">
-            <IonCardTitle className="text-xl font-semibold text-primary">
+            <IonCardTitle className="text-xl font-rye font-semibold text-primary">
               Account Options
             </IonCardTitle>
           </IonCardHeader>
@@ -36,10 +36,10 @@ const UserAccountSecondRow = (props) => {
                 <IonSelectOption value="dark">Dark</IonSelectOption>
               </IonSelect>
               <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-sm font-medium text-black dark:text-white">
+                <div className="mr-4">
+                  <h4 className="text-sm font-medium text-black dark:text-white">
                     Change Your Password
-                  </p>
+                  </h4>
                   <p className="text-xs dark:text-gray-300">
                     Reset your account password.
                   </p>
@@ -52,10 +52,10 @@ const UserAccountSecondRow = (props) => {
                 </IonButton>
               </div>
               <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-sm font-medium text-black dark:text-white">
+                <div className="mr-4">
+                  <h4 className="text-sm font-medium text-black dark:text-white">
                     Delete Your Account
-                  </p>
+                  </h4>
                   <p className="text-xs dark:text-gray-300">
                     This will delete all account data and can't be undone.
                   </p>

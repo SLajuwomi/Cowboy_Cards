@@ -14,7 +14,7 @@ export default function LoginStreakCard(props) {
   return (
     <IonCard className="md:w-1/2 rounded-lg border shadow-sm">
       <IonCardHeader className="p-6">
-        <IonCardTitle className="text-xl font-semibold text-primary">
+        <IonCardTitle className="text-xl font-rye font-semibold text-primary">
           Login Streak
         </IonCardTitle>
       </IonCardHeader>
@@ -23,7 +23,7 @@ export default function LoginStreakCard(props) {
 
         <span
           key={props.streak}
-          className="text-6xl font-extrabold text-green-500 tabular-nums"
+          className="text-6xl px-4 font-rye font-extrabold text-[color:--ion-color-primary] tabular-nums"
         >
           <CountUp
             start={prev.current}

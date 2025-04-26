@@ -10,7 +10,7 @@ import { home } from 'ionicons/icons';
 
 const Footer = () => {
   return (
-    <IonFooter className="hidden md:block ion-no-border fixed bottom-0 w-full">
+    <IonFooter className="hidden sm:block ion-no-border fixed bottom-0 w-full">
       <IonToolbar>
         <IonButtons slot="start">
           <IonButton routerLink="/home">

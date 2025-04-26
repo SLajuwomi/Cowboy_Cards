@@ -10,7 +10,6 @@ import {
   IonMenu,
   IonMenuToggle,
   IonPopover,
-  IonTitle,
   IonToolbar,
   useIonRouter,
 } from '@ionic/react';
@@ -87,7 +86,7 @@ const Navbar = () => {
           </IonButtons>
 
           <div
-            className="flex items-center cursor-pointer"
+            className="cursor-pointer"
             onClick={() => ionRouter.push('/home')}
           >
             <img
@@ -95,12 +94,15 @@ const Navbar = () => {
               alt="Cowboy Cards Logo"
               className="h-8 w-auto xs:hidden block"
             />
-            <IonTitle
+            <h2 className="hidden xs:block text-2xl sm:text-3xl md:text-4xl text-ellipsis overflow-hidden whitespace-nowrap font-ewert text-[color:--ion-color-primary]">
+              Cowboy Cards
+            </h2>
+            {/* <IonTitle
               color="primary"
               className="hidden xs:block text-2xl sm:text-3xl lg:text-4xl font-ewert"
             >
               Cowboy Cards
-            </IonTitle>
+            </IonTitle> */}
           </div>
 
           <IonButtons slot="end">

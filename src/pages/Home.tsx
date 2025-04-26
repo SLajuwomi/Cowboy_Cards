@@ -72,11 +72,11 @@ const Home = () => {
       <Navbar />
       <div id="main-content" className="container mx-auto px-4 py-8 flex-grow">
         {error && <div className="text-red-500 mt-2">{error}</div>}
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-8">
-          <h1 className="text-3xl font-bold">
+        <div className="flex flex-col me:flex-row me:justify-between me:items-center mb-8">
+          <h1 className="text-4xl font-smokum font-bold">
             {tab === 'classes' ? 'My Classes' : 'My Flashcard Sets'}
           </h1>
-          <div className="flex items-center gap-2 mt-4 md:mt-0">
+          <div className="flex items-center gap-2 mt-4 me:mt-0">
             <IonButton
               color="primary"
               className="rounded-lg"

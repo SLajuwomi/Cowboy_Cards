@@ -151,7 +151,7 @@ const UserAccount = () => {
 
       <div id="main-content" className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <p className="text-xl font-semibold text-primary">
+          <p className="text-xl font-rye font-semibold text-primary">
             Welcome back, {userInfo?.username || 'User'}!
           </p>
         </div>

@@ -230,7 +230,9 @@ const EditSet = () => {
           id="main-content"
           className="container mx-auto px-4 py-8 max-w-4xl"
         >
-          <h1 className="text-3xl font-bold mb-6">Edit Flashcard Set</h1>
+          <h1 className="text-4xl tracking-wide font-bold font-smokum mb-6">
+            Edit Flashcard Set
+          </h1>
 
           <IonLoading isOpen={loading} message={'Loading set data...'} />
           <IonLoading isOpen={isSaving} message={'Saving changes...'} />

@@ -47,7 +47,9 @@ const PublicClasses = () => {
       <Navbar />
       <div id="main-content" className="container mx-auto px-0 py-8 w-4/5">
         <div className="flex items-center flex-col justify-between mb-4">
-          <h1 className="text-3xl font-bold pb-8">Public Classes</h1>
+          <h1 className="text-4xl tracking-wide font-bold font-smokum pb-8">
+            Public Classes
+          </h1>
           {loading && <div>Loading...</div>}
           {error && <div className="text-red-500 mt-2">{error}</div>}
           <IonSearchbar

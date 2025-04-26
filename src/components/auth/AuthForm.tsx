@@ -125,7 +125,7 @@ export const AuthForm = () => {
 
       // Show success message
       toast({
-        duration: 5000,
+        duration: 8000,
         title: isLogin ? 'Welcome back!' : 'Account created',
         description: isLogin
           ? 'You have been successfully logged in.'

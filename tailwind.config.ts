@@ -26,6 +26,7 @@ export default {
       },
       screens: {
         xs: '24rem',
+        me: '30rem',
       },
       transitionProperty: {
         'transform-shadow': 'transform, box-shadow',
