@@ -8,93 +8,17 @@ import LeaderboardTab from '@/components/LeaderboardTab';
 import { Navbar } from '@/components/Navbar';
 import StudentTab from '@/components/StudentTab';
 import { type CarouselApi } from '@/components/ui/carousel';
-import type {
-  Class,
-  FlashcardSet,
-  GetClassScoresRow,
-  ListMembersOfAClassRow,
-} from '@/types/globalTypes';
-import { makeHttpCall } from '@/utils/makeHttpCall';
+import {
+  useClassDetails,
+  useClassLeaderboard,
+  useClassMembers,
+  useClassSets,
+  useDeleteStudent,
+  useUpdateClass,
+} from '@/hooks/useClassQueries';
 import { IonContent } from '@ionic/react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-
-//TODO: 504 Gateway Timeout when using live site, this happens due to Ionic's router remounting the component
-
-// Custom hooks for data fetching
-const useClassDetails = (id: string) =>
-  useQuery<Class, Error>({
-    queryKey: ['class', id],
-    queryFn: () =>
-      makeHttpCall<Class>(`/api/classes/`, {
-        method: 'GET',
-        headers: { id },
-      }),
-    staleTime: 5 * 60 * 1000,
-  });
-
-const useClassSets = (id: string) =>
-  useQuery<FlashcardSet[], Error>({
-    queryKey: ['classSets', id],
-    queryFn: () =>
-      makeHttpCall<FlashcardSet[]>(`/api/class_set/list_sets`, {
-        method: 'GET',
-        headers: { id },
-      }),
-    staleTime: 5 * 60 * 1000,
-  });
-
-const useClassMembers = (id: string) =>
-  useQuery<ListMembersOfAClassRow[], Error>({
-    queryKey: ['classMembers', id],
-    queryFn: () =>
-      makeHttpCall<ListMembersOfAClassRow[]>(`/api/class_user/members`, {
-        method: 'GET',
-        headers: { class_id: id },
-      }),
-    staleTime: 5 * 60 * 1000,
-  });
-
-const useClassLeaderboard = (id: string) =>
-  useQuery<GetClassScoresRow[], Error>({
-    queryKey: ['classLeaderboard', id],
-    queryFn: () =>
-      makeHttpCall<GetClassScoresRow[]>(`/api/classes/leaderboard`, {
-        method: 'GET',
-        headers: { id },
-      }),
-    staleTime: 5 * 60 * 1000,
-  });
-
-type UpdateClassArgs = { id: string; field: string; value: string };
-const useUpdateClass = () => {
-  const queryClient = useQueryClient();
-  return useMutation<Class, Error, UpdateClassArgs>({
-    mutationFn: ({ id, field, value }) =>
-      makeHttpCall<Class>(`/api/classes/${field}`, {
-        method: 'PUT',
-        headers: { id, [field]: value },
-      }),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['class', variables.id] });
-    },
-  });
-};
-
-const useDeleteStudent = (id: string) => {
-  const queryClient = useQueryClient();
-  return useMutation<void, Error, number>({
-    mutationFn: (studentId) =>
-      makeHttpCall(`/api/class_user/`, {
-        method: 'DELETE',
-        headers: { student_id: studentId, id },
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['classMembers', id] });
-    },
-  });
-};
 
 const ClassDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -107,7 +31,7 @@ const ClassDetail = () => {
     class_description: '',
   });
   const [showAddSetDialog, setShowAddSetDialog] = useState(false);
-  const [errors, setErrors] = useState<{
+  const [formErrors, setFormErrors] = useState<{
     className?: string;
     classDescription?: string;
     general?: string;
@@ -137,7 +61,6 @@ const ClassDetail = () => {
 
   const updateClassMutation = useUpdateClass();
   const deleteStudentMutation = useDeleteStudent(id!);
-  const queryClient = useQueryClient();
 
   const isTeacher = classData?.Role === 'teacher';
 
@@ -162,7 +85,7 @@ const ClassDetail = () => {
       newErrors.classDescription = 'Class description is required';
       isValid = false;
     }
-    setErrors(newErrors);
+    setFormErrors(newErrors);
     return isValid;
   };
 
@@ -171,12 +94,12 @@ const ClassDetail = () => {
     try {
       await Promise.all([
         updateClassMutation.mutateAsync({
-          id,
+          id: id!,
           field: 'class_name',
           value: updatedInfo.class_name,
         }),
         updateClassMutation.mutateAsync({
-          id,
+          id: id!,
           field: 'class_description',
           value: updatedInfo.class_description,
         }),
@@ -214,24 +137,26 @@ const ClassDetail = () => {
   }, [carouselApi]);
 
   // Error and loading handling
-  const anyLoading =
+  const queryLoading =
     isLoadingClass || isLoadingSets || isLoadingUsers || isLoadingLeaderboard;
-  const anyError = classError || setsError || usersError || leaderboardError;
+  const queryError = classError || setsError || usersError || leaderboardError;
 
   return (
     <>
       <Navbar />
       <IonContent className="ion-padding">
         <div id="main-content" className="max-w-4xl mx-auto">
-          {anyError && <div className="text-red-500">{anyError.message}</div>}
+          {queryError && (
+            <div className="text-red-500">{queryError.message}</div>
+          )}
           <ClassDetailHeader
             classData={classData}
             isTeacher={isTeacher}
-            loading={anyLoading}
+            loading={queryLoading}
             handleEdit={handleEdit}
             isEditing={isEditing}
             updatedInfo={updatedInfo}
-            errors={errors}
+            formErrors={formErrors}
             handleChange={handleChange}
             handleSave={handleSave}
             handleCancel={handleCancel}
@@ -245,7 +170,7 @@ const ClassDetail = () => {
           {tab === 'leaderboard' && (
             <LeaderboardTab
               leaderboardData={leaderboardData}
-              loadingScores={anyLoading}
+              loadingScores={isLoadingLeaderboard}
             />
           )}
           {tab === 'flashcards' && (
@@ -253,7 +178,7 @@ const ClassDetail = () => {
               flashcardSets={flashcardSets}
               currentCardIndex={currentCardIndex}
               setApi={setCarouselApi}
-              loading={anyLoading}
+              loading={queryLoading}
             />
           )}
           {tab === 'students' && (
@@ -271,10 +196,6 @@ const ClassDetail = () => {
         onDidDismiss={() => setShowAddSetDialog(false)}
         classId={id}
         existingSetIds={flashcardSets.map((set) => set.ID)}
-        onSetAdded={() => {
-          // Invalidate queries after adding a set
-          queryClient.invalidateQueries({ queryKey: ['classSets', id] });
-        }}
       />
     </>
   );

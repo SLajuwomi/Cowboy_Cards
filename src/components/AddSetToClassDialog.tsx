@@ -1,5 +1,4 @@
-import type { ListSetsOfAUserRow } from '@/types/globalTypes';
-import { makeHttpCall } from '@/utils/makeHttpCall';
+import { useAddSetToClass, useUserSets } from '@/hooks/useClassQueries';
 import {
   IonButton,
   IonButtons,
@@ -17,55 +16,32 @@ import {
   IonToolbar,
   useIonToast,
 } from '@ionic/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const AddSetToClassDialog = (props) => {
-  const [userSets, setUserSets] = useState<ListSetsOfAUserRow[]>([]);
-  const [availableSets, setAvailableSets] = useState<ListSetsOfAUserRow[]>([]);
   const [selectedSetId, setSelectedSetId] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [presentToast] = useIonToast();
 
-  const fetchUserSets = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const fetchedSets = await makeHttpCall<ListSetsOfAUserRow[]>(
-        `/api/set_user/list`
-      );
-      setUserSets(fetchedSets || []);
-    } catch (err) {
-      console.error('Failed to fetch user sets:', err);
-      setError(
-        `Failed to load your sets: ${
-          err instanceof Error ? err.message : 'Unknown error'
-        }`
-      );
-      setUserSets([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  // Use React Query hooks
+  const {
+    data: userSets = [],
+    isLoading: isLoadingUserSets,
+    error: userSetsError,
+  } = useUserSets();
 
+  const addSetMutation = useAddSetToClass();
+
+  // Filter sets that are not already in the class
+  const availableSets = userSets.filter(
+    (set) => !props.existingSetIds.includes(set.SetID)
+  );
+
+  // Reset selected set when dialog opens/closes
   useEffect(() => {
-    if (props.isOpen) {
-      fetchUserSets();
-    } else {
-      setUserSets([]);
-      setAvailableSets([]);
+    if (!props.isOpen) {
       setSelectedSetId(null);
-      setError(null);
-      setIsLoading(false);
     }
-  }, [props.isOpen, fetchUserSets]);
-
-  useEffect(() => {
-    const setsNotInClass = userSets.filter(
-      (set) => !props.existingSetIds.includes(set.SetID)
-    );
-    setAvailableSets(setsNotInClass);
-  }, [userSets, props.existingSetIds]);
+  }, [props.isOpen]);
 
   const handleAddSet = async () => {
     if (!selectedSetId || !props.classId) {
@@ -76,38 +52,35 @@ const AddSetToClassDialog = (props) => {
       });
       return;
     }
-    setIsLoading(true);
-    setError(null);
+
     try {
-      await makeHttpCall<string>(`/api/class_set/`, {
-        method: 'POST',
-        headers: {
-          id: props.classId,
-          set_id: selectedSetId.toString(),
-        },
+      await addSetMutation.mutateAsync({
+        classId: props.classId,
+        setId: selectedSetId,
       });
+
       presentToast({
         message: 'Set added successfully!',
         duration: 2000,
         color: 'success',
       });
-      props.onSetAdded();
+
       props.onDidDismiss();
     } catch (err) {
-      console.error('Failed to add set to class:', err);
       const errorMessage = `Failed to add set: ${
         err instanceof Error ? err.message : 'Unknown error'
       }`;
-      setError(errorMessage);
+
       presentToast({
         message: errorMessage,
         duration: 3000,
         color: 'danger',
       });
-    } finally {
-      setIsLoading(false);
     }
   };
+
+  const isLoading = isLoadingUserSets || addSetMutation.isPending;
+  const error = userSetsError || addSetMutation.error;
 
   return (
     <IonModal isOpen={props.isOpen} onDidDismiss={props.onDidDismiss}>
@@ -129,7 +102,7 @@ const AddSetToClassDialog = (props) => {
           </div>
         ) : error ? (
           <IonText color="danger">
-            <p>{error}</p>
+            <p>{error instanceof Error ? error.message : String(error)}</p>
           </IonText>
         ) : availableSets.length === 0 ? (
           <p className="text-center text-gray-500 mt-4">
@@ -140,7 +113,6 @@ const AddSetToClassDialog = (props) => {
           <IonRadioGroup
             value={selectedSetId}
             onIonChange={(e) => {
-              console.log('e.detail.value', e.detail.value);
               setSelectedSetId(Number(e.detail.value));
             }}
           >
@@ -162,7 +134,7 @@ const AddSetToClassDialog = (props) => {
 
         {error && availableSets.length > 0 && (
           <IonText color="danger" className="block mt-4">
-            <p>{error}</p>
+            <p>{error instanceof Error ? error.message : String(error)}</p>
           </IonText>
         )}
       </IonContent>
@@ -171,10 +143,14 @@ const AddSetToClassDialog = (props) => {
           <IonButton
             expand="block"
             onClick={handleAddSet}
-            disabled={!selectedSetId}
+            disabled={!selectedSetId || addSetMutation.isPending}
             className="ion-margin-bottom"
           >
-            {isLoading ? <IonSpinner name="dots" /> : 'Add Selected Set'}
+            {addSetMutation.isPending ? (
+              <IonSpinner name="dots" />
+            ) : (
+              'Add Selected Set'
+            )}
           </IonButton>
         </div>
       )}
