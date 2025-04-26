@@ -185,7 +185,6 @@ const ClassDetail = () => {
   }, [fetchDataForClass]);
 
   const handleDeleteStudent = async (studentId: number | null) => {
-    // studentId =
     if (studentId === null) return;
     try {
       await makeHttpCall(`/api/class_user/`, {

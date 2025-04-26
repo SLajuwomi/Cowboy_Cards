@@ -1,21 +1,10 @@
 import { Navbar } from '@/components/Navbar';
+import SetCardList from '@/components/SetCardList';
+import SetOverviewControls from '@/components/SetOverviewControls';
+import SetOverviewHeader from '@/components/SetOverviewHeader';
 import type { Flashcard, FlashcardSet } from '@/types/globalTypes';
-import { EditableField } from '@/utils/EditableField';
 import { makeHttpCall } from '@/utils/makeHttpCall';
-import {
-  IonAlert,
-  IonButton,
-  IonCard,
-  IonCardContent,
-  IonContent,
-  IonIcon,
-  IonItem,
-  IonSpinner,
-  IonText,
-  IonTextarea,
-  useIonToast,
-} from '@ionic/react';
-import { addOutline, trashOutline } from 'ionicons/icons';
+import { IonAlert, IonContent, useIonToast } from '@ionic/react';
 import { useCallback, useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
@@ -24,9 +13,9 @@ const SetOverview = () => {
   const history = useHistory();
   const [presentToast] = useIonToast();
   const [flashcardSetData, setFlashcardSetData] = useState<FlashcardSet>();
-  const [cards, setCards] = useState<Flashcard[]>([]); // Holds the displayed cards (original or fetched)
-  const [originalCards, setOriginalCards] = useState<Flashcard[]>([]); // Holds cards at the start of edit
-  const [editedCards, setEditedCards] = useState<Flashcard[]>([]); // Holds cards being edited
+  const [cards, setCards] = useState<Flashcard[]>([]);
+  const [originalCards, setOriginalCards] = useState<Flashcard[]>([]);
+  const [editedCards, setEditedCards] = useState<Flashcard[]>([]);
   const [loadingCards, setLoadingCards] = useState(true);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
@@ -61,10 +50,10 @@ const SetOverview = () => {
       setFlashcardSetData(setDetails);
       setIsOwner(setDetails.Role === 'owner');
       const initialCards = Array.isArray(fetchedCardsData)
-        ? fetchedCardsData.map((c) => ({ ...c, ID: c.ID || 0 })) // Ensure ID is number
+        ? fetchedCardsData
         : [];
       setCards(initialCards);
-      setOriginalCards(initialCards); // Store original state for cancel/comparison
+      setOriginalCards(initialCards);
     } catch (error) {
       console.error('Failed to fetch data', error);
       let message = 'Unknown error';
@@ -89,15 +78,14 @@ const SetOverview = () => {
       set_name: flashcardSetData.SetName || '',
       set_description: flashcardSetData.SetDescription || '',
     });
-    setOriginalCards([...cards]); // Store current cards as original for this edit session
-    setEditedCards(cards.map((card) => ({ ...card }))); // Deep copy cards for editing
+    setOriginalCards([...cards]);
+    setEditedCards(cards.map((card) => ({ ...card })));
     setIsEditing(true);
     setMetadataErrors({});
     setCardErrors({});
   };
 
   const handleMetadataChange = (e: CustomEvent) => {
-    // ... existing handleMetadataChange ...
     const { name } = e.target as HTMLInputElement;
     const value = e.detail.value ?? '';
     setUpdatedInfo((prev) => ({
@@ -117,23 +105,12 @@ const SetOverview = () => {
         i === index ? { ...card, [field]: newValue } : card
       )
     );
-    // Optionally clear validation error for this field on change
-    setCardErrors((prev) => {
-      const newErrors = { ...prev };
-      if (newErrors[index]) {
-        delete newErrors[index][field.toLowerCase()];
-        if (Object.keys(newErrors[index]).length === 0) {
-          delete newErrors[index];
-        }
-      }
-      return newErrors;
-    });
   };
 
   const handleAddCard = () => {
     if (!flashcardSetData) return;
     const newCard: Flashcard = {
-      ID: 0 - editedCards.filter((c) => c.ID <= 0).length - 1, // Temporary negative ID for new cards
+      ID: 0 - editedCards.filter((c) => c.ID <= 0).length - 1,
       Front: '',
       Back: '',
       SetID: flashcardSetData.ID,
@@ -148,7 +125,6 @@ const SetOverview = () => {
   };
 
   const validateMetadata = () => {
-    // ... existing validateMetadata ...
     const newErrors: { setName?: string; setDescription?: string } = {};
     let isValid = true;
 
@@ -178,16 +154,26 @@ const SetOverview = () => {
     let isValid = true;
     editedCards.forEach((card, index) => {
       const errors: { front?: string; back?: string } = {};
-      if (!card.Front.trim()) {
+      const trimmedFront = card.Front.trim();
+      const trimmedBack = card.Back.trim();
+
+      if (!trimmedFront) {
         errors.front = 'Front cannot be empty';
         isValid = false;
       }
-      if (!card.Back.trim()) {
+      if (!trimmedBack) {
         errors.back = 'Back cannot be empty';
         isValid = false;
       }
       if (Object.keys(errors).length > 0) {
         newCardErrors[index] = errors;
+      }
+      if (trimmedFront !== card.Front || trimmedBack !== card.Back) {
+        setEditedCards((prev) =>
+          prev.map((c, i) =>
+            i === index ? { ...c, Front: trimmedFront, Back: trimmedBack } : c
+          )
+        );
       }
     });
     setCardErrors(newCardErrors);
@@ -208,35 +194,36 @@ const SetOverview = () => {
       return;
     }
 
+    setLoadingCards(true);
     const apiPromises: Promise<any>[] = [];
 
-    // --- Metadata Updates --- (as before)
-    if (updatedInfo.set_name !== flashcardSetData.SetName) {
+    if (updatedInfo.set_name !== (flashcardSetData.SetName || '').trim()) {
       apiPromises.push(
         makeHttpCall(`/api/flashcards/sets/set_name`, {
           method: 'PUT',
-          headers: { id: id, set_name: updatedInfo.set_name },
+          headers: { id: id, set_name: updatedInfo.set_name }, // Send trimmed name
         })
       );
     }
-    if (updatedInfo.set_description !== flashcardSetData.SetDescription) {
+    if (
+      updatedInfo.set_description !==
+      (flashcardSetData.SetDescription || '').trim()
+    ) {
       apiPromises.push(
         makeHttpCall(`/api/flashcards/sets/set_description`, {
           method: 'PUT',
-          headers: { id: id, set_description: updatedInfo.set_description },
+          headers: { id: id, set_description: updatedInfo.set_description }, // Send trimmed description
         })
       );
     }
 
-    // --- Card Updates --- //
     const originalCardMap = new Map(
       originalCards.map((card) => [card.ID, card])
     );
     const editedCardMap = new Map(editedCards.map((card) => [card.ID, card]));
 
-    // Identify Deletions
     originalCards.forEach((originalCard) => {
-      if (!editedCardMap.has(originalCard.ID)) {
+      if (!editedCardMap.has(originalCard.ID) && originalCard.ID > 0) {
         apiPromises.push(
           makeHttpCall(`/api/flashcards`, {
             method: 'DELETE',
@@ -246,62 +233,52 @@ const SetOverview = () => {
       }
     });
 
-    // Identify Additions and Updates
     editedCards.forEach((editedCard) => {
       if (editedCard.ID <= 0) {
-        // New card
         apiPromises.push(
           makeHttpCall<Flashcard>(`/api/flashcards`, {
             method: 'POST',
             headers: {
-              front: editedCard.Front.trim(),
-              back: editedCard.Back.trim(),
-              id: flashcardSetData.ID, // Set ID
+              front: editedCard.Front,
+              back: editedCard.Back,
+              id: flashcardSetData.ID,
             },
           })
         );
       } else {
-        // Existing card, check for updates
         const originalCard = originalCardMap.get(editedCard.ID);
         if (originalCard) {
-          const trimmedFront = editedCard.Front.trim();
-          const trimmedBack = editedCard.Back.trim();
-          if (trimmedFront !== originalCard.Front) {
+          if (editedCard.Front !== (originalCard.Front || '').trim()) {
             apiPromises.push(
               makeHttpCall(`/api/flashcards/front`, {
                 method: 'PUT',
-                headers: { id: editedCard.ID, front: trimmedFront },
+                headers: { id: editedCard.ID, front: editedCard.Front },
               })
             );
           }
-          if (trimmedBack !== originalCard.Back) {
+          if (editedCard.Back !== (originalCard.Back || '').trim()) {
             apiPromises.push(
               makeHttpCall(`/api/flashcards/back`, {
                 method: 'PUT',
-                headers: { id: editedCard.ID, back: trimmedBack },
+                headers: { id: editedCard.ID, back: editedCard.Back },
               })
             );
           }
         }
-        // If originalCard not found, it's an error case, but handled by delete logic
       }
     });
 
     try {
-      // Execute all API calls
       await Promise.all(apiPromises);
-
       presentToast({
         message: 'Set details and cards updated successfully!',
         duration: 2000,
         color: 'success',
       });
-
-      // Reset editing state and fetch fresh data AFTER save
       setIsEditing(false);
       setMetadataErrors({});
       setCardErrors({});
-      await fetchData(); // Re-fetch to get actual IDs for new cards and confirm changes
+      await fetchData();
     } catch (error) {
       console.error('Failed to update set:', error);
       let message = 'Unknown error during save';
@@ -315,6 +292,8 @@ const SetOverview = () => {
         duration: 3000,
         color: 'danger',
       });
+    } finally {
+      setLoadingCards(false);
     }
   };
 
@@ -322,282 +301,90 @@ const SetOverview = () => {
     setIsEditing(false);
     setMetadataErrors({});
     setCardErrors({});
-    setCards(originalCards); // Revert displayed cards to original state for this edit session
   };
 
   const handleDeleteSet = async () => {
-    // ... existing handleDeleteSet code ...
     if (!id) {
       console.error('Cannot delete set: ID is missing.');
+      presentToast({
+        message: 'Cannot delete: Set ID missing.',
+        duration: 3000,
+        color: 'danger',
+      });
       return;
     }
     try {
       await makeHttpCall<void>(`/api/flashcards/sets/`, {
         method: 'DELETE',
-        headers: {
-          id: id,
-        },
+        headers: { id: id },
       });
-
+      presentToast({
+        message: 'Set deleted successfully.',
+        duration: 2000,
+        color: 'success',
+      });
       history.push('/student-dashboard');
     } catch (error) {
       console.error('Failed to delete set:', error);
+      let message = 'Unknown error during deletion';
+      if (error instanceof Error) message = error.message;
+      presentToast({
+        message: `Failed to delete set: ${message}`,
+        duration: 3000,
+        color: 'danger',
+      });
     }
   };
 
-  // Use `editedCards` for rendering when editing, otherwise use `cards`
+  const handleBackClick = () => {
+    if (!isEditing) {
+      window.history.back();
+    }
+  };
+
   const cardsToDisplay = isEditing ? editedCards : cards;
 
   return (
     <IonContent className="ion-padding">
       <Navbar />
       <div id="main-content" className="container max-w-4xl mx-auto px-4 py-8">
-        {/* --- Header Section --- */}
-        {/* ... existing header JSX ... */}
         <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
-          <div className="flex items-center gap-4 flex-1 pr-4">
-            <IonButton
-              className="rounded-lg"
-              fill="outline"
-              style={{ '--border-radius': '0.5rem' }}
-              onClick={() => !isEditing && window.history.back()} // Disable back while editing?
-              disabled={isEditing}
-            >
-              Back
-            </IonButton>
+          <SetOverviewHeader
+            loading={loadingCards}
+            flashcardSetData={flashcardSetData}
+            isEditing={isEditing}
+            isOwner={isOwner}
+            updatedInfo={updatedInfo}
+            metadataErrors={metadataErrors}
+            onMetadataChange={handleMetadataChange}
+            onBackClick={handleBackClick}
+          />
 
-            <div className="flex flex-col w-full">
-              {loadingCards || !flashcardSetData ? (
-                <IonSpinner name="dots" />
-              ) : isEditing && isOwner ? (
-                <>
-                  <EditableField
-                    type="text"
-                    label="Set Name"
-                    name="set_name"
-                    value={updatedInfo.set_name}
-                    onChange={handleMetadataChange}
-                    error={metadataErrors.setName}
-                  />
-                  <EditableField
-                    type="text"
-                    label="Set Description"
-                    name="set_description"
-                    value={updatedInfo.set_description}
-                    onChange={handleMetadataChange}
-                    error={metadataErrors.setDescription}
-                  />
-                  {metadataErrors.general && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {metadataErrors.general}
-                    </p>
-                  )}
-                </>
-              ) : (
-                <>
-                  <h1 className="text-3xl font-bold">
-                    {flashcardSetData.SetName}
-                  </h1>
-                  <p className="text-base mt-1 text-gray-700">
-                    {flashcardSetData.SetDescription}
-                  </p>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* --- Controls Section --- */}
-          <div className="self-start md:self-center flex gap-2 md:mt-0 mt-4 w-full md:w-auto">
-            {isOwner && !isEditing && (
-              <>
-                <IonButton
-                  className="rounded-lg w-auto"
-                  fill="outline"
-                  style={{ '--border-radius': '0.5rem' }}
-                  onClick={handleEdit}
-                >
-                  Edit Set & Cards
-                </IonButton>
-                <IonButton
-                  className="rounded-lg w-auto"
-                  color={'danger'}
-                  style={{ '--border-radius': '0.5rem' }}
-                  onClick={() => setShowDeleteAlert(true)}
-                >
-                  Delete Set
-                </IonButton>
-              </>
-            )}
-            {isOwner && isEditing && (
-              <>
-                <IonButton
-                  className="rounded-lg"
-                  color="primary"
-                  size="small"
-                  onClick={handleSave}
-                >
-                  Save All Changes
-                </IonButton>
-                <IonButton
-                  className="rounded-lg"
-                  color="medium"
-                  size="small"
-                  onClick={handleCancel}
-                >
-                  Cancel
-                </IonButton>
-              </>
-            )}
-
-            <IonButton
-              className="rounded-lg w-1/3 md:w-auto"
-              color={'primary'}
-              style={{ '--border-radius': '0.5rem' }}
-              routerLink={`/flashcards/${id}`}
-              disabled={isEditing}
-            >
-              Study Set
-            </IonButton>
-          </div>
+          <SetOverviewControls
+            isOwner={isOwner}
+            isEditing={isEditing}
+            onBackClick={handleBackClick}
+            onEditClick={handleEdit}
+            onSaveClick={handleSave}
+            onCancelClick={handleCancel}
+            onDeleteClick={() => setShowDeleteAlert(true)}
+            studyLink={`/flashcards/${id}`}
+          />
         </div>
 
-        {/* --- Card List Section --- */}
-        <div className="mt-8 min-h-[200px]">
-          {loadingCards ? (
-            <div className="flex items-center justify-center">
-              <IonSpinner name="circular" />
-            </div>
-          ) : cardsToDisplay.length === 0 && !isEditing ? (
-            <div className="text-center">
-              <p className="text-lg text-gray-900 dark:text-gray-400 mb-4">
-                This set has no cards yet.
-              </p>
-              {isOwner && (
-                <IonButton
-                  color="primary"
-                  className="rounded-lg"
-                  style={{ '--border-radius': '0.5rem' }}
-                  onClick={handleEdit} // Trigger edit mode to add cards
-                >
-                  Add Cards
-                </IonButton>
-              )}
-            </div>
-          ) : (
-            <div className="w-full">
-              {cardsToDisplay.map((card, index) =>
-                isEditing && isOwner ? (
-                  // --- Edit Mode Card --- //
-                  <IonCard
-                    key={card.ID <= 0 ? `new-${index}` : card.ID} // Use temp key for new cards
-                    className="mb-4 rounded-lg border shadow-sm p-4"
-                  >
-                    <IonItem lines="none">
-                      <IonText className="text-md font-semibold text-gray-900 dark:text-gray-300 mr-auto">
-                        Card {index + 1}
-                      </IonText>
-                      <IonButton
-                        fill="clear"
-                        color="danger"
-                        size="small"
-                        onClick={() => handleRemoveCard(index)}
-                      >
-                        <IonIcon slot="icon-only" icon={trashOutline} />
-                      </IonButton>
-                    </IonItem>
-                    <div className="flex flex-col md:flex-row gap-4 mt-2">
-                      <div className="flex-1">
-                        <IonTextarea
-                          label="Front"
-                          labelPlacement="stacked"
-                          value={card.Front}
-                          onIonInput={(e) =>
-                            handleCardChange(index, 'Front', e.detail.value)
-                          }
-                          className={`w-full border rounded-md p-2 ${
-                            cardErrors[index]?.front
-                              ? 'border-red-500'
-                              : 'border-gray-300'
-                          }`}
-                          autoGrow={true}
-                          rows={3}
-                        />
-                        {cardErrors[index]?.front && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {cardErrors[index].front}
-                          </p>
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <IonTextarea
-                          label="Back"
-                          labelPlacement="stacked"
-                          value={card.Back}
-                          onIonInput={(e) =>
-                            handleCardChange(index, 'Back', e.detail.value)
-                          }
-                          className={`w-full border rounded-md p-2 ${
-                            cardErrors[index]?.back
-                              ? 'border-red-500'
-                              : 'border-gray-300'
-                          }`}
-                          autoGrow={true}
-                          rows={3}
-                        />
-                        {cardErrors[index]?.back && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {cardErrors[index].back}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </IonCard>
-                ) : (
-                  // --- Display Mode Card --- //
-                  <IonCard
-                    key={card.ID} // Use actual ID when displaying
-                    className="mb-4 rounded-lg border shadow-sm"
-                  >
-                    <IonCardContent>
-                      <div className="border-b border-gray-300 mb-3 pb-1 m-4">
-                        <IonText className="text-md font-semibold text-gray-900 dark:text-gray-300">
-                          Card {index + 1}
-                        </IonText>
-                      </div>
-                      <div className="flex flex-row justify-between items-start">
-                        <div className="w-3/12 pr-4 border-r border-gray-300 m-4">
-                          <IonText className="block whitespace-pre-wrap text-lg text-gray-900 dark:text-gray-200">
-                            {card.Front}
-                          </IonText>
-                        </div>
-                        <div className="w-9/12 pl-4 m-4">
-                          <IonText className="block whitespace-pre-wrap text-lg text-gray-900 dark:text-gray-200">
-                            {card.Back}
-                          </IonText>
-                        </div>
-                      </div>
-                    </IonCardContent>
-                  </IonCard>
-                )
-              )}
-              {isEditing && isOwner && (
-                <IonButton
-                  expand="block"
-                  fill="outline"
-                  onClick={handleAddCard}
-                  className="mt-4 rounded-lg"
-                >
-                  <IonIcon slot="start" icon={addOutline} />
-                  Add New Card
-                </IonButton>
-              )}
-            </div>
-          )}
-        </div>
+        <SetCardList
+          loading={loadingCards}
+          cardsToDisplay={cardsToDisplay}
+          isEditing={isEditing}
+          isOwner={isOwner}
+          cardErrors={cardErrors}
+          onCardChange={handleCardChange}
+          onAddCard={handleAddCard}
+          onRemoveCard={handleRemoveCard}
+          onAddCardClick={handleEdit}
+        />
       </div>
 
-      {/* --- Delete Alert --- */}
-      {/* ... existing IonAlert code ... */}
       <IonAlert
         isOpen={showDeleteAlert}
         onDidDismiss={() => setShowDeleteAlert(false)}
@@ -610,16 +397,11 @@ const SetOverview = () => {
             text: 'Cancel',
             role: 'cancel',
             cssClass: 'secondary',
-            handler: () => {
-              console.log('Delete canceled');
-            },
           },
           {
             text: 'Delete',
             role: 'destructive',
-            handler: () => {
-              handleDeleteSet();
-            },
+            handler: handleDeleteSet,
           },
         ]}
       />

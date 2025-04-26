@@ -5,7 +5,7 @@ const IMAGE_SIZE = 256; // Size of the image in pixels
 
 const imagePaths = Array.from(
   { length: NUM_FRAMES },
-  (_, i) => `src/assets/bonsai-frames/frame-${i}.png`
+  (_, i) => `/frame-${i}.png`
 );
 
 interface GrowthAnimationProps {
