@@ -15,7 +15,7 @@ const UserAccountSecondRow = (props) => {
     <>
       <div className="flex flex-col md:flex-row gap-6 py-6">
         <LoginStreakCard streak={props.streak} />
-        <IonCard className="w-full md:w-1/2 rounded-lg border shadow-sm">
+        <IonCard className="md:w-1/2 rounded-lg border shadow-sm">
           <IonCardHeader className="p-6">
             <IonCardTitle className="text-xl font-semibold text-primary">
               Account Options

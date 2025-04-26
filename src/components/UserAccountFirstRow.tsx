@@ -13,7 +13,7 @@ import { createOutline } from 'ionicons/icons';
 const UserAccountFirstRow = (props) => {
   return (
     <div className="flex flex-col md:flex-row gap-6">
-      <IonCard className="w-full md:w-1/2 rounded-lg border shadow-sm">
+      <IonCard className="md:w-1/2 rounded-lg border shadow-sm">
         <IonCardHeader className="p-6">
           <IonCardTitle className="text-xl font-semibold text-primary">
             Account Information
@@ -77,7 +77,7 @@ const UserAccountFirstRow = (props) => {
         </IonCardContent>
       </IonCard>
 
-      <IonCard className="w-full md:w-1/2 rounded-lg border shadow-sm">
+      <IonCard className="md:w-1/2 rounded-lg border shadow-sm">
         <IonCardHeader className="p-6">
           <IonCardTitle className="text-xl font-semibold text-primary">
             Account Stats

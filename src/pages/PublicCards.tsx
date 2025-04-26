@@ -56,7 +56,7 @@ const PublicFlashcards = () => {
             value={searchText} // eslint-disable-next-line
             onIonInput={(e: any) => setSearchText(e.target.value)}
             placeholder="Search flashcard sets"
-            className="mb-4 pr-0 max-w-lg"
+            className="mb-4 max-w-lg"
           />
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
