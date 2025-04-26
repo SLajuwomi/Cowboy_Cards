@@ -11,7 +11,6 @@ import {
   IonButton,
   IonContent,
   IonLoading,
-  IonPage,
   IonText,
   useIonToast,
 } from '@ionic/react';
@@ -224,7 +223,7 @@ const EditSet = () => {
   };
 
   return (
-    <IonPage>
+    <>
       <Navbar />
       <IonContent className="ion-padding">
         <div
@@ -281,7 +280,7 @@ const EditSet = () => {
         </div>
       </IonContent>
       <Footer />
-    </IonPage>
+    </>
   );
 };
 

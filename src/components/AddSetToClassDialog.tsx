@@ -1,4 +1,4 @@
-import type { SetUser } from '@/types/globalTypes';
+import type { ListSetsOfAUserRow } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonButton,
@@ -20,8 +20,8 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 
 const AddSetToClassDialog = (props) => {
-  const [userSets, setUserSets] = useState<SetUser[]>([]);
-  const [availableSets, setAvailableSets] = useState<SetUser[]>([]);
+  const [userSets, setUserSets] = useState<ListSetsOfAUserRow[]>([]);
+  const [availableSets, setAvailableSets] = useState<ListSetsOfAUserRow[]>([]);
   const [selectedSetId, setSelectedSetId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,10 +31,9 @@ const AddSetToClassDialog = (props) => {
     setIsLoading(true);
     setError(null);
     try {
-      const fetchedSets = await makeHttpCall<SetUser[]>(`/api/set_user/list`, {
-        method: 'GET',
-        headers: {},
-      });
+      const fetchedSets = await makeHttpCall<ListSetsOfAUserRow[]>(
+        `/api/set_user/list`
+      );
       setUserSets(fetchedSets || []);
     } catch (err) {
       console.error('Failed to fetch user sets:', err);
