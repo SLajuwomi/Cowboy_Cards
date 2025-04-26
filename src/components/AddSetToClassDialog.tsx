@@ -109,10 +109,6 @@ const AddSetToClassDialog = (props) => {
     }
   };
 
-  console.log('selectedSetId', selectedSetId);
-
-  console.log('availableSets', availableSets);
-
   return (
     <IonModal isOpen={props.isOpen} onDidDismiss={props.onDidDismiss}>
       <IonHeader>
