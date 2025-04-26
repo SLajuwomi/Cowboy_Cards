@@ -8,7 +8,7 @@ export interface CardHistory {
 }
 
 export interface Class {
-  ID: number;
+  ClassID: number;
   ClassName: string;
   ClassDescription: string;
   CreatedAt: string;
