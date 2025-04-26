@@ -1,4 +1,5 @@
 import { AuthForm } from '@/components/auth/AuthForm';
+import ConfirmResetPass from '@/components/auth/ConfirmResetPass';
 import ResetPass from '@/components/auth/ResetPass';
 import { Toaster as Sonner } from '@/components/ui/sonner';
 import { Toaster } from '@/components/ui/toaster';
@@ -12,7 +13,6 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import ClassDetail from './pages/ClassDetail';
 import CreateClass from './pages/CreateClass';
 import CreateSet from './pages/CreateSet';
-import EditSet from './pages/EditSet';
 import Flashcard from './pages/Flashcard';
 import Home from './pages/Home';
 import Index from './pages/Index';
@@ -63,11 +63,15 @@ function App() {
                   <Route exact path="/class/:id" component={ClassDetail} />
                   <Route exact path="/auth" component={AuthForm} />
                   <Route exact path="/reset-password" component={ResetPass} />
+                  <Route
+                    exact
+                    path="/confirm-reset-password"
+                    component={ConfirmResetPass}
+                  />
                   <Route exact path="/public-cards" component={PublicCards} />
                   <Route exact path="/user-account" component={UserAccount} />
                   <Route exact path="/flashcards/:id" component={Flashcard} />
                   <Route exact path="/create-set" component={CreateSet} />
-                  <Route exact path="/edit-set/:id" component={EditSet} />
                   <Route exact path="/create-class" component={CreateClass} />
                   <Route
                     exact

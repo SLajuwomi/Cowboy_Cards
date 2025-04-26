@@ -21,7 +21,6 @@ import { useParams } from 'react-router-dom';
 
 const ClassDetail = () => {
   const { id } = useParams<{ id: string }>();
-  console.log('id', id);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [tab, setTab] = useState('flashcards');
@@ -185,7 +184,6 @@ const ClassDetail = () => {
   }, [fetchDataForClass]);
 
   const handleDeleteStudent = async (studentId: number | null) => {
-    // studentId =
     if (studentId === null) return;
     try {
       await makeHttpCall(`/api/class_user/`, {
