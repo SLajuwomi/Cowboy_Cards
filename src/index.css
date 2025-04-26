@@ -366,3 +366,7 @@ ion-segment-button {
 ion-card-title {
   color: var(--ion-text-color);
 }
+
+.searchbar-input.sc-ion-searchbar-md {
+  padding-inline-end: 0;
+}

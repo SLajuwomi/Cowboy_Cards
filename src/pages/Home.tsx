@@ -74,7 +74,7 @@ const Home = () => {
         {error && <div className="text-red-500 mt-2">{error}</div>}
         <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-8">
           <h1 className="text-3xl font-bold">
-            {tab === 'classes' ? 'My Classes' : 'Personal Flashcard Sets'}
+            {tab === 'classes' ? 'My Classes' : 'My Flashcard Sets'}
           </h1>
           <div className="flex items-center gap-2 mt-4 md:mt-0">
             <IonButton

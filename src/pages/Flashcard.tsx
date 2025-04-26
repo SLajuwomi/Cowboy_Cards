@@ -115,8 +115,8 @@ const Flashcard = () => {
             Back
           </IonButton>
           <div>
-            <h1 className="text-2xl font-bold">{flashcardSetData.SetName}</h1>
-            <p className="text-gray-500">{flashcardSetData.SetDescription}</p>
+            <h1 className="text-2xl font-bold">{flashcardSetData?.SetName}</h1>
+            <p className="text-gray-500">{flashcardSetData?.SetDescription}</p>
           </div>
         </div>
 

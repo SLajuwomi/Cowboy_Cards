@@ -12,7 +12,7 @@ export default function LoginStreakCard(props) {
   const prev = useRef(props.streak);
 
   return (
-    <IonCard className="w-full md:w-1/2 rounded-lg border shadow-sm">
+    <IonCard className="md:w-1/2 rounded-lg border shadow-sm">
       <IonCardHeader className="p-6">
         <IonCardTitle className="text-xl font-semibold text-primary">
           Login Streak
