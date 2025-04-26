@@ -93,11 +93,11 @@ const Navbar = () => {
             <img
               src="src/assets/Spirit-Cowboy-Profile-Only.png"
               alt="Cowboy Cards Logo"
-              className="h-8 w-auto md:hidden"
+              className="h-8 w-auto xs:hidden block"
             />
             <IonTitle
               color="primary"
-              className="hidden md:inline-block text-lg md:text-xl lg:text-2xl font-bold hover:translate-x-1 transition-all duration-300"
+              className="hidden xs:block text-2xl sm:text-3xl lg:text-4xl font-ewert"
             >
               Cowboy Cards
             </IonTitle>

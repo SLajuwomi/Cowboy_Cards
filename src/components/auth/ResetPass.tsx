@@ -26,9 +26,11 @@ const ResetPass = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <Card className="w-[350px]">
+      <Card className="w-11/12 max-w-[350px]">
         <CardHeader>
-          <CardTitle>Reset Password</CardTitle>
+          <CardTitle className="text-4xl tracking-wide font-smokum font-bold">
+            Reset Password
+          </CardTitle>
           <CardDescription>
             Enter your email to reset your password
           </CardDescription>
@@ -42,7 +44,12 @@ const ResetPass = () => {
               </Alert>
             )}
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label
+                className="text-3xl tracking-wide font-smokum font-bold"
+                htmlFor="email"
+              >
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"

@@ -33,7 +33,7 @@ const Footer = () => {
         {/*</IonButtons>*/}
 
         <IonText className="mx-auto text-center text-sm">
-          Cowboy Cards 2025. Built for learning and fun.
+          &copy;Cowboy Cards 2025. Built for learning and fun.
         </IonText>
       </IonToolbar>
     </IonFooter>
