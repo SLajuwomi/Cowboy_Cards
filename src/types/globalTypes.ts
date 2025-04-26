@@ -16,14 +16,6 @@ export interface Class {
   Role: string;
 }
 
-export interface ClassUser {
-  UserID: number;
-  ClassID: number;
-  Role: string;
-  FirstName: string;
-  LastName: string;
-}
-
 export interface Flashcard {
   ID: number;
   Front: string;
@@ -42,25 +34,39 @@ export interface FlashcardSet {
   Role: string;
 }
 
+// to hide first and last name from GetClassLeaderboardRow go type
 export interface GetClassScoresRow {
   UserID: number;
   Username: string;
   ClassScore: number;
 }
 
-export interface NewClass {
+export interface ListClassesOfAUserRow {
+  ClassID: number;
+  Role: string;
   ClassName: string;
   ClassDescription: string;
 }
 
-export interface SetUser {
+export interface ListMembersOfAClassRow {
   UserID: number;
+  ClassID: number;
+  Role: string;
+  FirstName: string;
+  LastName: string;
+  Username: string;
+}
+
+export interface ListSetsOfAUserRow {
   SetID: number;
   Role: string;
-  SetScore: number;
-  IsPrivate: boolean;
   SetName: string;
   SetDescription: string;
+}
+
+export interface NewClass {
+  ClassName: string;
+  ClassDescription: string;
 }
 
 export interface User {

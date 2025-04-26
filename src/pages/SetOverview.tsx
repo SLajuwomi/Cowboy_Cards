@@ -81,7 +81,7 @@ const SetOverview = () => {
   };
 
   return (
-    <IonContent className="ion-padding">
+    <IonContent className="">
       <Navbar />
       <div id="main-content" className="container max-w-4xl mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">

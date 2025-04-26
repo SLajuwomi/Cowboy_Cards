@@ -10,9 +10,9 @@ import StudentTab from '@/components/StudentTab';
 import { type CarouselApi } from '@/components/ui/carousel';
 import type {
   Class,
-  ClassUser,
   FlashcardSet,
   GetClassScoresRow,
+  ListMembersOfAClassRow,
 } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import { IonContent } from '@ionic/react';
@@ -28,7 +28,7 @@ const ClassDetail = () => {
   const [isTeacher, setIsTeacher] = useState(false);
   const [classData, setClassData] = useState<Class>();
   const [flashcardSets, setFlashcardSets] = useState<FlashcardSet[]>([]);
-  const [classUsers, setClassUsers] = useState<ClassUser[]>([]);
+  const [classUsers, setClassUsers] = useState<ListMembersOfAClassRow[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [leaderboardData, setLeaderboardData] = useState<GetClassScoresRow[]>(
@@ -143,7 +143,7 @@ const ClassDetail = () => {
           headers: { id: id },
         }),
 
-        makeHttpCall<ClassUser[]>(`/api/class_user/members`, {
+        makeHttpCall<ListMembersOfAClassRow[]>(`/api/class_user/members`, {
           method: 'GET',
           headers: { class_id: id },
         }),

@@ -8,6 +8,7 @@ import {
   IonCardSubtitle,
   IonCardTitle,
   IonContent,
+  IonSearchbar,
 } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -16,6 +17,13 @@ const PublicClasses = () => {
   const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchText, setSearchText] = useState('');
+  const filteredClasses = classes.filter(
+    (x) =>
+      x.ClassName.toLowerCase().includes(searchText.toLowerCase()) ||
+      (x.ClassDescription &&
+        x.ClassDescription.toLowerCase().includes(searchText.toLowerCase()))
+  );
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -24,7 +32,6 @@ const PublicClasses = () => {
       try {
         const res = await makeHttpCall<Class[]>(`/api/classes/list`);
         setClasses(res);
-        setLoading(false);
       } catch (error) {
         setError(`Error fetching classes: ${error.message}`);
       } finally {
@@ -38,12 +45,20 @@ const PublicClasses = () => {
   return (
     <IonContent>
       <Navbar />
-      <div id="main-content" className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold pb-8">Public Classes</h1>
-        {loading && <div>Loading...</div>}
-        {error && <div className="text-red-500 mt-2">{error}</div>}
+      <div id="main-content" className="container mx-auto px-0 py-8 w-4/5">
+        <div className="flex items-center flex-col justify-between mb-4">
+          <h1 className="text-3xl font-bold pb-8">Public Classes</h1>
+          {loading && <div>Loading...</div>}
+          {error && <div className="text-red-500 mt-2">{error}</div>}
+          <IonSearchbar
+            value={searchText} // eslint-disable-next-line
+            onIonInput={(e: any) => setSearchText(e.target.value)}
+            placeholder="Search classes"
+            className="mb-4 pr-0 max-w-lg"
+          />
+        </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {classes.map((classItem) => (
+          {filteredClasses.map((classItem) => (
             // TODO: INstead of a link, navigate after the response comes back
             <Link key={classItem.ID} to={`/class/${classItem.ID}`}>
               <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-transform-shadow duration-200 rounded-lg border shadow-sm">
