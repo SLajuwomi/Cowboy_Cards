@@ -1,31 +1,35 @@
 import React from 'react';
 
-const FRAME_SIZE = 256; // Size of each frame in pixels
-const NUM_FRAMES = 11; // Number of frames in the sprite sheet
+const NUM_FRAMES = 10; // Now corresponds to 10 individual images (0-9)
+const IMAGE_SIZE = 256; // Size of the image in pixels
 
-const GrowthAnimation = (props) => {
-  const effectiveStreak = Math.max(0, Math.min(props.streak, NUM_FRAMES));
-  const frameIndex =
-    effectiveStreak === 0 ? 0 : Math.min(effectiveStreak - 1, NUM_FRAMES - 1);
+const imagePaths = Array.from(
+  { length: NUM_FRAMES },
+  (_, i) => `/frame-${i}.png`
+);
 
-  const col = frameIndex;
-  const backgroundPositionX = `-${col * FRAME_SIZE}px`;
-  const backgroundPositionY = '0px';
+interface GrowthAnimationProps {
+  streak: number;
+}
 
-  const style = {
-    backgroundImage: `url('src/assets/bonsai-growth.png')`,
-    backgroundPosition: `${backgroundPositionX} ${backgroundPositionY}`,
-    backgroundRepeat: 'no-repeat',
-    width: `${FRAME_SIZE}px`,
-    height: `${FRAME_SIZE}px`,
-    imageRendering: 'pixelated' as React.CSSProperties['imageRendering'],
+const GrowthAnimation: React.FC<GrowthAnimationProps> = ({ streak }) => {
+  const effectiveStreak = Math.max(0, streak);
+  const frameIndex = Math.min(effectiveStreak, NUM_FRAMES - 1);
+  const imageSrc = imagePaths[frameIndex];
+
+  const style: React.CSSProperties = {
+    width: `${IMAGE_SIZE}px`,
+    height: `${IMAGE_SIZE}px`,
+    imageRendering: 'pixelated',
   };
 
   return (
-    <div
+    <img
+      src={imageSrc}
+      alt={`Bonsai growth stage for streak ${streak}`}
       style={style}
-      aria-label={`Bonsai growth animation frame for streak ${props.streak}`}
-      role="img"
+      width={IMAGE_SIZE}
+      height={IMAGE_SIZE}
     />
   );
 };

@@ -13,7 +13,7 @@ const ClassDetailHeader = (props) => {
             name="class_name"
             value={props.updatedInfo.class_name}
             onChange={props.handleChange}
-            error={props.errors.className}
+            error={props.formErrors.className}
           />
           <EditableField
             type="text"
@@ -21,10 +21,12 @@ const ClassDetailHeader = (props) => {
             name="class_description"
             value={props.updatedInfo.class_description}
             onChange={props.handleChange}
-            error={props.errors.classDescription}
+            error={props.formErrors.classDescription}
           />
-          {props.errors.general && (
-            <p className="text-red-500 text-sm mt-1">{props.errors.general}</p>
+          {props.formErrors.general && (
+            <p className="text-red-500 text-sm mt-1">
+              {props.formErrors.general}
+            </p>
           )}
           <div className="mt-4 flex justify-end space-x-2">
             <IonButton onClick={props.handleSave} color="primary" size="small">

@@ -90,7 +90,7 @@ const Navbar = () => {
             onClick={() => ionRouter.push('/home')}
           >
             <img
-              src="src/assets/Spirit-Cowboy-Profile-Only.png"
+              src="/Spirit-Cowboy-Profile-Only.png"
               alt="Cowboy Cards Logo"
               className="h-8 w-auto xs:hidden block"
             />

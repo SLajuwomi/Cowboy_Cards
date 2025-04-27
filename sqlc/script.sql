@@ -12,6 +12,7 @@ create table users (
   last_name TEXT not null,
   email TEXT not null unique,
   password TEXT not null,
+  reset_token TEXT,
   last_login DATE not null default CURRENT_DATE,
   login_streak INTEGER not null default 1,
   created_at TIMESTAMP not null default LOCALTIMESTAMP(2),

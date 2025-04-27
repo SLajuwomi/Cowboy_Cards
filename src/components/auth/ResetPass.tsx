@@ -10,18 +10,82 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/components/ui/use-toast';
+import { makeHttpCall } from '@/utils/makeHttpCall';
 import { AlertCircle } from 'lucide-react';
 import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
 const ResetPass = () => {
   const [email, setEmail] = useState('');
   const [errors, setErrors] = useState<{ email?: string; general?: string }>(
     {}
   );
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { toast } = useToast();
+  const history = useHistory();
+
+  const validateForm = () => {
+    const newErrors: { email?: string } = {};
+    let isValid = true;
+
+    if (!email) {
+      newErrors.email = 'Email is required';
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = 'Email is invalid';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Placeholder for form submission logic
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
+    setErrors({});
+
+    try {
+      // Make API call to send reset token
+      await makeHttpCall('/reset-password/request', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      toast({
+        title: 'Reset token sent',
+        description:
+          'If the email exists in our system, a reset token has been sent to it.',
+      });
+
+      // Navigate to the confirmation page with the email
+      history.push('/confirm-reset-password', { email });
+    } catch (error) {
+      console.error('Reset password request error:', error);
+
+      setErrors({
+        general:
+          'An error occurred while processing your request. Please try again.',
+      });
+
+      toast({
+        title: 'Reset request failed',
+        description: 'Please try again later.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -65,8 +129,8 @@ const ResetPass = () => {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full">
-              Send Reset Link
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? 'Sending...' : 'Send Reset Token'}
             </Button>
           </CardFooter>
         </form>
