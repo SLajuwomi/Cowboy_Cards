@@ -68,6 +68,7 @@ type User struct {
 	LastName    string
 	Email       string
 	Password    string
+	ResetToken  pgtype.Text
 	LastLogin   pgtype.Date
 	LoginStreak int32
 	CreatedAt   pgtype.Timestamp

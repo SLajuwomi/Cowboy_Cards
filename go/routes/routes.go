@@ -116,4 +116,6 @@ func Protected(r *chi.Mux, h *controllers.DBHandler) {
 func Unprotected(r *chi.Mux, h *controllers.DBHandler) {
 	r.Post("/login", h.Login)
 	r.Post("/signup", h.Signup)
+	r.Post("/send-reset-password-token", h.SendResetPasswordToken)
+	r.Post("/reset-password", h.ResetPassword)
 }

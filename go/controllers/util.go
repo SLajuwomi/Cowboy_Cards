@@ -89,6 +89,7 @@ const (
 	student_id        string = "student_id"
 	teacher           string = "teacher"
 	username          string = "username"
+	token             string = "token"
 )
 
 func logAndSendError(w http.ResponseWriter, err error, msg string, statusCode int) {
