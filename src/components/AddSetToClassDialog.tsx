@@ -101,7 +101,7 @@ const AddSetToClassDialog = (props) => {
           </IonButtons>
         </IonToolbar>
       </IonHeader>
-      <IonContent className="ion-padding">
+      <IonContent>
         {isLoading && !availableSets?.length ? (
           <div className="flex justify-center items-center h-full">
             <IonSpinner name="circular" />
