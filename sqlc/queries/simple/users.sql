@@ -37,9 +37,6 @@ DELETE FROM users WHERE id = $1;
 -- name: CreateResetToken :exec
 UPDATE users SET reset_token = $1, updated_at = LOCALTIMESTAMP(2) WHERE id = $2;
 
--- name: UpdateResetTokenAndExpiry :exec
-UPDATE users SET reset_token = $2, updated_at = LOCALTIMESTAMP(2) WHERE email = $1;
-
 -- name: UpdatePasswordAndClearResetToken :exec
 UPDATE users SET password = $1, reset_token = NULL, updated_at = LOCALTIMESTAMP(2) WHERE id = $2;
 
