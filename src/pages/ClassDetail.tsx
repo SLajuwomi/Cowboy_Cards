@@ -193,7 +193,7 @@ const ClassDetail = () => {
           isOpen={showAddSetDialog}
           onDidDismiss={() => setShowAddSetDialog(false)}
           classId={id}
-          existingSetIds={flashcardSets.map((set) => set.ID)}
+          existingSetIds={flashcardSets?.map((set) => set.ID) || []}
         />
       </IonContent>
 

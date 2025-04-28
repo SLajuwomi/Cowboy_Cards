@@ -70,7 +70,7 @@ const Home = () => {
 
   return (
     <IonPage>
-      <IonContent className="flex flex-col min-h-screen" fullscreen>
+      <IonContent>
         <Navbar />
         <div
           id="main-content"
@@ -191,8 +191,8 @@ const Home = () => {
             </>
           )}
         </div>
-        <Footer />
       </IonContent>
+      <Footer />
     </IonPage>
   );
 };

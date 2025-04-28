@@ -34,9 +34,13 @@ const AddSetToClassDialog = (props) => {
   console.log('addSetMutation', addSetMutation.data);
 
   // Filter sets that are not already in the class
-  const availableSets = userSets?.filter(
-    (set) => !props.existingSetIds.includes(set.SetID)
-  );
+  const availableSets = Array.isArray(userSets)
+    ? userSets.filter((set) =>
+        !Array.isArray(props.existingSetIds)
+          ? true
+          : !props.existingSetIds.includes(set.SetID)
+      )
+    : [];
 
   // Reset selected set when dialog opens/closes
   useEffect(() => {
@@ -83,6 +87,7 @@ const AddSetToClassDialog = (props) => {
 
   const isLoading = isLoadingUserSets || addSetMutation.isPending;
   const error = userSetsError || addSetMutation.error;
+  console.log('availableSets', availableSets);
 
   return (
     <IonModal isOpen={props.isOpen} onDidDismiss={props.onDidDismiss}>

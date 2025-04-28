@@ -46,7 +46,10 @@ const FlashcardCarousel = (props) => {
           </IonRow>
         </IonGrid>
       ) : (
-        <p>No flashcard sets available.</p>
+        <p>
+          No flashcard sets available. Create one or add an existing set to your
+          class.
+        </p>
       )}
     </div>
   );
