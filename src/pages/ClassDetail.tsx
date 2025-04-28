@@ -16,7 +16,7 @@ import {
   useDeleteStudent,
   useUpdateClass,
 } from '@/hooks/useClassQueries';
-import { IonContent } from '@ionic/react';
+import { IonContent, IonPage } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -142,7 +142,7 @@ const ClassDetail = () => {
   const queryError = classError || setsError || usersError || leaderboardError;
 
   return (
-    <>
+    <IonPage>
       <Navbar />
       <IonContent className="ion-padding">
         <div id="main-content" className="max-w-4xl mx-auto">
@@ -189,15 +189,16 @@ const ClassDetail = () => {
             />
           )}
         </div>
-        <Footer />
+        <AddSetToClassDialog
+          isOpen={showAddSetDialog}
+          onDidDismiss={() => setShowAddSetDialog(false)}
+          classId={id}
+          existingSetIds={flashcardSets.map((set) => set.ID)}
+        />
       </IonContent>
-      <AddSetToClassDialog
-        isOpen={showAddSetDialog}
-        onDidDismiss={() => setShowAddSetDialog(false)}
-        classId={id}
-        existingSetIds={flashcardSets.map((set) => set.ID)}
-      />
-    </>
+
+      <Footer />
+    </IonPage>
   );
 };
 

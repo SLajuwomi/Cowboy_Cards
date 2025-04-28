@@ -1,10 +1,11 @@
+import { Footer } from '@/components/Footer';
 import { Navbar } from '@/components/Navbar';
 import SetCardList from '@/components/SetCardList';
 import SetOverviewControls from '@/components/SetOverviewControls';
 import SetOverviewHeader from '@/components/SetOverviewHeader';
 import type { Flashcard, FlashcardSet } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
-import { IonAlert, IonContent, useIonToast } from '@ionic/react';
+import { IonAlert, IonContent, IonPage, useIonToast } from '@ionic/react';
 import { useCallback, useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
@@ -345,67 +346,73 @@ const SetOverview = () => {
   const cardsToDisplay = isEditing ? editedCards : cards;
 
   return (
-    <IonContent className="">
-      <Navbar />
-      <div id="main-content" className="container max-w-4xl mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
-          <SetOverviewHeader
-            loading={loadingCards}
-            flashcardSetData={flashcardSetData}
-            isEditing={isEditing}
-            isOwner={isOwner}
-            updatedInfo={updatedInfo}
-            metadataErrors={metadataErrors}
-            onMetadataChange={handleMetadataChange}
-            onBackClick={handleBackClick}
-          />
+    <IonPage>
+      <IonContent className="">
+        <Navbar />
+        <div
+          id="main-content"
+          className="container max-w-4xl mx-auto px-4 py-8"
+        >
+          <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
+            <SetOverviewHeader
+              loading={loadingCards}
+              flashcardSetData={flashcardSetData}
+              isEditing={isEditing}
+              isOwner={isOwner}
+              updatedInfo={updatedInfo}
+              metadataErrors={metadataErrors}
+              onMetadataChange={handleMetadataChange}
+              onBackClick={handleBackClick}
+            />
 
-          <SetOverviewControls
-            isOwner={isOwner}
+            <SetOverviewControls
+              isOwner={isOwner}
+              isEditing={isEditing}
+              onBackClick={handleBackClick}
+              onEditClick={handleEdit}
+              onSaveClick={handleSave}
+              onCancelClick={handleCancel}
+              onDeleteClick={() => setShowDeleteAlert(true)}
+              studyLink={`/flashcards/${id}`}
+            />
+          </div>
+
+          <SetCardList
+            loading={loadingCards}
+            cardsToDisplay={cardsToDisplay}
             isEditing={isEditing}
-            onBackClick={handleBackClick}
-            onEditClick={handleEdit}
-            onSaveClick={handleSave}
-            onCancelClick={handleCancel}
-            onDeleteClick={() => setShowDeleteAlert(true)}
-            studyLink={`/flashcards/${id}`}
+            isOwner={isOwner}
+            cardErrors={cardErrors}
+            onCardChange={handleCardChange}
+            onAddCard={handleAddCard}
+            onRemoveCard={handleRemoveCard}
+            onAddCardClick={handleEdit}
           />
         </div>
 
-        <SetCardList
-          loading={loadingCards}
-          cardsToDisplay={cardsToDisplay}
-          isEditing={isEditing}
-          isOwner={isOwner}
-          cardErrors={cardErrors}
-          onCardChange={handleCardChange}
-          onAddCard={handleAddCard}
-          onRemoveCard={handleRemoveCard}
-          onAddCardClick={handleEdit}
+        <IonAlert
+          isOpen={showDeleteAlert}
+          onDidDismiss={() => setShowDeleteAlert(false)}
+          header={'Confirm Deletion'}
+          message={
+            'Are you sure you want to delete this set? This action cannot be undone.'
+          }
+          buttons={[
+            {
+              text: 'Cancel',
+              role: 'cancel',
+              cssClass: 'secondary',
+            },
+            {
+              text: 'Delete',
+              role: 'destructive',
+              handler: handleDeleteSet,
+            },
+          ]}
         />
-      </div>
-
-      <IonAlert
-        isOpen={showDeleteAlert}
-        onDidDismiss={() => setShowDeleteAlert(false)}
-        header={'Confirm Deletion'}
-        message={
-          'Are you sure you want to delete this set? This action cannot be undone.'
-        }
-        buttons={[
-          {
-            text: 'Cancel',
-            role: 'cancel',
-            cssClass: 'secondary',
-          },
-          {
-            text: 'Delete',
-            role: 'destructive',
-            handler: handleDeleteSet,
-          },
-        ]}
-      />
-    </IonContent>
+      </IonContent>
+      <Footer />
+    </IonPage>
   );
 };
 

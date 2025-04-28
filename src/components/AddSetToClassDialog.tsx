@@ -30,6 +30,8 @@ const AddSetToClassDialog = (props) => {
   } = useUserSets();
 
   const addSetMutation = useAddSetToClass();
+  console.log('userSets', userSets);
+  console.log('addSetMutation', addSetMutation.data);
 
   // Filter sets that are not already in the class
   const availableSets = userSets?.filter(
