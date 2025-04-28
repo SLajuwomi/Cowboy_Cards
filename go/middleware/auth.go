@@ -2,9 +2,11 @@ package middleware
 
 import (
 	"context"
+	"encoding/hex"
 	"errors"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gorilla/sessions"
@@ -13,22 +15,25 @@ import (
 // ***************************
 // *  LIVE backend           *
 // ***************************
-// var (
-// 	sessionKey = os.Getenv("SESSION_KEY")
-// 	sKey, _    = hex.DecodeString(sessionKey)
-// 	store      = sessions.NewCookieStore(sKey)
-// )
+var (
+	buildenv   = os.Getenv("BUILDENV")
+	sessionKey = os.Getenv("SESSION_KEY")
+	sKey, _    = hex.DecodeString(sessionKey)
+	store      = sessions.NewCookieStore(sKey)
+)
 
 // ************************************************
 // * uncomment this block and comment out the one *
 // * above to dev with the LOCAL backend          *
 // ************************************************
-var (
-	store = sessions.NewCookieStore([]byte{95, 65, 12, 40})
-)
+// var (
+// buildenv = os.Getenv("BUILDENV")
+// 	store = sessions.NewCookieStore([]byte{95, 65, 12, 40})
+// )
 
 func init() {
 	log.Println("init")
+	log.Println("mw init: ", buildenv)
 
 	// MaxAge=0 means no Max-Age attribute specified and the cookie will be
 	// deleted after the browser session ends.
@@ -39,14 +44,18 @@ func init() {
 	// * LIVE and LOCAL WEB backend *
 	// ******************************
 
-	// store.Options = &sessions.Options{
-	// 	Path:     "/",
-	// 	MaxAge:   0,
-	// 	Secure:   true,
-	// 	HttpOnly: true,
-	// 	// SameSite: http.SameSiteStrictMode,//prod
-	// 	SameSite: http.SameSiteNoneMode,
-	// }
+	store.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   0,
+		Secure:   true,
+		HttpOnly: true,
+	}
+
+	if buildenv == "" {
+		store.Options.SameSite = http.SameSiteNoneMode
+	} else if buildenv == "prod" {
+		store.Options.SameSite = http.SameSiteStrictMode
+	}
 
 	// **********************************************************
 	// uncomment this and comment the one above to dev MOBILE
