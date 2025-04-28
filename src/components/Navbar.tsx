@@ -92,9 +92,9 @@ const Navbar = () => {
             <img
               src="/Spirit-Cowboy-Profile-Only.png"
               alt="Cowboy Cards Logo"
-              className="h-8 w-auto xs:hidden block"
+              className="h-8 w-auto me:hidden block"
             />
-            <h2 className="hidden xs:block text-2xl sm:text-3xl md:text-4xl text-ellipsis overflow-hidden whitespace-nowrap font-ewert text-[color:--ion-color-primary]">
+            <h2 className="hidden me:block text-2xl sm:text-3xl md:text-4xl text-ellipsis overflow-hidden whitespace-nowrap font-ewert text-[color:--ion-color-primary]">
               Cowboy Cards
             </h2>
             {/* <IonTitle
