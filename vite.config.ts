@@ -21,7 +21,15 @@ export default defineConfig(({ mode }) => {
       host: '::',
       port: 8080,
     },
-    build: {},
+    build: {
+      outDir: 'public',
+      sourcemap: true,
+      rollupOptions: {
+        output: {
+          manualChunks,
+        },
+      },
+    },
     publicDir: 'static',
     plugins: [react(), mode === 'development' && componentTagger()].filter(
       Boolean
@@ -33,26 +41,9 @@ export default defineConfig(({ mode }) => {
     },
   };
 
-  if (mode === 'development' || mode === 'staging') {
-    res.build = {
-      outDir: 'public',
-      sourcemap: true,
-      rollupOptions: {
-        output: {
-          manualChunks,
-        },
-      },
-    };
-  } else if (mode === 'production') {
-    res.build = {
-      outDir: '/var/www/cowboy_cards/html',
-      sourcemap: false,
-      rollupOptions: {
-        output: {
-          manualChunks,
-        },
-      },
-    };
+  if (mode === 'production') {
+    res.build.sourcemap = false;
   }
+
   return res;
 });
