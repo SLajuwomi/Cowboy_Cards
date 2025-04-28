@@ -151,16 +151,12 @@ const UserAccount = () => {
 
       <div id="main-content" className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <p className="text-xl font-semibold text-primary">
+          <p className="text-xl font-rye font-semibold text-primary">
             Welcome back, {userInfo?.username || 'User'}!
           </p>
         </div>
 
-        <IonButton
-          onClick={() => window.history.back()}
-          fill="outline"
-          className="mb-6"
-        >
+        <IonButton onClick={() => window.history.back()} className="mb-6">
           <IonIcon slot="start" icon={arrowBackOutline} />
           Back
         </IonButton>

@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss';
+import tailwindAnimate from 'tailwindcss-animate';
 
 export default {
   darkMode: ['class'],
@@ -18,6 +19,15 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        ewert: 'Ewert, serif',
+        rye: 'Rye, serif',
+        smokum: 'Smokum, serif',
+      },
+      screens: {
+        xs: '24rem',
+        me: '30rem',
+      },
       transitionProperty: {
         'transform-shadow': 'transform, box-shadow',
       },
@@ -95,5 +105,5 @@ export default {
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [tailwindAnimate],
 } satisfies Config;

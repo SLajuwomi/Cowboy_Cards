@@ -10,7 +10,7 @@ import { home } from 'ionicons/icons';
 
 const Footer = () => {
   return (
-    <IonFooter className="hidden md:block ion-no-border fixed bottom-0 w-full">
+    <IonFooter className="hidden sm:block ion-no-border fixed bottom-0 w-full">
       <IonToolbar>
         <IonButtons slot="start">
           <IonButton routerLink="/home">
@@ -33,7 +33,7 @@ const Footer = () => {
         {/*</IonButtons>*/}
 
         <IonText className="mx-auto text-center text-sm">
-          Cowboy Cards 2025. Built for learning and fun.
+          &copy;Cowboy Cards 2025. Built for learning and fun.
         </IonText>
       </IonToolbar>
     </IonFooter>
