@@ -194,7 +194,7 @@ const SetOverview = () => {
       return;
     }
 
-    setLoadingCards(true);
+    setLoadingCards(true); //eslint-disable-next-line
     const apiPromises: Promise<any>[] = [];
 
     if (updatedInfo.set_name !== (flashcardSetData.SetName || '').trim()) {
@@ -241,7 +241,7 @@ const SetOverview = () => {
             headers: {
               front: editedCard.Front,
               back: editedCard.Back,
-              id: flashcardSetData.ID,
+              set_id: flashcardSetData.ID,
             },
           })
         );

@@ -186,7 +186,7 @@ func (h *DBHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 			ID:       userID,
 		})
 	case password:
-		if err := CheckPasswordStrength(w, val); err != nil {
+		if err := CheckPasswordStrength(val); err != nil {
 			logAndSendError(w, err, "Password strength error", http.StatusBadRequest)
 			return
 		}

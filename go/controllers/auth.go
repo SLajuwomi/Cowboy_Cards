@@ -78,7 +78,7 @@ func (h *DBHandler) Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := CheckPasswordStrength(w, req.Password); err != nil {
+	if err := CheckPasswordStrength(req.Password); err != nil {
 		logAndSendError(w, err, "Password strength error", http.StatusBadRequest)
 		return
 	}
@@ -143,22 +143,23 @@ func (h *DBHandler) Signup(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Logout handles user logout
-// func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
-// 	// Clear the session
-// 	if err := middleware.ClearSession(w, r); err != nil {
-// 		logAndSendError(w, err, "Error clearing session", http.StatusInternalServerError)
-// 		return
-// 	}
-
-// 	w.WriteHeader(http.StatusOK)
-// 	json.NewEncoder(w).Encode(map[string]string{"message": "Successfully logged out"})
-// }
-
 func (h *DBHandler) SendResetPasswordToken(w http.ResponseWriter, r *http.Request) {
+	query, ctx, conn, err := getQueryConnAndContext(r, h)
+	if err != nil {
+		logAndSendError(w, err, "Database connection error", http.StatusInternalServerError)
+		return
+	}
+	defer conn.Release()
+
 	headerVals, err := getHeaderVals(r, email)
 	if err != nil {
 		logAndSendError(w, err, "Header error", http.StatusBadRequest)
+		return
+	}
+
+	user, err := query.GetUserByEmail(ctx, headerVals[email])
+	if err != nil {
+		logAndSendError(w, err, "Invalid email", http.StatusUnauthorized)
 		return
 	}
 
@@ -182,23 +183,15 @@ Yeehaw!
 The Cowboy Cards Team
 	`, resetToken)
 
-	query, ctx, conn, err := getQueryConnAndContext(r, h)
-	if err != nil {
-		logAndSendError(w, err, "Database connection error", http.StatusInternalServerError)
-		return
-	}
-	defer conn.Release()
-	user, err := query.GetUserByEmail(ctx, headerVals[email])
-	if err != nil {
-		logAndSendError(w, err, "Invalid email", http.StatusUnauthorized)
-		return
-	}
-
 	// Store the reset token in the database
 	err = query.CreateResetToken(ctx, db.CreateResetTokenParams{
-		ResetToken: pgtype.Text{resetToken, true},
+		ResetToken: pgtype.Text{String: resetToken, Valid: true},
 		ID:         user.ID,
 	})
+	if err != nil {
+		logAndSendError(w, err, "Error creating token", http.StatusUnauthorized)
+		return
+	}
 
 	if err := SendEmail(w, headerVals[email], "Cowboy Cards Password Reset", emailBody); err != nil {
 		http.Error(w, "Failed to send password reset email", http.StatusInternalServerError)
@@ -207,26 +200,22 @@ The Cowboy Cards Team
 }
 
 func (h *DBHandler) ResetPassword(w http.ResponseWriter, r *http.Request) {
-	headerVals, err := getHeaderVals(r, password, token, email)
-	if err != nil {
-		logAndSendError(w, err, "Header error", http.StatusBadRequest)
-		return
-	}
-
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
 		logAndSendError(w, err, "Database connection error", http.StatusInternalServerError)
 		return
 	}
 	defer conn.Release()
-	user, err := query.GetUserByEmail(ctx, headerVals[email])
+
+	headerVals, err := getHeaderVals(r, password, token, email)
 	if err != nil {
-		logAndSendError(w, err, "Invalid email", http.StatusUnauthorized)
+		logAndSendError(w, err, "Header error", http.StatusBadRequest)
 		return
 	}
 
-	if time.Now().After(user.UpdatedAt.Time.Add(time.Hour)) {
-		logAndSendError(w, err, "Reset token expired", http.StatusUnauthorized)
+	user, err := query.GetUserByEmail(ctx, headerVals[email])
+	if err != nil {
+		logAndSendError(w, err, "Invalid email", http.StatusUnauthorized)
 		return
 	}
 
@@ -235,7 +224,12 @@ func (h *DBHandler) ResetPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := CheckPasswordStrength(w, headerVals[password]); err != nil {
+	if time.Now().After(user.UpdatedAt.Time.Add(time.Hour)) {
+		logAndSendError(w, err, "Reset token expired", http.StatusUnauthorized)
+		return
+	}
+
+	if err := CheckPasswordStrength(headerVals[password]); err != nil {
 		logAndSendError(w, err, "Password strength error", http.StatusBadRequest)
 		return
 	}
@@ -274,7 +268,7 @@ func SendEmail(w http.ResponseWriter, to, subject, body string) error {
 
 	auth := smtp.PlainAuth("", from, password, smtpHost)
 
-	message := []byte(fmt.Sprintf("To: %s\r\nSubject: %s\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n%s\r\n", to, subject, body))
+	message := fmt.Appendf(nil, "To: %s\r\nSubject: %s\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n%s\r\n", to, subject, body)
 
 	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, []string{to}, message)
 	if err != nil {
@@ -284,7 +278,7 @@ func SendEmail(w http.ResponseWriter, to, subject, body string) error {
 	return nil
 }
 
-func CheckPasswordStrength(w http.ResponseWriter, password string) error {
+func CheckPasswordStrength(password string) error {
 	minLength := 8
 	if len(password) < minLength {
 		return fmt.Errorf("password must be at least %d characters long", minLength)
@@ -294,6 +288,7 @@ func CheckPasswordStrength(w http.ResponseWriter, password string) error {
 	hasLower := false
 	hasDigit := false
 	hasSpecial := false
+
 	for _, char := range password {
 		switch {
 		case char >= 'A' && char <= 'Z':

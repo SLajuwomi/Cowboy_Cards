@@ -88,17 +88,17 @@ export function useUpdateClass() {
 }
 
 // Delete student from class mutation
-export function useDeleteStudent(id: string) {
+export function useDeleteStudent(class_id: string) {
   const queryClient = useQueryClient();
 
   return useMutation<void, Error, number>({
     mutationFn: (studentId) =>
       makeHttpCall(`/api/class_user/`, {
         method: 'DELETE',
-        headers: { student_id: studentId, id },
+        headers: { student_id: studentId, class_id },
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['classMembers', id] });
+      queryClient.invalidateQueries({ queryKey: ['classMembers', class_id] });
     },
   });
 }
@@ -114,7 +114,7 @@ export function useAddSetToClass() {
       makeHttpCall<string>(`/api/class_set/`, {
         method: 'POST',
         headers: {
-          id: classId,
+          class_id: classId,
           set_id: setId.toString(),
         },
       }),

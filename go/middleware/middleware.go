@@ -80,16 +80,35 @@ func (h *Handler) VerifyClassMemberMW(next http.Handler) http.Handler {
 			return
 		}
 
-		headerVals, err := GetHeaderVals(r, id)
-		if err != nil {
-			LogAndSendError(w, err, "Header error", http.StatusBadRequest)
-			return
-		}
+		var (
+			route   = r.URL.Path
+			classID int32
+		)
 
-		classID, err := GetInt32Id(headerVals[id])
-		if err != nil {
-			LogAndSendError(w, err, "Invalid class id", http.StatusBadRequest)
-			return
+		if strings.HasSuffix(route, "/class_set/") || strings.HasSuffix(route, "/class_user/") {
+			headerVals, err := GetHeaderVals(r, class_id)
+			if err != nil {
+				LogAndSendError(w, err, "Header error", http.StatusBadRequest)
+				return
+			}
+
+			classID, err = GetInt32Id(headerVals[class_id])
+			if err != nil {
+				LogAndSendError(w, err, "Invalid class id", http.StatusBadRequest)
+				return
+			}
+		} else {
+			headerVals, err := GetHeaderVals(r, id)
+			if err != nil {
+				LogAndSendError(w, err, "Header error", http.StatusBadRequest)
+				return
+			}
+
+			classID, err = GetInt32Id(headerVals[id])
+			if err != nil {
+				LogAndSendError(w, err, "Invalid class id", http.StatusBadRequest)
+				return
+			}
 		}
 
 		member, err := query.VerifyClassMember(ctx, db.VerifyClassMemberParams{
@@ -131,16 +150,35 @@ func (h *Handler) VerifySetMemberMW(next http.Handler) http.Handler {
 			return
 		}
 
-		headerVals, err := GetHeaderVals(r, id)
-		if err != nil {
-			LogAndSendError(w, err, "Header error", http.StatusBadRequest)
-			return
-		}
+		var (
+			method = r.Method
+			setID  int32
+		)
 
-		setID, err := GetInt32Id(headerVals[id])
-		if err != nil {
-			LogAndSendError(w, err, "Invalid class id", http.StatusBadRequest)
-			return
+		if method == http.MethodPost || (method == http.MethodDelete && strings.HasSuffix(r.URL.Path, "/set_user/")) {
+			headerVals, err := GetHeaderVals(r, set_id)
+			if err != nil {
+				LogAndSendError(w, err, "Header error", http.StatusBadRequest)
+				return
+			}
+
+			setID, err = GetInt32Id(headerVals[set_id])
+			if err != nil {
+				LogAndSendError(w, err, "Invalid set id", http.StatusBadRequest)
+				return
+			}
+		} else {
+			headerVals, err := GetHeaderVals(r, id)
+			if err != nil {
+				LogAndSendError(w, err, "Header error", http.StatusBadRequest)
+				return
+			}
+
+			setID, err = GetInt32Id(headerVals[id])
+			if err != nil {
+				LogAndSendError(w, err, "Invalid set or fc id", http.StatusBadRequest)
+				return
+			}
 		}
 
 		member, err := query.VerifySetMember(ctx, db.VerifySetMemberParams{

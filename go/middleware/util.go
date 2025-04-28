@@ -36,6 +36,8 @@ const (
 	sessionName  string         = "cowboy-cards-session"
 	id           string         = "id"
 	no_role      string         = "no role"
+	class_id     string         = "class_id"
+	set_id       string         = "set_id"
 )
 
 func LogAndSendError(w http.ResponseWriter, err error, msg string, statusCode int) {
