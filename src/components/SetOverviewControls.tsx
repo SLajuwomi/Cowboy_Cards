@@ -6,7 +6,6 @@ const SetOverviewControls = (props) => {
         <>
           <IonButton
             className="rounded-lg flex-grow md:flex-grow-0"
-            fill="outline"
             style={{ '--border-radius': '0.5rem' }}
             onClick={props.onEditClick}
           >

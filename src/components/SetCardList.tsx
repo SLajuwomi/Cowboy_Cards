@@ -133,7 +133,6 @@ const SetCardList = (props) => {
           {props.isEditing && props.isOwner && (
             <IonButton
               expand="block"
-              fill="outline"
               onClick={props.onAddCard}
               className="mt-4 rounded-lg"
             >

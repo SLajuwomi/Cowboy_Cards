@@ -44,7 +44,6 @@ const SetOverviewHeader = (props) => {
       </div>
       <IonButton
         className="rounded-lg flex-grow md:flex-grow-0 mt-4"
-        fill="outline"
         style={{ '--border-radius': '0.5rem' }}
         onClick={props.onBackClick}
         disabled={props.isEditing}

@@ -32,7 +32,7 @@ const AddSetToClassDialog = (props) => {
   const addSetMutation = useAddSetToClass();
 
   // Filter sets that are not already in the class
-  const availableSets = userSets.filter(
+  const availableSets = userSets?.filter(
     (set) => !props.existingSetIds.includes(set.SetID)
   );
 
@@ -95,7 +95,7 @@ const AddSetToClassDialog = (props) => {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
-        {isLoading && !availableSets.length ? (
+        {isLoading && !availableSets?.length ? (
           <div className="flex justify-center items-center h-full">
             <IonSpinner name="circular" />
             <span className="ml-2">Loading your sets...</span>
@@ -104,7 +104,7 @@ const AddSetToClassDialog = (props) => {
           <IonText color="danger">
             <p>{error instanceof Error ? error.message : String(error)}</p>
           </IonText>
-        ) : availableSets.length === 0 ? (
+        ) : availableSets?.length === 0 ? (
           <p className="text-center text-gray-500 mt-4">
             You have no available sets to add to this class. Create a new set or
             check if all your sets are already added.
@@ -117,7 +117,7 @@ const AddSetToClassDialog = (props) => {
             }}
           >
             <IonList>
-              {availableSets.map((set) => (
+              {availableSets?.map((set) => (
                 <IonItem key={set.SetID}>
                   <IonRadio slot="start" key={set.SetID} value={set.SetID} />
                   <IonLabel>
@@ -132,13 +132,13 @@ const AddSetToClassDialog = (props) => {
           </IonRadioGroup>
         )}
 
-        {error && availableSets.length > 0 && (
+        {error && availableSets?.length > 0 && (
           <IonText color="danger" className="block mt-4">
             <p>{error instanceof Error ? error.message : String(error)}</p>
           </IonText>
         )}
       </IonContent>
-      {!isLoading && availableSets.length > 0 && (
+      {!isLoading && availableSets?.length > 0 && (
         <div className="ion-padding">
           <IonButton
             expand="block"

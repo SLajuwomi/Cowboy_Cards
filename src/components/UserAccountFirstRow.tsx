@@ -64,11 +64,7 @@ const UserAccountFirstRow = (props) => {
               <InfoRow label="Last Name" value={props.userInfo?.last_name} />
               <InfoRow label="Username" value={props.userInfo?.username} />
               <InfoRow label="Email" value={props.userInfo?.email} />
-              <IonButton
-                fill="outline"
-                onClick={props.handleEdit}
-                className="mt-4"
-              >
+              <IonButton onClick={props.handleEdit} className="mt-4">
                 <IonIcon slot="start" icon={createOutline} />
                 Edit Info
               </IonButton>

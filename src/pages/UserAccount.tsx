@@ -156,11 +156,7 @@ const UserAccount = () => {
           </p>
         </div>
 
-        <IonButton
-          onClick={() => window.history.back()}
-          fill="outline"
-          className="mb-6"
-        >
+        <IonButton onClick={() => window.history.back()} className="mb-6">
           <IonIcon slot="start" icon={arrowBackOutline} />
           Back
         </IonButton>

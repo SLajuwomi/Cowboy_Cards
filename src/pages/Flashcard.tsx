@@ -106,7 +106,6 @@ const Flashcard = () => {
         <div className="flex items-center gap-4 mb-6">
           <IonButton
             className="rounded-lg"
-            fill="outline"
             style={{ '--border-radius': '0.5rem' }}
             routerLink={`/set-overview/${id}`}
           >

@@ -323,7 +323,6 @@ export const AuthForm = () => {
           </Button>
           {/* <IonButton
             expand="block"
-            fill="outline"
             className="flex items-center justify-center space-x-2"
             onClick={() => {
               // Add your Google sign-in logic here
