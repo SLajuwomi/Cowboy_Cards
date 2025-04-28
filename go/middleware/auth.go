@@ -2,11 +2,9 @@ package middleware
 
 import (
 	"context"
-	"encoding/hex"
 	"errors"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/gorilla/sessions"
@@ -15,19 +13,19 @@ import (
 // ***************************
 // *  LIVE backend           *
 // ***************************
-var (
-	sessionKey = os.Getenv("SESSION_KEY")
-	sKey, _    = hex.DecodeString(sessionKey)
-	store      = sessions.NewCookieStore(sKey)
-)
+// var (
+// 	sessionKey = os.Getenv("SESSION_KEY")
+// 	sKey, _    = hex.DecodeString(sessionKey)
+// 	store      = sessions.NewCookieStore(sKey)
+// )
 
 // ************************************************
 // * uncomment this block and comment out the one *
 // * above to dev with the LOCAL backend          *
 // ************************************************
-// var (
-// 	store = sessions.NewCookieStore([]byte{95, 65, 12, 40})
-// )
+var (
+	store = sessions.NewCookieStore([]byte{95, 65, 12, 40})
+)
 
 func init() {
 	log.Println("init")
@@ -41,26 +39,26 @@ func init() {
 	// * LIVE and LOCAL WEB backend *
 	// ******************************
 
-	store.Options = &sessions.Options{
-		Path:     "/",
-		MaxAge:   0,
-		Secure:   true,
-		HttpOnly: true,
-		// SameSite: http.SameSiteStrictMode,//prod
-		SameSite: http.SameSiteNoneMode,
-	}
+	// store.Options = &sessions.Options{
+	// 	Path:     "/",
+	// 	MaxAge:   0,
+	// 	Secure:   true,
+	// 	HttpOnly: true,
+	// 	// SameSite: http.SameSiteStrictMode,//prod
+	// 	SameSite: http.SameSiteNoneMode,
+	// }
 
 	// **********************************************************
 	// uncomment this and comment the one above to dev MOBILE
 	// **********************************************************
-	//
-	//	store.Options = &sessions.Options{
-	//		Path:     "/",
-	//		MaxAge:   0,
-	//		Secure:   false,
-	//		HttpOnly: true,
-	//		SameSite: http.SameSiteLaxMode,
-	//	}
+
+	store.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   0,
+		Secure:   false,
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+	}
 }
 
 func Auth(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {

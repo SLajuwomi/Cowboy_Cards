@@ -7,11 +7,14 @@
   "scripts": {
     "dev:live": "VITE_API_BASE=https://cowboy-cards.dsouth.org vite",
     "dev:local": "VITE_API_BASE=http://localhost:8000 vite",
+    "dev:mobile": "VITE_API_BASE=http://10.84.16.22:8080 vite",
     "go": "go run go/main.go",
     "sqlc:gen": "sqlc generate -f sqlc/sqlc.yaml",
     "build:staging": "VITE_API_BASE=https://cowboy-cards.dsouth.org vite build --mode staging",
     "build:prod": "VITE_API_BASE=https://cowboy-cards.org vite build --mode production",
     "build:dev": "vite build --mode development",
+    "build:ios": "ionic cap copy ios && ionic cap open ios", 
+    "prebuild:ios": "VITE_API_BASE=http://10.84.16.22:8080 ionic build -- --mode mobile",
     "lint": "eslint .",
     "preview": "vite preview"
   },

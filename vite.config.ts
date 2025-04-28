@@ -12,6 +12,7 @@ function manualChunks(id: string) {
 }
 
 export default defineConfig(({ mode }) => {
+  console.log("mode: ",mode);
   const res = {
     base: './',
     preview: {
@@ -33,7 +34,7 @@ export default defineConfig(({ mode }) => {
     },
   };
 
-  if (mode === 'development' || mode === 'staging') {
+  if (mode === 'development' || mode === 'staging' || mode === 'mobile') {
     res.build = {
       outDir: 'public',
       sourcemap: true,
