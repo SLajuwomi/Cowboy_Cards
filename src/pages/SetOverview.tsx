@@ -3,24 +3,55 @@ import { Navbar } from '@/components/Navbar';
 import SetCardList from '@/components/SetCardList';
 import SetOverviewControls from '@/components/SetOverviewControls';
 import SetOverviewHeader from '@/components/SetOverviewHeader';
-import type { Flashcard, FlashcardSet } from '@/types/globalTypes';
-import { makeHttpCall } from '@/utils/makeHttpCall';
-import { IonAlert, IonContent, IonPage, useIonToast } from '@ionic/react';
-import { useCallback, useEffect, useState } from 'react';
+import {
+  useAddCard,
+  useDeleteCard,
+  useDeleteSet,
+  useSetCards,
+  useSetDetails,
+  useUpdateCard,
+  useUpdateSet,
+} from '@/hooks/useSetQueries';
+import type { Flashcard } from '@/types/globalTypes';
+import {
+  IonAlert,
+  IonContent,
+  IonPage,
+  IonSpinner,
+  useIonToast,
+} from '@ionic/react';
+import { useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
 const SetOverview = () => {
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
   const [presentToast] = useIonToast();
-  const [flashcardSetData, setFlashcardSetData] = useState<FlashcardSet>();
-  const [cards, setCards] = useState<Flashcard[]>([]);
-  const [originalCards, setOriginalCards] = useState<Flashcard[]>([]);
-  const [editedCards, setEditedCards] = useState<Flashcard[]>([]);
-  const [loadingCards, setLoadingCards] = useState(true);
+
+  // React Query hooks
+  const {
+    data: flashcardSetData,
+    isLoading: isLoadingSet,
+    error: setError,
+  } = useSetDetails(id);
+
+  const {
+    data: cards = [],
+    isLoading: isLoadingCards,
+    error: cardsError,
+  } = useSetCards(id);
+
+  // Mutations
+  const updateSetMutation = useUpdateSet();
+  const updateCardMutation = useUpdateCard();
+  const addCardMutation = useAddCard();
+  const deleteCardMutation = useDeleteCard();
+  const deleteSetMutation = useDeleteSet();
+
+  // UI state
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
-  const [isOwner, setIsOwner] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [editedCards, setEditedCards] = useState<Flashcard[]>([]);
   const [updatedInfo, setUpdatedInfo] = useState({
     set_name: '',
     set_description: '',
@@ -34,44 +65,24 @@ const SetOverview = () => {
     [key: number]: { front?: string; back?: string };
   }>({});
 
-  const fetchData = useCallback(async () => {
-    setLoadingCards(true);
-    try {
-      const [setDetails, fetchedCardsData] = await Promise.all([
-        makeHttpCall<FlashcardSet>(`/api/flashcards/sets/`, {
-          method: 'GET',
-          headers: { id: id },
-        }),
-        makeHttpCall<Flashcard[]>(`/api/flashcards/list`, {
-          method: 'GET',
-          headers: { set_id: id },
-        }),
-      ]);
+  // Check if user is the owner of the set
+  const isOwner = flashcardSetData?.Role === 'owner';
 
-      setFlashcardSetData(setDetails);
-      setIsOwner(setDetails.Role === 'owner');
-      const initialCards = Array.isArray(fetchedCardsData)
-        ? fetchedCardsData
-        : [];
-      setCards(initialCards);
-      setOriginalCards(initialCards);
-    } catch (error) {
-      console.error('Failed to fetch data', error);
-      let message = 'Unknown error';
-      if (error instanceof Error) message = error.message;
-      presentToast({
-        message: `Error loading data: ${message}`,
-        duration: 3000,
-        color: 'danger',
-      });
-    } finally {
-      setLoadingCards(false);
-    }
-  }, [id, presentToast]);
+  // Loading state derived from React Query
+  const isLoading = isLoadingSet || isLoadingCards;
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  // Error handling
+  const error = setError || cardsError;
+  if (error) {
+    console.error('Query error:', error);
+    let message = 'Unknown error';
+    if (error instanceof Error) message = error.message;
+    presentToast({
+      message: `Error loading data: ${message}`,
+      duration: 3000,
+      color: 'danger',
+    });
+  }
 
   const handleEdit = () => {
     if (!flashcardSetData) return;
@@ -79,8 +90,7 @@ const SetOverview = () => {
       set_name: flashcardSetData.SetName || '',
       set_description: flashcardSetData.SetDescription || '',
     });
-    setOriginalCards([...cards]);
-    setEditedCards(cards.map((card) => ({ ...card })));
+    setEditedCards(cards?.map((card) => ({ ...card })));
     setIsEditing(true);
     setMetadataErrors({});
     setCardErrors({});
@@ -102,7 +112,7 @@ const SetOverview = () => {
   ) => {
     const newValue = value ?? '';
     setEditedCards((prevCards) =>
-      prevCards.map((card, i) =>
+      prevCards?.map((card, i) =>
         i === index ? { ...card, [field]: newValue } : card
       )
     );
@@ -171,7 +181,7 @@ const SetOverview = () => {
       }
       if (trimmedFront !== card.Front || trimmedBack !== card.Back) {
         setEditedCards((prev) =>
-          prev.map((c, i) =>
+          prev?.map((c, i) =>
             i === index ? { ...c, Front: trimmedFront, Back: trimmedBack } : c
           )
         );
@@ -195,91 +205,83 @@ const SetOverview = () => {
       return;
     }
 
-    setLoadingCards(true); //eslint-disable-next-line
-    const apiPromises: Promise<any>[] = [];
-
-    if (updatedInfo.set_name !== (flashcardSetData.SetName || '').trim()) {
-      apiPromises.push(
-        makeHttpCall(`/api/flashcards/sets/set_name`, {
-          method: 'PUT',
-          headers: { id: id, set_name: updatedInfo.set_name }, // Send trimmed name
-        })
-      );
-    }
-    if (
-      updatedInfo.set_description !==
-      (flashcardSetData.SetDescription || '').trim()
-    ) {
-      apiPromises.push(
-        makeHttpCall(`/api/flashcards/sets/set_description`, {
-          method: 'PUT',
-          headers: { id: id, set_description: updatedInfo.set_description }, // Send trimmed description
-        })
-      );
-    }
-
-    const originalCardMap = new Map(
-      originalCards.map((card) => [card.ID, card])
-    );
-    const editedCardMap = new Map(editedCards.map((card) => [card.ID, card]));
-
-    originalCards.forEach((originalCard) => {
-      if (!editedCardMap.has(originalCard.ID) && originalCard.ID > 0) {
-        apiPromises.push(
-          makeHttpCall(`/api/flashcards`, {
-            method: 'DELETE',
-            headers: { id: originalCard.ID },
-          })
-        );
+    try {
+      // Update set metadata if changed
+      if (updatedInfo.set_name !== (flashcardSetData.SetName || '').trim()) {
+        await updateSetMutation.mutateAsync({
+          id: id,
+          field: 'set_name',
+          value: updatedInfo.set_name,
+        });
       }
-    });
 
-    editedCards.forEach((editedCard) => {
-      if (editedCard.ID <= 0) {
-        apiPromises.push(
-          makeHttpCall<Flashcard>(`/api/flashcards`, {
-            method: 'POST',
-            headers: {
-              front: editedCard.Front,
-              back: editedCard.Back,
-              set_id: flashcardSetData.ID,
-            },
-          })
-        );
-      } else {
-        const originalCard = originalCardMap.get(editedCard.ID);
-        if (originalCard) {
-          if (editedCard.Front !== (originalCard.Front || '').trim()) {
-            apiPromises.push(
-              makeHttpCall(`/api/flashcards/front`, {
-                method: 'PUT',
-                headers: { id: editedCard.ID, front: editedCard.Front },
-              })
-            );
-          }
-          if (editedCard.Back !== (originalCard.Back || '').trim()) {
-            apiPromises.push(
-              makeHttpCall(`/api/flashcards/back`, {
-                method: 'PUT',
-                headers: { id: editedCard.ID, back: editedCard.Back },
-              })
-            );
+      if (
+        updatedInfo.set_description !==
+        (flashcardSetData.SetDescription || '').trim()
+      ) {
+        await updateSetMutation.mutateAsync({
+          id: id,
+          field: 'set_description',
+          value: updatedInfo.set_description,
+        });
+      }
+
+      // Process card changes
+      const originalCardMap = new Map(cards?.map((card) => [card.ID, card]));
+
+      // Delete removed cards
+      for (const originalCard of cards) {
+        if (
+          !editedCards.some((c) => c.ID === originalCard.ID) &&
+          originalCard.ID > 0
+        ) {
+          await deleteCardMutation.mutateAsync(originalCard.ID);
+        }
+      }
+
+      // Add/update cards
+      for (const editedCard of editedCards) {
+        if (editedCard.ID <= 0) {
+          // New card
+          await addCardMutation.mutateAsync({
+            setId: flashcardSetData.ID,
+            front: editedCard.Front,
+            back: editedCard.Back,
+          });
+        } else {
+          // Existing card
+          const originalCard = originalCardMap.get(editedCard.ID);
+          if (originalCard) {
+            // Update front if changed
+            if (editedCard.Front !== (originalCard.Front || '').trim()) {
+              await updateCardMutation.mutateAsync({
+                id: editedCard.ID,
+                field: 'front',
+                value: editedCard.Front,
+              });
+            }
+
+            // Update back if changed
+            if (editedCard.Back !== (originalCard.Back || '').trim()) {
+              await updateCardMutation.mutateAsync({
+                id: editedCard.ID,
+                field: 'back',
+                value: editedCard.Back,
+              });
+            }
           }
         }
       }
-    });
 
-    try {
-      await Promise.all(apiPromises);
       presentToast({
         message: 'Set details and cards updated successfully!',
         duration: 2000,
         color: 'success',
       });
+
       setIsEditing(false);
       setMetadataErrors({});
       setCardErrors({});
-      await fetchData();
     } catch (error) {
       console.error('Failed to update set:', error);
       let message = 'Unknown error during save';
@@ -293,8 +295,6 @@ const SetOverview = () => {
         duration: 3000,
         color: 'danger',
       });
-    } finally {
-      setLoadingCards(false);
     }
   };
 
@@ -314,11 +314,9 @@ const SetOverview = () => {
       });
       return;
     }
+
     try {
-      await makeHttpCall<void>(`/api/flashcards/sets/`, {
-        method: 'DELETE',
-        headers: { id: id },
-      });
+      await deleteSetMutation.mutateAsync(id);
       presentToast({
         message: 'Set deleted successfully.',
         duration: 2000,
@@ -345,6 +343,20 @@ const SetOverview = () => {
 
   const cardsToDisplay = isEditing ? editedCards : cards;
 
+  if (isLoading && !isEditing) {
+    return (
+      <IonPage>
+        <IonContent className="">
+          <Navbar />
+          <div className="flex items-center justify-center h-64">
+            <IonSpinner name="circular" />
+          </div>
+        </IonContent>
+        <Footer />
+      </IonPage>
+    );
+  }
+
   return (
     <IonPage>
       <IonContent className="">
@@ -355,7 +367,7 @@ const SetOverview = () => {
         >
           <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
             <SetOverviewHeader
-              loading={loadingCards}
+              loading={isLoading}
               flashcardSetData={flashcardSetData}
               isEditing={isEditing}
               isOwner={isOwner}
@@ -378,7 +390,7 @@ const SetOverview = () => {
           </div>
 
           <SetCardList
-            loading={loadingCards}
+            loading={isLoading}
             cardsToDisplay={cardsToDisplay}
             isEditing={isEditing}
             isOwner={isOwner}
