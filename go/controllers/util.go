@@ -31,7 +31,6 @@ type User struct {
 	TotalCardViews any `json:"totalCardViews"`
 }
 
-// Class represents the class data that will be sent to the client in a getclassbyid req
 type Class struct {
 	ID               int32
 	ClassName        string
@@ -39,6 +38,15 @@ type Class struct {
 	CreatedAt        string
 	UpdatedAt        string
 	Role             string
+}
+
+type FlashcardSet struct {
+	ID             int32
+	SetName        string
+	SetDescription string
+	CreatedAt      string
+	UpdatedAt      string
+	Role           string
 }
 
 // LoginRequest represents the login request body
@@ -81,6 +89,7 @@ const (
 	student_id        string = "student_id"
 	teacher           string = "teacher"
 	username          string = "username"
+	token             string = "token"
 )
 
 func logAndSendError(w http.ResponseWriter, err error, msg string, statusCode int) {

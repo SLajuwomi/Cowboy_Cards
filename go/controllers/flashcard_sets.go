@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"path"
+	"time"
 
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/db"
 	"github.com/HSU-Senior-Project-2025/Cowboy_Cards/go/middleware"
@@ -47,14 +48,29 @@ func (h *DBHandler) GetFlashcardSetById(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	role, ok := middleware.GetRoleFromContext(ctx)
+	if !ok {
+		logAndSendError(w, errContext, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
 	flashcard_set, err := query.GetFlashcardSetById(ctx, setID)
 	if err != nil {
 		logAndSendError(w, err, "Failed to get flashcard set", http.StatusInternalServerError)
 		return
 	}
 
+	response := FlashcardSet{
+		ID:             flashcard_set.ID,
+		SetName:        flashcard_set.SetName,
+		SetDescription: flashcard_set.SetDescription,
+		CreatedAt:      flashcard_set.CreatedAt.Time.Format(time.DateTime),
+		UpdatedAt:      flashcard_set.UpdatedAt.Time.Format(time.DateTime),
+		Role:           role,
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(flashcard_set); err != nil {
+	if err := json.NewEncoder(w).Encode(response); err != nil {
 		logAndSendError(w, err, "Error encoding response", http.StatusInternalServerError)
 	}
 }

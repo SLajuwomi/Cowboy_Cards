@@ -1,4 +1,5 @@
 import { Navbar } from '@/components/Navbar';
+import type { FlashcardSet } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonCard,
@@ -11,12 +12,6 @@ import {
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-type FlashcardSet = {
-  ID: number;
-  SetName: string;
-  SetDescription: string;
-};
-
 const PublicFlashcards = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -28,6 +23,7 @@ const PublicFlashcards = () => {
       (set.SetDescription &&
         set.SetDescription.toLowerCase().includes(searchText.toLowerCase()))
   );
+
   useEffect(() => {
     async function fetchSets() {
       setLoading(true);
@@ -51,16 +47,18 @@ const PublicFlashcards = () => {
   return (
     <IonContent>
       <Navbar />
-      <div id="main-content" className="container mx-auto px-4 py-8 w-1/2">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-3xl font-bold pb-8">Public Flashcard Sets</h1>
+      <div id="main-content" className="container mx-auto px-0 py-8 w-4/5">
+        <div className="flex items-center flex-col justify-between mb-4">
+          <h1 className="text-4xl tracking-wide font-bold font-smokum pb-8">
+            Public Flashcard Sets
+          </h1>
           {loading && <div>Loading...</div>}
           {error && <div className="text-red-500 mt-2">{error}</div>}
           <IonSearchbar
-            value={searchText}
-            onIonInput={(e: any) => setSearchText(e.target.value)} // Use onIonInput for real-time updates
+            value={searchText} // eslint-disable-next-line
+            onIonInput={(e: any) => setSearchText(e.target.value)}
             placeholder="Search flashcard sets"
-            className="mb-4 w-1/2"
+            className="mb-4 max-w-lg"
           />
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

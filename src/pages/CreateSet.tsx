@@ -1,5 +1,5 @@
 import { Navbar } from '@/components/Navbar';
-import { FlashcardSet } from '@/types/globalTypes';
+import type { FlashcardSet } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonButton,
@@ -11,8 +11,6 @@ import {
 } from '@ionic/react';
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-
-//TODO: Decide if we want to have a CreateSet button on the ClassDetail page and be able to create sets and automatically link to class
 
 const CreateSet = () => {
   const history = useHistory();
@@ -68,12 +66,14 @@ const CreateSet = () => {
   };
 
   return (
-    <IonContent className="ion-padding">
+    <IonContent className="">
       <Navbar />
       <div id="main-content" className="container mx-auto px-4 py-8 max-w-4xl">
         {loading && <div>Loading...</div>}
         {error && <div className="text-red-500 mt-2">{error}</div>}
-        <h1 className="text-3xl font-bold mb-6">Create New Flashcard Set</h1>
+        <h1 className="text-4xl tracking-wide font-bold font-smokum mb-6">
+          Create New Flashcard Set
+        </h1>
 
         <IonCard className="mb-6 rounded-lg border shadow-sm">
           <IonCardContent>

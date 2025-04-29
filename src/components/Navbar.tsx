@@ -10,7 +10,6 @@ import {
   IonMenu,
   IonMenuToggle,
   IonPopover,
-  IonTitle,
   IonToolbar,
   useIonRouter,
 } from '@ionic/react';
@@ -24,11 +23,11 @@ const Navbar = () => {
   const closePopover = () => setPopoverEvent(null);
 
   const handleMenuItemClick = (route) => {
-    router.push(route);
+    ionRouter.push(route);
     document.querySelector('ion-menu')?.close();
   };
 
-  const router = useIonRouter();
+  const ionRouter = useIonRouter();
   const { theme, setTheme } = useTheme();
 
   const toggleDarkMode = () => {
@@ -87,20 +86,23 @@ const Navbar = () => {
           </IonButtons>
 
           <div
-            className="flex items-center cursor-pointer"
-            onClick={() => router.push('/home')}
+            className="cursor-pointer"
+            onClick={() => ionRouter.push('/home')}
           >
             <img
-              src="https://www.hsutx.edu/wp-content/uploads/2018/06/Spirit-Cowboy-Profile-Only.png"
+              src="/Spirit-Cowboy-Profile-Only.png"
               alt="Cowboy Cards Logo"
-              className="h-8 w-auto md:hidden"
+              className="h-8 w-auto me:hidden block"
             />
-            <IonTitle
+            <h2 className="hidden me:block text-2xl sm:text-3xl md:text-4xl text-ellipsis overflow-hidden whitespace-nowrap font-ewert text-[color:--ion-color-primary]">
+              Cowboy Cards
+            </h2>
+            {/* <IonTitle
               color="primary"
-              className="hidden md:inline-block text-lg md:text-xl lg:text-2xl font-bold hover:translate-x-1 transition-all duration-300"
+              className="hidden xs:block text-2xl sm:text-3xl lg:text-4xl font-ewert"
             >
               Cowboy Cards
-            </IonTitle>
+            </IonTitle> */}
           </div>
 
           <IonButtons slot="end">
@@ -118,7 +120,7 @@ const Navbar = () => {
                     button
                     onClick={() => {
                       closePopover();
-                      router.push('/create-set');
+                      ionRouter.push('/create-set');
                     }}
                   >
                     Create Set
@@ -127,7 +129,7 @@ const Navbar = () => {
                     button
                     onClick={() => {
                       closePopover();
-                      router.push('/create-class');
+                      ionRouter.push('/create-class');
                     }}
                   >
                     Create Class
@@ -136,7 +138,7 @@ const Navbar = () => {
                     button
                     onClick={() => {
                       closePopover();
-                      router.push('/public-classes');
+                      ionRouter.push('/public-classes');
                     }}
                   >
                     Join Class

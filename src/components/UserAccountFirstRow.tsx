@@ -13,9 +13,9 @@ import { createOutline } from 'ionicons/icons';
 const UserAccountFirstRow = (props) => {
   return (
     <div className="flex flex-col md:flex-row gap-6">
-      <IonCard className="w-full md:w-1/2 rounded-lg border shadow-sm">
+      <IonCard className="md:w-1/2 rounded-lg border shadow-sm">
         <IonCardHeader className="p-6">
-          <IonCardTitle className="text-xl font-semibold text-primary">
+          <IonCardTitle className="text-xl font-rye font-semibold text-primary">
             Account Information
           </IonCardTitle>
         </IonCardHeader>
@@ -64,11 +64,7 @@ const UserAccountFirstRow = (props) => {
               <InfoRow label="Last Name" value={props.userInfo?.last_name} />
               <InfoRow label="Username" value={props.userInfo?.username} />
               <InfoRow label="Email" value={props.userInfo?.email} />
-              <IonButton
-                fill="outline"
-                onClick={props.handleEdit}
-                className="mt-4"
-              >
+              <IonButton onClick={props.handleEdit} className="mt-4">
                 <IonIcon slot="start" icon={createOutline} />
                 Edit Info
               </IonButton>
@@ -77,9 +73,9 @@ const UserAccountFirstRow = (props) => {
         </IonCardContent>
       </IonCard>
 
-      <IonCard className="w-full md:w-1/2 rounded-lg border shadow-sm">
+      <IonCard className="md:w-1/2 rounded-lg border shadow-sm">
         <IonCardHeader className="p-6">
-          <IonCardTitle className="text-xl font-semibold text-primary">
+          <IonCardTitle className="text-xl font-rye font-semibold text-primary">
             Account Stats
           </IonCardTitle>
         </IonCardHeader>

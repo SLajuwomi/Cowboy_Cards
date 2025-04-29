@@ -1,9 +1,9 @@
 import {
+  IonButton,
   IonCard,
   IonCardContent,
-  IonTextarea,
-  IonButton,
   IonIcon,
+  IonTextarea,
 } from '@ionic/react';
 import { addOutline, trashOutline } from 'ionicons/icons';
 
@@ -58,7 +58,7 @@ const FlashcardListEditor = (props) => {
       ))}
 
       <div className="flex justify-center mt-4 mb-6">
-        <IonButton onClick={props.onAddCard} fill="outline">
+        <IonButton onClick={props.onAddCard}>
           <IonIcon slot="start" icon={addOutline} /> Add Card
         </IonButton>
       </div>

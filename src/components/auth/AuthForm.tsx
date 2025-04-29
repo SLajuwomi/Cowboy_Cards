@@ -125,6 +125,7 @@ export const AuthForm = () => {
 
       // Show success message
       toast({
+        duration: 8000,
         title: isLogin ? 'Welcome back!' : 'Account created',
         description: isLogin
           ? 'You have been successfully logged in.'
@@ -169,9 +170,11 @@ export const AuthForm = () => {
   };
 
   return (
-    <Card className="w-[350px]">
+    <Card className="w-11/12 max-w-[350px] mb-8">
       <CardHeader>
-        <CardTitle>{isLogin ? 'Welcome back' : 'Create account'}</CardTitle>
+        <CardTitle className="text-4xl tracking-wide font-smokum font-bold">
+          {isLogin ? 'Welcome back' : 'Create account'}
+        </CardTitle>
         <CardDescription>
           {isLogin
             ? 'Enter your credentials to continue'
@@ -190,7 +193,12 @@ export const AuthForm = () => {
           {!isLogin && (
             <>
               <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
+                <Label
+                  className="text-3xl tracking-wide font-smokum font-bold"
+                  htmlFor="username"
+                >
+                  Username
+                </Label>
                 <Input
                   id="username"
                   type="text"
@@ -205,7 +213,12 @@ export const AuthForm = () => {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
+                <Label
+                  className="text-3xl tracking-wide font-smokum font-bold"
+                  htmlFor="firstName"
+                >
+                  First Name
+                </Label>
                 <Input
                   id="firstName"
                   type="text"
@@ -216,7 +229,12 @@ export const AuthForm = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
+                <Label
+                  className="text-3xl tracking-wide font-smokum font-bold"
+                  htmlFor="lastName"
+                >
+                  Last Name
+                </Label>
                 <Input
                   id="lastName"
                   type="text"
@@ -229,7 +247,12 @@ export const AuthForm = () => {
             </>
           )}
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label
+              className="text-3xl tracking-wide font-smokum font-bold"
+              htmlFor="email"
+            >
+              Email
+            </Label>
             <Input
               id="email"
               type="email"
@@ -244,7 +267,12 @@ export const AuthForm = () => {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label
+              className="text-3xl tracking-wide font-smokum font-bold"
+              htmlFor="password"
+            >
+              Password
+            </Label>
             <Input
               id="password"
               type="password"
@@ -295,7 +323,6 @@ export const AuthForm = () => {
           </Button>
           {/* <IonButton
             expand="block"
-            fill="outline"
             className="flex items-center justify-center space-x-2"
             onClick={() => {
               // Add your Google sign-in logic here

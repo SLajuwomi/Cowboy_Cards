@@ -1,5 +1,6 @@
 import { Navbar } from '@/components/Navbar';
 import { useTheme } from '@/contexts/ThemeContext';
+import type { User } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
   IonButton,
@@ -12,19 +13,6 @@ import { arrowBackOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import UserAccountFirstRow from '../components/UserAccountFirstRow';
 import UserAccountSecondRow from '../components/UserAccountSecondRow';
-
-type User = {
-  username: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  login_streak: number;
-  created_at: string;
-  numClasses: number;
-  cardsStudied: number;
-  cardsMastered: number;
-  totalCardViews: number;
-};
 
 const UserAccount = () => {
   const { theme, setTheme } = useTheme();
@@ -163,16 +151,12 @@ const UserAccount = () => {
 
       <div id="main-content" className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <p className="text-xl font-semibold text-primary">
+          <p className="text-xl font-rye font-semibold text-primary">
             Welcome back, {userInfo?.username || 'User'}!
           </p>
         </div>
 
-        <IonButton
-          onClick={() => window.history.back()}
-          fill="outline"
-          className="mb-6"
-        >
+        <IonButton onClick={() => window.history.back()} className="mb-6">
           <IonIcon slot="start" icon={arrowBackOutline} />
           Back
         </IonButton>

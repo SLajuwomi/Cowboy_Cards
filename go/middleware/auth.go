@@ -16,6 +16,7 @@ import (
 // *  LIVE backend           *
 // ***************************
 var (
+	buildenv   = os.Getenv("BUILDENV")
 	sessionKey = os.Getenv("SESSION_KEY")
 	sKey, _    = hex.DecodeString(sessionKey)
 	store      = sessions.NewCookieStore(sKey)
@@ -26,11 +27,13 @@ var (
 // * above to dev with the LOCAL backend          *
 // ************************************************
 // var (
+// buildenv = os.Getenv("BUILDENV")
 // 	store = sessions.NewCookieStore([]byte{95, 65, 12, 40})
 // )
 
 func init() {
 	log.Println("init")
+	log.Println("mw init: ", buildenv)
 
 	// MaxAge=0 means no Max-Age attribute specified and the cookie will be
 	// deleted after the browser session ends.
@@ -46,8 +49,12 @@ func init() {
 		MaxAge:   0,
 		Secure:   true,
 		HttpOnly: true,
-		// SameSite: http.SameSiteStrictMode,//prod
-		SameSite: http.SameSiteNoneMode,
+	}
+
+	if buildenv == "" {
+		store.Options.SameSite = http.SameSiteNoneMode
+	} else if buildenv == "prod" {
+		store.Options.SameSite = http.SameSiteStrictMode
 	}
 
 	// **********************************************************

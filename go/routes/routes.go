@@ -23,7 +23,7 @@ func Protected(r *chi.Mux, h *controllers.DBHandler) {
 		r.Route("/", func(r chi.Router) {
 			r.Use(h.VerifyClassMemberMW)
 			r.Post("/", h.AddSetToClass)
-			r.Delete("/", h.RemoveSetFromClass)
+			r.Delete("/", h.RemoveSetFromClass) //never called
 		})
 		r.Get("/list_sets", h.ListSetsInClass)
 		r.Get("/list_classes", h.ListClassesHavingSet)
@@ -45,7 +45,7 @@ func Protected(r *chi.Mux, h *controllers.DBHandler) {
 	r.Route("/set_user", func(r chi.Router) {
 		r.Route("/", func(r chi.Router) {
 			r.Use(h.VerifySetMemberMW)
-			r.Delete("/", h.LeaveSet)
+			r.Delete("/", h.LeaveSet) //never called
 		})
 		r.Post("/", h.JoinSet)
 		r.Get("/list", h.ListSetsOfAUser)
@@ -61,7 +61,7 @@ func Protected(r *chi.Mux, h *controllers.DBHandler) {
 			r.Get("/", h.GetClassById)
 			r.Put("/class_name", h.UpdateClass)
 			r.Put("/class_description", h.UpdateClass)
-			r.Delete("/", h.DeleteClass)
+			r.Delete("/", h.DeleteClass) //never called
 		})
 
 		r.Route("/leaderboard", func(r chi.Router) {
@@ -116,4 +116,6 @@ func Protected(r *chi.Mux, h *controllers.DBHandler) {
 func Unprotected(r *chi.Mux, h *controllers.DBHandler) {
 	r.Post("/login", h.Login)
 	r.Post("/signup", h.Signup)
+	r.Post("/send-reset-password-token", h.SendResetPasswordToken)
+	r.Post("/reset-password", h.ResetPassword)
 }

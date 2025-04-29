@@ -8,34 +8,31 @@ import {
 } from '@/components/ui/carousel';
 import type { Flashcard, FlashcardSet } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
-import { IonButton, IonContent, IonSpinner } from '@ionic/react';
+import { IonButton, IonContent, IonIcon, IonSpinner } from '@ionic/react';
+import { arrowBackOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
-//TODO: add summary after going through all cards of cards missed, cards correct, etc
 const Flashcard = () => {
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [flashcardSetData, setFlashcardSetData] = useState<FlashcardSet>();
   const [cards, setCards] = useState<Flashcard[]>([]);
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    //TODO: Fix this, currently only the owner can see the set details
     const fetchSetDetails = async () => {
       try {
-        const setRes = await makeHttpCall<FlashcardSet>(
+        const setDetails = await makeHttpCall<FlashcardSet>(
           `/api/flashcards/sets/`,
           {
             method: 'GET',
             headers: { id },
           }
         );
-        setTitle(setRes.SetName);
-        setDescription(setRes.SetDescription);
+        setFlashcardSetData(setDetails);
       } catch (error) {
         console.error('Failed to fetch set info', error);
       }
@@ -101,7 +98,7 @@ const Flashcard = () => {
   };
 
   return (
-    <IonContent className="ion-padding">
+    <IonContent className="">
       <Navbar />
 
       <div id="main-content" className="container mx-auto px-4 py-8 max-w-4xl">
@@ -109,15 +106,28 @@ const Flashcard = () => {
         <div className="flex items-center gap-4 mb-6">
           <IonButton
             className="rounded-lg"
-            fill="outline"
             style={{ '--border-radius': '0.5rem' }}
             routerLink={`/set-overview/${id}`}
           >
+            <IonIcon slot="start" icon={arrowBackOutline} />
             Back
           </IonButton>
           <div>
-            <h1 className="text-2xl font-bold">{title}</h1>
-            <p className="text-gray-500">{description}</p>
+            {loading ? (
+              <div className="flex flex-col gap-2">
+                <IonSpinner name="dots" />
+                <IonSpinner name="dots" />
+              </div>
+            ) : (
+              <>
+                <h1 className="text-2xl font-bold">
+                  {flashcardSetData?.SetName}
+                </h1>
+                <p className="text-gray-500">
+                  {flashcardSetData?.SetDescription}
+                </p>
+              </>
+            )}
           </div>
         </div>
 

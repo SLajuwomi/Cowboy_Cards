@@ -35,11 +35,14 @@ const (
 	roleKey      userRoleKey    = "userRole"
 	sessionName  string         = "cowboy-cards-session"
 	id           string         = "id"
+	no_role      string         = "no role"
+	class_id     string         = "class_id"
+	set_id       string         = "set_id"
 )
 
 func LogAndSendError(w http.ResponseWriter, err error, msg string, statusCode int) {
 	log.Printf(msg+": %v", err)
-	http.Error(w, msg, statusCode)
+	http.Error(w, fmt.Sprintf(msg+": %v", err), statusCode)
 }
 
 func GetUserIDFromContext(ctx context.Context) (id int32, ok bool) {
