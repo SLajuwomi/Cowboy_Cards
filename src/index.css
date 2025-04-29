@@ -370,3 +370,6 @@ ion-card-title {
 .searchbar-input.sc-ion-searchbar-md {
   padding-inline-end: 0;
 }
+.ios {
+  --ion-safe-area-top: 50px;
+}
