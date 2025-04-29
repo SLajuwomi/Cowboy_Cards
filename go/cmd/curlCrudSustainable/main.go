@@ -301,7 +301,17 @@ func card_historyTest() {
 		fmt.Println("No Data returned by getScoresInaSet")
 	}
 
-	fmt.Println("Card_history successful")
+	// delete flashcard
+	curlTemplate = `curl -X DELETE --cookie "cowboy-cards-session=[cookie]" https://cowboy-cards.dsouth.org/api/flashcards -sS -H "id: ` + extractedID + `"`
+
+	curlOutput, err = executeCurlWithCookieFromString(curlTemplate)
+	if err != nil {
+		fmt.Println("Error:", err)
+		fmt.Print(curlOutput)
+		return
+	}
+
+	fmt.Println("Card_history was successful")
 
 }
 
@@ -805,7 +815,8 @@ func flashcardTest() {
 	if len(match) > 1 {
 		if match[1] != extractedID {
 			fmt.Println("wrong set/flashcard retrieved")
-			return
+			// return
+			fmt.Print(curlOutput)
 		}
 	} else {
 		fmt.Println("ID not found")
@@ -821,6 +832,8 @@ func flashcardTest() {
 		fmt.Print(curlOutput)
 		return
 	}
+
+	fmt.Println("Flashcard successful")
 }
 
 func set_userTest() {
