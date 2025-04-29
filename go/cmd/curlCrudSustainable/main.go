@@ -91,7 +91,7 @@ func main() {
 	classesTest()
 	flashcard_setTest()
 	flashcardTest()
-	// set_userTest()
+	set_userTest()
 
 	cleanUpSetAndClass()
 }
@@ -119,7 +119,7 @@ func createSetAndClass() {
 	}
 
 	// verify id manually
-	fmt.Println("Creating Class " + extractedClassID)
+	// fmt.Println("Creating Class " + extractedClassID)
 
 	// create a set for use in testing
 	curlTemplate = `curl -X POST --cookie "cowboy-cards-session=[cookie]" https://cowboy-cards.dsouth.org/api/flashcards/sets -sS -H "set_name: testDelete" -H "set_description: one moment"`
@@ -143,7 +143,7 @@ func createSetAndClass() {
 		return
 	}
 
-	fmt.Println("Creating Set " + extractedSetID)
+	// fmt.Println("Creating Set " + extractedSetID)
 	// fmt.Println(curlOutput)
 }
 
@@ -484,15 +484,15 @@ func class_userTest() {
 			return
 		}
 		if results[0].Role != "student" {
-			fmt.Println("unexpected setName for sets in class")
+			fmt.Println("unexpected role")
 			return
 		}
 		if results[0].ClassName != "Testing Curls" {
-			fmt.Println("unexpected SetDescription for sets in class")
+			fmt.Println("unexpected classname")
 			return
 		}
 		if results[0].ClassDescription != "One moment" {
-			fmt.Println("unexpected SetDescription for sets in class")
+			fmt.Println("unexpected classDescription")
 			return
 		}
 	}
@@ -555,14 +555,15 @@ func class_userTest() {
 	}
 
 	// leave class
-	// curlTemplate = `curl -s -X DELETE --cookie "cowboy-cards-session=[cookie]" https://cowboy-cards.dsouth.org/api/class_user/`
+	curlTemplate = `curl -s -X DELETE --cookie "cowboy-cards-session=[cookie]" https://cowboy-cards.dsouth.org/api/class_user/ -H "class_id: ` + extractedClassID + `" -H "student_id: 47"`
 
-	// curlOutput, err = executeCurlWithCookieFromString(curlTemplate)
-	// if err != nil {
-	// 	fmt.Println("Error:", err)
-	// 	fmt.Println(curlOutput)
-	// 	return
-	// }
+	curlOutput, err = executeCurlWithCookieFromString(curlTemplate)
+	if err != nil {
+		fmt.Println("Error:", err)
+		fmt.Println(curlOutput)
+		return
+	}
+	fmt.Print(curlOutput)
 
 	// fmt.Print(curlOutput)
 
@@ -837,22 +838,81 @@ func flashcardTest() {
 }
 
 func set_userTest() {
-	// join set
-	curlTemplate := fmt.Sprintf(
-		`curl -X POST --cookie "cowboy-cards-session=[cookie]" https://cowboy-cards.dsouth.org/api/set_user -sS -H "role:owner" -H "set_id: %s"`,
-		extractedSetID,
-	)
+	var realCookie string = cookie
+	cookie = "MTc0NTg5OTY4NnxEWDhFQVFMX2dBQUJFQUVRQUFCa180QUFBd1p6ZEhKcGJtY01Ed0FOWVhWMGFHVnVkR2xqWVhSbFpBUmliMjlzQWdJQUFRWnpkSEpwYm1jTUNRQUhkWE5sY2w5cFpBVnBiblF6TWdRQ0FGNEdjM1J5YVc1bkRBd0FDbU55WldGMFpXUmZZWFFGYVc1ME5qUUVCZ0Q4MENDaFRBPT18fgeLOgENGTBUvyqzregN4g81QxO4VdKoaJW1HTp9hLk="
+
+	curlTemplate := `curl -X POST --cookie "cowboy-cards-session=[cookie]" https://cowboy-cards.dsouth.org/api/flashcards/sets -sS -H "set_name: testDelete" -H "set_description: Update Me"`
 
 	curlOutput, err := executeCurlWithCookieFromString(curlTemplate)
+	if err != nil {
+		fmt.Println("Error:", err)
+		fmt.Println(curlOutput)
+		return
+	}
+	re := regexp.MustCompile(`"ID"\s*:\s*(\d+)`)
+	match := re.FindStringSubmatch(curlOutput)
+	var tempSetID string
+
+	if len(match) > 1 {
+		tempSetID = match[1] // store the ID directly
+	} else {
+		fmt.Println("ID not found")
+		return
+	}
+
+	cookie = realCookie
+
+	// join set
+	curlTemplate = fmt.Sprintf(
+		`curl -X POST --cookie "cowboy-cards-session=[cookie]" https://cowboy-cards.dsouth.org/api/set_user -sS -H "role:owner" -H "set_id: %s"`,
+		tempSetID,
+	)
+
+	curlOutput, err = executeCurlWithCookieFromString(curlTemplate)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	// fmt.Print(curlOutput)
+
+	// lists sets of a user
+	curlTemplate = `curl -X GET --cookie "cowboy-cards-session=[cookie]" https://cowboy-cards.dsouth.org/api/set_user/list -sS -H "id: 3"`
+
+	curlOutput, err = executeCurlWithCookieFromString(curlTemplate)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	// fmt.Print(curlOutput)
+
+	// leave set
+	curlTemplate = fmt.Sprintf(
+		`curl -X DELETE --cookie "cowboy-cards-session=[cookie]" https://cowboy-cards.dsouth.org/api/set_user/ -sS -H "set_id: %s"`,
+		tempSetID,
+	)
+
+	curlOutput, err = executeCurlWithCookieFromString(curlTemplate)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	// fmt.Print(curlOutput)
+
+	cookie = "MTc0NTg5OTY4NnxEWDhFQVFMX2dBQUJFQUVRQUFCa180QUFBd1p6ZEhKcGJtY01Ed0FOWVhWMGFHVnVkR2xqWVhSbFpBUmliMjlzQWdJQUFRWnpkSEpwYm1jTUNRQUhkWE5sY2w5cFpBVnBiblF6TWdRQ0FGNEdjM1J5YVc1bkRBd0FDbU55WldGMFpXUmZZWFFGYVc1ME5qUUVCZ0Q4MENDaFRBPT18fgeLOgENGTBUvyqzregN4g81QxO4VdKoaJW1HTp9hLk="
+
+	curlTemplate = fmt.Sprintf(
+		`curl -X DELETE --cookie "cowboy-cards-session=[cookie]" https://cowboy-cards.dsouth.org/api/flashcards/sets/ -sS -H "id: %s"`,
+		tempSetID,
+	)
+
+	curlOutput, err = executeCurlWithCookieFromString(curlTemplate)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
 	}
 
-	fmt.Print(curlOutput)
-
-	// lists sets of a user
-	// leave set
+	cookie = realCookie
+	fmt.Println("Set_user was successful")
 }
 
 func cleanUpSetAndClass() {
@@ -866,7 +926,7 @@ func cleanUpSetAndClass() {
 		return
 	}
 
-	fmt.Println("Deleting set " + extractedSetID)
+	// fmt.Println("Deleting set " + extractedSetID)
 
 	// deletes the used class to keep the database clean
 	curlTemplate = `curl -X DELETE --cookie "cowboy-cards-session=[cookie]" https://cowboy-cards.dsouth.org/api/classes/ -sS -H "id:` + extractedClassID + `"`
@@ -878,5 +938,5 @@ func cleanUpSetAndClass() {
 		return
 	}
 
-	fmt.Println("Deleting class " + extractedClassID)
+	// fmt.Println("Deleting class " + extractedClassID)
 }
