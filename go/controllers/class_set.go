@@ -58,7 +58,7 @@ func (h *DBHandler) AddSetToClass(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *DBHandler) RemoveSetFromClass(w http.ResponseWriter, r *http.Request) {
-	// curl -X DELETE localhost:8000/api/class_user/ -H "id: 1" -H "set_id"
+	// curl -X DELETE localhost:8000/api/class_set/ -H "id: 1" -H "set_id"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {

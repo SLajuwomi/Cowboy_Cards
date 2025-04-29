@@ -44,7 +44,7 @@ func (h *DBHandler) GetFlashcardById(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *DBHandler) ListFlashcardsOfASet(w http.ResponseWriter, r *http.Request) {
-	// curl http://localhost:8000/api/flashcards/list -H "set_id:1"| jq
+	// curl http://localhost:8000/api/flashcards/list -H "set_id:1"
 
 	query, ctx, conn, err := getQueryConnAndContext(r, h)
 	if err != nil {
