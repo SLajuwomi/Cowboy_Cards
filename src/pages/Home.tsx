@@ -130,7 +130,7 @@ const Home = () => {
                 </div>
               ) : (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {classes.map((cls) => (
+                  {classes?.map((cls) => (
                     <Link key={cls.ClassID} to={`/class/${cls.ClassID}`}>
                       <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-transform-shadow duration-200 rounded-lg border shadow-sm">
                         <IonCardHeader className="flex flex-col space-y-1.5 p-6">
@@ -167,7 +167,7 @@ const Home = () => {
                 </div>
               ) : (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {sets.map((set) => (
+                  {sets?.map((set) => (
                     <Link key={set.SetID} to={`/set-overview/${set.SetID}`}>
                       <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-transform-shadow duration-200 rounded-lg border shadow-sm">
                         <IonCardHeader className="flex flex-col space-y-1.5 p-6">

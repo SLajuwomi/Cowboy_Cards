@@ -24,7 +24,7 @@ const FlashcardCarousel = (props) => {
           <IonRow>
             {props.flashcardSets
               .sort((a, b) => a.ID - b.ID)
-              .map((set) => (
+              ?.map((set) => (
                 <IonCol size="12" sizeMd="6" sizeLg="4" key={set.ID}>
                   <IonCard
                     className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-200 rounded-lg border shadow-sm"

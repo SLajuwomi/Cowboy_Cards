@@ -65,7 +65,7 @@ const PublicFlashcards = () => {
             />
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredFlashcardSets.map((set) => (
+            {filteredFlashcardSets?.map((set) => (
               <Link key={set.ID} to={`/flashcards/${set.ID}`}>
                 <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-transform-shadow duration-200 rounded-lg border shadow-sm">
                   <IonCardHeader className="flex flex-col space-y-1.5 p-6">
