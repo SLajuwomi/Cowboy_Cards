@@ -45,8 +45,8 @@ const UserAccount = () => {
 
     try {
       const updatePromises = fieldsToUpdate
-        .filter((field) => updatedInfo[field] !== userInfo[field])
-        .map((field) =>
+        ?.filter((field) => updatedInfo[field] !== userInfo[field])
+        ?.map((field) =>
           makeHttpCall<User>(`/api/users/${field}`, {
             method: 'PUT',
             headers: {

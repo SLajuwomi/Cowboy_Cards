@@ -37,7 +37,6 @@ import '@ionic/react/css/float-elements.css';
 import '@ionic/react/css/padding.css';
 import '@ionic/react/css/text-alignment.css';
 import '@ionic/react/css/text-transformation.css';
-
 /* Theme variables */
 // import './theme/variables.css'; Removed this import
 
@@ -55,6 +54,7 @@ function App() {
       <ThemeProvider>
         <TooltipProvider>
           <IonApp>
+            {/* @ts-expect-error - IonReactRouter is a known issue */}
             <IonReactRouter>
               <Suspense fallback={<div>Loading...</div>}>
                 <IonRouterOutlet>
