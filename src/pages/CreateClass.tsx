@@ -77,8 +77,8 @@ const CreateClass = () => {
 
   return (
     <IonPage>
+      <Navbar />
       <IonContent>
-        <Navbar />
         <div id="main-content" className="container mx-auto px-4 py-8">
           {error && <div className="text-red-500 mt-2">{error}</div>}
           <h1 className="text-4xl tracking-wide font-bold font-smokum mb-6">

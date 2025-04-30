@@ -19,6 +19,7 @@ import {
   IonSegment,
   IonSegmentButton,
   IonSpinner,
+  useIonViewWillEnter,
 } from '@ionic/react';
 import { addOutline, bookOutline, listOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
@@ -32,46 +33,51 @@ const Home = () => {
   const [setsLoading, setSetsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchClassesOfUser = async () => {
+    setClassesLoading(true);
+    setError(null);
+    try {
+      const data = await makeHttpCall<ListClassesOfAUserRow[]>(
+        `/api/class_user/classes`
+      );
+      console.log('Classes: ', data);
+      setClasses(data);
+    } catch (error) {
+      setError(`Error fetching classes: ${error.message}`);
+    } finally {
+      setClassesLoading(false);
+    }
+  };
+
+  const fetchSetsOfUser = async () => {
+    setSetsLoading(true);
+    try {
+      const data = await makeHttpCall<ListSetsOfAUserRow[]>(
+        `/api/set_user/list`
+      );
+      console.log('Sets: ', data);
+      setSets(data);
+    } catch (error) {
+      setError(`Error fetching sets: ${error.message}`);
+    } finally {
+      setSetsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchClassesOfUser = async () => {
-      setClassesLoading(true);
-      setError(null);
-      try {
-        const data = await makeHttpCall<ListClassesOfAUserRow[]>(
-          `/api/class_user/classes`
-        );
-        console.log('Classes: ', data);
-        setClasses(data);
-      } catch (error) {
-        setError(`Error fetching classes: ${error.message}`);
-      } finally {
-        setClassesLoading(false);
-      }
-    };
-
-    const fetchSetsOfUser = async () => {
-      setSetsLoading(true);
-      try {
-        const data = await makeHttpCall<ListSetsOfAUserRow[]>(
-          `/api/set_user/list`
-        );
-        console.log('Sets: ', data);
-        setSets(data);
-      } catch (error) {
-        setError(`Error fetching sets: ${error.message}`);
-      } finally {
-        setSetsLoading(false);
-      }
-    };
-
     fetchClassesOfUser();
     fetchSetsOfUser();
   }, []);
 
+  useIonViewWillEnter(() => {
+    fetchClassesOfUser();
+    fetchSetsOfUser();
+  });
+
   return (
     <IonPage>
+      <Navbar />
       <IonContent>
-        <Navbar />
         <div
           id="main-content"
           className="container mx-auto px-4 py-8 flex-grow"

@@ -21,12 +21,14 @@ import {
   useIonToast,
 } from '@ionic/react';
 import { useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 
 const SetOverview = () => {
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
   const [presentToast] = useIonToast();
+  const location = useLocation<{ fromClassId?: string }>();
+  const fromClassId = location.state?.fromClassId;
 
   // React Query hooks
   const {
@@ -337,7 +339,11 @@ const SetOverview = () => {
 
   const handleBackClick = () => {
     if (!isEditing) {
-      window.history.back();
+      if (fromClassId) {
+        history.push(`/class/${fromClassId}`);
+      } else {
+        history.push('/home');
+      }
     }
   };
 
@@ -359,12 +365,9 @@ const SetOverview = () => {
 
   return (
     <IonPage>
-      <IonContent className="">
-        <Navbar />
-        <div
-          id="main-content"
-          className="container max-w-4xl mx-auto px-4 py-8"
-        >
+      <Navbar />
+      <IonContent>
+        <div className="container max-w-4xl mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
             <SetOverviewHeader
               loading={isLoading}

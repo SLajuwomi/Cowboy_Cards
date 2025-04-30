@@ -1,6 +1,8 @@
 import { AuthForm } from '@/components/auth/AuthForm';
 import ConfirmResetPass from '@/components/auth/ConfirmResetPass';
 import ResetPass from '@/components/auth/ResetPass';
+import { Footer } from '@/components/Footer';
+import { Navbar } from '@/components/Navbar';
 import { Toaster as Sonner } from '@/components/ui/sonner';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -49,15 +51,19 @@ const queryClient = new QueryClient();
 // const PublicCards = React.lazy(() => import('./pages/PublicCards'));
 // const PublicClasses = React.lazy(() => import('./pages/PublicClasses'));
 
+// TODO: Try a different router and query parameters instead of whatever we are doing now
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <TooltipProvider>
           <IonApp>
+            {/* @ts-expect-error - unsolvable type error */}
             <IonReactRouter>
               <Suspense fallback={<div>Loading...</div>}>
-                <IonRouterOutlet>
+                <Navbar />
+                <IonRouterOutlet id="main-content">
                   <Route exact path="/" component={Index} />
                   <Route exact path="/home" component={Home} />
                   <Route exact path="/class/:id" component={ClassDetail} />
@@ -86,6 +92,7 @@ function App() {
                   <Route component={NotFound} />
                 </IonRouterOutlet>
               </Suspense>
+              <Footer />
             </IonReactRouter>
           </IonApp>
           <Toaster />
