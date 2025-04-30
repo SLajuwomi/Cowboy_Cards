@@ -60,7 +60,7 @@ func init() {
 	// **********************************************************
 	// uncomment this and comment the one above to dev MOBILE
 	// **********************************************************
-    // 
+	//
 	// store.Options = &sessions.Options{
 	// 	Path:     "/",
 	// 	MaxAge:   0,
