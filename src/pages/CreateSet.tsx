@@ -1,3 +1,4 @@
+import { Footer } from '@/components/Footer';
 import { Navbar } from '@/components/Navbar';
 import type { FlashcardSet } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
@@ -6,6 +7,7 @@ import {
   IonCard,
   IonCardContent,
   IonContent,
+  IonPage,
   IonText,
   IonTextarea,
 } from '@ionic/react';
@@ -66,61 +68,67 @@ const CreateSet = () => {
   };
 
   return (
-    <IonContent className="">
-      <Navbar />
-      <div id="main-content" className="container mx-auto px-4 py-8 max-w-4xl">
-        {loading && <div>Loading...</div>}
-        {error && <div className="text-red-500 mt-2">{error}</div>}
-        <h1 className="text-4xl tracking-wide font-bold font-smokum mb-6">
-          Create New Flashcard Set
-        </h1>
+    <IonPage>
+      <IonContent className="">
+        <Navbar />
+        <div
+          id="main-content"
+          className="container mx-auto px-4 py-8 max-w-4xl"
+        >
+          {loading && <div>Loading...</div>}
+          {error && <div className="text-red-500 mt-2">{error}</div>}
+          <h1 className="text-4xl tracking-wide font-bold font-smokum mb-6">
+            Create New Flashcard Set
+          </h1>
 
-        <IonCard className="mb-6 rounded-lg border shadow-sm">
-          <IonCardContent>
-            <IonTextarea
-              placeholder="Enter set title"
-              value={title}
-              onIonChange={(e) => setTitle(e.detail.value!)}
-              rows={1}
-              autoGrow
-              className="w-full text-xl font-bold mb-2"
-              style={{ resize: 'none' }}
-            />
-            {errors.title && (
-              <IonText color="danger">
-                <p className="text-sm mt-1">{errors.title}</p>
-              </IonText>
-            )}
+          <IonCard className="mb-6 rounded-lg border shadow-sm">
+            <IonCardContent>
+              <IonTextarea
+                placeholder="Enter set title"
+                value={title}
+                onIonChange={(e) => setTitle(e.detail.value!)}
+                rows={1}
+                autoGrow
+                className="w-full text-xl font-bold mb-2"
+                style={{ resize: 'none' }}
+              />
+              {errors.title && (
+                <IonText color="danger">
+                  <p className="text-sm mt-1">{errors.title}</p>
+                </IonText>
+              )}
 
-            <IonTextarea
-              placeholder="Enter set description"
-              value={description}
-              onIonChange={(e) => setDescription(e.detail.value!)}
-              rows={1}
-              autoGrow
-              className="w-full text-base mt-4"
-              style={{ resize: 'none' }}
-            />
-            {errors.description && (
-              <IonText color="danger">
-                <p className="text-sm mt-1">{errors.description}</p>
-              </IonText>
-            )}
-          </IonCardContent>
-        </IonCard>
+              <IonTextarea
+                placeholder="Enter set description"
+                value={description}
+                onIonChange={(e) => setDescription(e.detail.value!)}
+                rows={1}
+                autoGrow
+                className="w-full text-base mt-4"
+                style={{ resize: 'none' }}
+              />
+              {errors.description && (
+                <IonText color="danger">
+                  <p className="text-sm mt-1">{errors.description}</p>
+                </IonText>
+              )}
+            </IonCardContent>
+          </IonCard>
 
-        <div className="flex justify-center">
-          <IonButton
-            color="success"
-            className="rounded-lg shadow-sm w-full md:w-auto"
-            onClick={saveSet}
-            disabled={loading}
-          >
-            {loading ? 'Creating...' : 'Create Set'}
-          </IonButton>
+          <div className="flex justify-center">
+            <IonButton
+              color="success"
+              className="rounded-lg shadow-sm w-full md:w-auto"
+              onClick={saveSet}
+              disabled={loading}
+            >
+              {loading ? 'Creating...' : 'Create Set'}
+            </IonButton>
+          </div>
         </div>
-      </div>
-    </IonContent>
+      </IonContent>
+      <Footer />
+    </IonPage>
   );
 };
 

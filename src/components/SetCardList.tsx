@@ -11,13 +11,17 @@ import {
 import { addOutline, trashOutline } from 'ionicons/icons';
 
 const SetCardList = (props) => {
+  // Check if we have cards to display
+  const hasCards =
+    Array.isArray(props.cardsToDisplay) && props.cardsToDisplay.length > 0;
+
   return (
     <div className="mt-8 min-h-[200px]">
       {props.loading ? (
         <div className="flex items-center justify-center">
           <IonSpinner name="circular" />
         </div>
-      ) : props.cardsToDisplay.length === 0 && !props.isEditing ? (
+      ) : !hasCards && !props.isEditing ? (
         <div className="text-center">
           <p className="text-lg text-gray-900 dark:text-gray-400 mb-4">
             This set has no cards yet.
@@ -27,7 +31,7 @@ const SetCardList = (props) => {
               color="primary"
               className="rounded-lg"
               style={{ '--border-radius': '0.5rem' }}
-              onClick={props.onAddCardClick} // Use the passed handler
+              onClick={props.onAddCardClick}
             >
               Add Cards
             </IonButton>
@@ -35,7 +39,7 @@ const SetCardList = (props) => {
         </div>
       ) : (
         <div className="w-full">
-          {props.cardsToDisplay.map((card, index) =>
+          {props.cardsToDisplay?.map((card, index) =>
             props.isEditing && props.isOwner ? (
               // --- Edit Mode Card --- //
               <IonCard

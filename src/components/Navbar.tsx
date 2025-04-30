@@ -114,7 +114,7 @@ const Navbar = () => {
               isOpen={!!popoverEvent}
               onDidDismiss={closePopover}
             >
-              <IonContent className="p-2">
+              <IonContent>
                 <IonList>
                   <IonItem
                     button

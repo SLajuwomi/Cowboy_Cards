@@ -7,14 +7,17 @@ import {
   IonToolbar,
 } from '@ionic/react';
 import { home } from 'ionicons/icons';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
-    <IonFooter className="hidden sm:block ion-no-border fixed bottom-0 w-full">
+    <IonFooter className=" ion-no-border">
       <IonToolbar>
         <IonButtons slot="start">
-          <IonButton routerLink="/home">
-            <IonIcon icon={home} />
+          <IonButton>
+            <Link to="/home">
+              <IonIcon icon={home} />
+            </Link>
           </IonButton>
         </IonButtons>
 

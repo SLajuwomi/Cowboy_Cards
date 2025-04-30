@@ -1,6 +1,7 @@
 import { EditableField } from '@/utils/EditableField';
 import { IonButton, IonIcon, IonSpinner } from '@ionic/react';
 import { arrowBackOutline } from 'ionicons/icons';
+
 const SetOverviewHeader = (props) => {
   return (
     <div className="gap-4 flex-1 pr-4">
@@ -34,10 +35,11 @@ const SetOverviewHeader = (props) => {
         ) : (
           <>
             <h1 className="text-3xl font-bold">
-              {props.flashcardSetData.SetName}
+              {props.flashcardSetData.SetName || 'Untitled Set'}
             </h1>
             <p className="text-base mt-1 text-gray-700">
-              {props.flashcardSetData.SetDescription}
+              {props.flashcardSetData.SetDescription ||
+                'No description available'}
             </p>
           </>
         )}

@@ -22,7 +22,7 @@ const Leaderboard = (props) => {
           {props.leaderboard === null ? (
             <h1 className="text-center text-gray-500">No scores available</h1>
           ) : (
-            props.leaderboard.map((entry, index) => (
+            props.leaderboard?.map((entry, index) => (
               // Wrap each item with a motion.div for animation
               <motion.div
                 key={entry.UserID}
@@ -41,7 +41,9 @@ const Leaderboard = (props) => {
                     {index === 2 && (
                       <span className="text-orange-500 text-xl">🥉</span>
                     )}
-                    <span className="font-medium text-lg">{entry.Username}</span>
+                    <span className="font-medium text-lg">
+                      {entry.Username}
+                    </span>
                   </div>
                   <span slot="end" className="text-primary font-semibold">
                     {entry.ClassScore} points

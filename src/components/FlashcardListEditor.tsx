@@ -11,7 +11,7 @@ const FlashcardListEditor = (props) => {
   return (
     <>
       <h2 className="text-xl font-semibold mb-2">Edit Cards</h2>
-      {props.cards.map((card, index) => (
+      {props.cards?.map((card, index) => (
         <IonCard key={card.ID} className="mb-4 rounded-lg border shadow-sm">
           <IonCardContent>
             <div className="flex justify-between items-start mb-2">
