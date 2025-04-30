@@ -10,6 +10,7 @@ import {
   IonPage,
   IonText,
   IonTextarea,
+  IonToast,
 } from '@ionic/react';
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -21,8 +22,10 @@ const CreateSet = () => {
   const [errors, setErrors] = useState({ title: '', description: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const saveSet = async () => {
+    if (loading) return;
     setLoading(true);
     setError(null);
 
@@ -58,7 +61,12 @@ const CreateSet = () => {
         }
       );
 
-      history.push(`/set-overview/${setResponse.ID}`);
+      setTitle('');
+      setDescription('');
+
+      setShowSuccess(true);
+
+      // history.push(`/set-overview/${setResponse.ID}`);
     } catch (error) {
       console.error('Error saving flashcard set:', error);
       setError(`Failed to save flashcard set: ${error.message}`);
@@ -66,10 +74,6 @@ const CreateSet = () => {
       setLoading(false);
     }
   };
-
-  // FIXME: Doesn't show success toast after creating
-  // FIXME: Does not show error toast after creation fails
-  // FIXME: UI consistency with @CreateClass
 
   return (
     <IonPage>
@@ -129,6 +133,16 @@ const CreateSet = () => {
               {loading ? 'Creating...' : 'Create Set'}
             </IonButton>
           </div>
+
+          {showSuccess && (
+            <IonToast
+              isOpen={showSuccess}
+              color="success"
+              onDidDismiss={() => setShowSuccess(false)}
+              message="Set created successfully!"
+              duration={2000}
+            />
+          )}
         </div>
       </IonContent>
       <Footer />

@@ -65,14 +65,12 @@ const CreateClass = () => {
     }
   };
 
-  // FIXME: UI consistency with @CreateSet
-  // FIXME: Change from text success to toast success
-
   return (
     <IonPage>
       <Navbar />
       <IonContent>
         <div id="main-content" className="container mx-auto px-4 py-8">
+          {loading && <div>Loading...</div>}
           {error && <div className="text-red-500 mt-2">{error}</div>}
           <h1 className="text-4xl tracking-wide font-bold font-smokum mb-6">
             Create New Class
