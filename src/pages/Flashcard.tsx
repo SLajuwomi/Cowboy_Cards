@@ -85,10 +85,12 @@ const Flashcard = () => {
     }
   };
 
+  // FIXME: Progress bar instead of dots
+  // FIXME: Add success toast after finishing cards
+
   return (
     <IonPage>
       <Navbar />
-
       <IonContent>
         <div
           id="main-content"

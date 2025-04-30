@@ -404,7 +404,7 @@ DECLARE
 
 BEGIN
     setid = (SELECT set_id FROM flashcards WHERE id = NEW.card_id);
-	INSERT INTO set_user (user_id, set_id, role, set_score, is_private) VALUES (NEW.user_id, setid, NEW.role, NEW.score, DEFAULT)
+	INSERT INTO set_user (user_id, set_id, role, set_score, is_private) VALUES (NEW.user_id, setid, 'user', 1, DEFAULT)
 	ON CONFLICT (user_id, set_id)
 	DO UPDATE SET set_score = (set_user.set_score + 1) 
 	WHERE NEW.user_id = set_user.user_id AND set_user.set_id = setid;
