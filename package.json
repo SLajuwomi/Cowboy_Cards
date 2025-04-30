@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev:live": "VITE_API_BASE=https://cowboy-cards.dsouth.org vite",
-    "dev:local": "VITE_API_BASE=http://10.84.16.32:8000 vite",
+    "dev:local": "VITE_API_BASE=http://localhost:8000 vite",
     "dev:mobile": "VITE_API_BASE=http://10.84.16.32:8080 vite",
     "go": "go run go/main.go",
     "sqlc:gen": "sqlc generate -f sqlc/sqlc.yaml",
@@ -90,7 +90,6 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.20",
-    "cross-env": "^7.0.3",
     "eslint": "^9.9.0",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
