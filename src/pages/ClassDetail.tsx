@@ -145,27 +145,29 @@ const ClassDetail = () => {
     <IonPage>
       <Navbar />
       <IonContent className="ion-padding">
-        <div id="main-content" className="container max-w-4xl mx-auto">
+        <div className="container max-w-4xl mx-auto px-4 py-8">
           {queryError && (
             <div className="text-red-500">{queryError.message}</div>
           )}
-          <ClassDetailHeader
-            classData={classData}
-            isTeacher={isTeacher}
-            loading={queryLoading}
-            handleEdit={handleEdit}
-            isEditing={isEditing}
-            updatedInfo={updatedInfo}
-            formErrors={formErrors}
-            handleChange={handleChange}
-            handleSave={handleSave}
-            handleCancel={handleCancel}
-          />
-          <ClassDetailControls
-            isTeacher={isTeacher}
-            classId={id}
-            onAddSetClick={() => setShowAddSetDialog(true)}
-          />
+          <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
+            <ClassDetailHeader
+              classData={classData}
+              isTeacher={isTeacher}
+              loading={queryLoading}
+              handleEdit={handleEdit}
+              isEditing={isEditing}
+              updatedInfo={updatedInfo}
+              formErrors={formErrors}
+              handleChange={handleChange}
+              handleSave={handleSave}
+              handleCancel={handleCancel}
+            />
+            <ClassDetailControls
+              isTeacher={isTeacher}
+              classId={id}
+              onAddSetClick={() => setShowAddSetDialog(true)}
+            />
+          </div>
           <ClassDetailTabs selectedTab={tab} onTabChange={setTab} />
           {tab === 'leaderboard' && (
             <LeaderboardTab

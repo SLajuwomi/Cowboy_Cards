@@ -1,6 +1,6 @@
 import { EditableField } from '@/utils/EditableField';
 import { IonButton, IonIcon } from '@ionic/react';
-import { createOutline } from 'ionicons/icons';
+import { arrowBackOutline, createOutline } from 'ionicons/icons';
 
 const ClassDetailHeader = (props) => {
   return (
@@ -41,23 +41,29 @@ const ClassDetailHeader = (props) => {
         <div>Loading...</div>
       ) : props.classData ? (
         <>
-          <div className="flex items-center">
-            <h1 className="text-2xl font-bold">
-              {props.loading ? 'Loading...' : props.classData.ClassName}
-            </h1>
-            {props.isTeacher && !props.isEditing && (
-              <IonIcon
-                icon={createOutline}
-                size="large"
-                color="primary"
-                className="hover:transform hover:scale-110 cursor-pointer p-2"
-                onClick={props.handleEdit}
-              ></IonIcon>
-            )}
+          <div className="flex flex-col">
+            <div className="flex items-center">
+              <h1 className="text-2xl font-bold">
+                {props.loading ? 'Loading...' : props.classData.ClassName}
+              </h1>
+              {props.isTeacher && !props.isEditing && (
+                <IonIcon
+                  icon={createOutline}
+                  size="large"
+                  color="primary"
+                  className="hover:transform hover:scale-110 cursor-pointer p-2"
+                  onClick={props.handleEdit}
+                ></IonIcon>
+              )}
+            </div>
+            <p className="text-gray-700 dark:text-gray-300">
+              {props.loading ? 'Loading...' : props.classData.ClassDescription}
+            </p>
+            <IonButton routerLink="/home" color="primary">
+              <IonIcon slot="start" icon={arrowBackOutline} />
+              Back
+            </IonButton>
           </div>
-          <p className="text-gray-700 dark:text-gray-300">
-            {props.loading ? 'Loading...' : props.classData.ClassDescription}
-          </p>
         </>
       ) : (
         <h1>Class details unavailable</h1>
