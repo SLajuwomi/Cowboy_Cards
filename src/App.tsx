@@ -51,8 +51,6 @@ const queryClient = new QueryClient();
 // const PublicCards = React.lazy(() => import('./pages/PublicCards'));
 // const PublicClasses = React.lazy(() => import('./pages/PublicClasses'));
 
-// TODO: Try a different router and query parameters instead of whatever we are doing now
-
 function App() {
   return (
     <QueryClientProvider client={queryClient}>

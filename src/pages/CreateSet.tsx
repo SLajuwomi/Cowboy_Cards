@@ -67,7 +67,7 @@ const CreateSet = () => {
     }
   };
 
-  // FIXME: Doesn't show success toast after creationg
+  // FIXME: Doesn't show success toast after creating
   // FIXME: Does not show error toast after creation fails
   // FIXME: UI consistency with @CreateClass
 
@@ -88,7 +88,7 @@ const CreateSet = () => {
           <IonCard className="mb-6 rounded-lg border shadow-sm">
             <IonCardContent>
               <IonTextarea
-                placeholder="Enter set title"
+                placeholder="Enter Set Title"
                 value={title}
                 onIonChange={(e) => setTitle(e.detail.value!)}
                 rows={1}
@@ -103,7 +103,7 @@ const CreateSet = () => {
               )}
 
               <IonTextarea
-                placeholder="Enter set description"
+                placeholder="Enter Set Description"
                 value={description}
                 onIonChange={(e) => setDescription(e.detail.value!)}
                 rows={1}
@@ -121,7 +121,7 @@ const CreateSet = () => {
 
           <div className="flex justify-center">
             <IonButton
-              color="success"
+              color="primary"
               className="rounded-lg shadow-sm w-full md:w-auto"
               onClick={saveSet}
               disabled={loading}
