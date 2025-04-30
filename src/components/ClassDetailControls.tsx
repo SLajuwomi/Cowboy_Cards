@@ -1,15 +1,23 @@
-import { IonButton, IonIcon } from '@ionic/react';
+import { IonButton, IonIcon, IonGrid, IonCol, IonRow } from '@ionic/react';
 import { addOutline, arrowBackOutline, createOutline } from 'ionicons/icons';
 
 const ClassDetailControls = (props) => {
   return (
-    <div className="flex justify-between items-center mb-4">
+     <IonGrid className="mb-4">
+      <IonRow className="ion-align-items-center ion-justify-content-between">
+        <IonCol size="12" sizeMd="auto">
       <IonButton routerLink="/home" color="primary">
         <IonIcon slot="start" icon={arrowBackOutline} />
         Back
       </IonButton>
+      </IonCol>
+
       {props.isTeacher && (
-        <div className="flex gap-2">
+        <IonCol
+        size="12"
+        sizeMd="auto"
+        className="flex gap-2 flex-wrap justify-end"
+      >
           <IonButton
             onClick={props.onAddSetClick}
             color="primary"
@@ -27,9 +35,10 @@ const ClassDetailControls = (props) => {
             <IonIcon slot="start" icon={createOutline} />
             Create New Set
           </IonButton>
-        </div>
-      )}
-    </div>
+          </IonCol>
+        )}
+      </IonRow>
+    </IonGrid>
   );
 };
 
