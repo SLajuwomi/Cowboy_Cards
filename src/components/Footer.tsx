@@ -7,9 +7,16 @@ import {
   IonToolbar,
 } from '@ionic/react';
 import { home } from 'ionicons/icons';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const Footer = () => {
+  const location = useLocation();
+
+  // Skip rendering on Index page
+  if (location.pathname === '/') {
+    return null;
+  }
+
   return (
     <IonFooter className=" ion-no-border">
       <IonToolbar>

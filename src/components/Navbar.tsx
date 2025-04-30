@@ -15,9 +15,18 @@ import {
 } from '@ionic/react';
 import { add, close, menu, moon, personCircle, sunny } from 'ionicons/icons';
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const Navbar = () => {
   const [popoverEvent, setPopoverEvent] = useState(null);
+  const location = useLocation();
+  const ionRouter = useIonRouter();
+  const { theme, setTheme } = useTheme();
+
+  // Skip rendering on Index page
+  if (location.pathname === '/') {
+    return null;
+  }
 
   const openPopover = (event) => setPopoverEvent(event.nativeEvent);
   const closePopover = () => setPopoverEvent(null);
@@ -26,9 +35,6 @@ const Navbar = () => {
     ionRouter.push(route);
     document.querySelector('ion-menu')?.close();
   };
-
-  const ionRouter = useIonRouter();
-  const { theme, setTheme } = useTheme();
 
   const toggleDarkMode = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
