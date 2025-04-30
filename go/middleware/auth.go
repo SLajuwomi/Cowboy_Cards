@@ -60,14 +60,14 @@ func init() {
 	// **********************************************************
 	// uncomment this and comment the one above to dev MOBILE
 	// **********************************************************
-	//
-	//	store.Options = &sessions.Options{
-	//		Path:     "/",
-	//		MaxAge:   0,
-	//		Secure:   false,
-	//		HttpOnly: true,
-	//		SameSite: http.SameSiteLaxMode,
-	//	}
+    // 
+	// store.Options = &sessions.Options{
+	// 	Path:     "/",
+	// 	MaxAge:   0,
+	// 	Secure:   false,
+	// 	HttpOnly: true,
+	// 	SameSite: http.SameSiteLaxMode,
+	// }
 }
 
 func Auth(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
