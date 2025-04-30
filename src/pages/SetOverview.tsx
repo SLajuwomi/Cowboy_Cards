@@ -365,12 +365,9 @@ const SetOverview = () => {
 
   return (
     <IonPage>
-      <IonContent className="">
-        <Navbar />
-        <div
-          id="main-content"
-          className="container max-w-4xl mx-auto px-4 py-8"
-        >
+      <Navbar />
+      <IonContent>
+        <div className="container max-w-4xl mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
             <SetOverviewHeader
               loading={isLoading}

@@ -76,8 +76,8 @@ const Home = () => {
 
   return (
     <IonPage>
+      <Navbar />
       <IonContent>
-        <Navbar />
         <div
           id="main-content"
           className="container mx-auto px-4 py-8 flex-grow"

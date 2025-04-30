@@ -69,8 +69,8 @@ const CreateSet = () => {
 
   return (
     <IonPage>
-      <IonContent className="">
-        <Navbar />
+      <Navbar />
+      <IonContent>
         <div
           id="main-content"
           className="container mx-auto px-4 py-8 max-w-4xl"

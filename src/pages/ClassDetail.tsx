@@ -145,7 +145,7 @@ const ClassDetail = () => {
     <IonPage>
       <Navbar />
       <IonContent className="ion-padding">
-        <div id="main-content" className="max-w-4xl mx-auto">
+        <div id="main-content" className="container max-w-4xl mx-auto">
           {queryError && (
             <div className="text-red-500">{queryError.message}</div>
           )}
