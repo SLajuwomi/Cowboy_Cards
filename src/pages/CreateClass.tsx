@@ -1,3 +1,4 @@
+import { Footer } from '@/components/Footer';
 import { Navbar } from '@/components/Navbar';
 import type { NewClass } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
@@ -6,6 +7,7 @@ import {
   IonCard,
   IonCardContent,
   IonContent,
+  IonPage,
   IonText,
   IonTextarea,
 } from '@ionic/react';
@@ -74,46 +76,47 @@ const CreateClass = () => {
   }, [buttonClicked, formData]);
 
   return (
-    <IonContent>
+    <IonPage>
       <Navbar />
-      <div id="main-content" className="container mx-auto px-4 py-8">
-        {error && <div className="text-red-500 mt-2">{error}</div>}
-        <h1 className="text-4xl tracking-wide font-bold font-smokum mb-6">
-          Create New Class
-        </h1>
-        <form>
-          <IonCard className="mb-6 rounded-lg border shadow-sm">
-            <IonCardContent>
-              <IonTextarea
-                placeholder="Enter Class Name"
-                value={formData.className}
-                onIonChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    className: e.detail.value || '',
-                  }))
-                }
-                rows={1}
-                autoGrow
-                className="w-full text-xl font-bold mb-2"
-                style={{ resize: 'none' }}
-              />
-              <IonTextarea
-                placeholder="Enter Class Description"
-                value={formData.description}
-                onIonChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    description: e.detail.value || '',
-                  }))
-                }
-                rows={1}
-                autoGrow
-                className="w-full text-base mt-4"
-                style={{ resize: 'none' }}
-              />
-            </IonCardContent>
-            {/* <IonItem>
+      <IonContent>
+        <div id="main-content" className="container mx-auto px-4 py-8">
+          {error && <div className="text-red-500 mt-2">{error}</div>}
+          <h1 className="text-4xl tracking-wide font-bold font-smokum mb-6">
+            Create New Class
+          </h1>
+          <form>
+            <IonCard className="mb-6 rounded-lg border shadow-sm">
+              <IonCardContent>
+                <IonTextarea
+                  placeholder="Enter Class Name"
+                  value={formData.className}
+                  onIonChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      className: e.detail.value || '',
+                    }))
+                  }
+                  rows={1}
+                  autoGrow
+                  className="w-full text-xl font-bold mb-2"
+                  style={{ resize: 'none' }}
+                />
+                <IonTextarea
+                  placeholder="Enter Class Description"
+                  value={formData.description}
+                  onIonChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      description: e.detail.value || '',
+                    }))
+                  }
+                  rows={1}
+                  autoGrow
+                  className="w-full text-base mt-4"
+                  style={{ resize: 'none' }}
+                />
+              </IonCardContent>
+              {/* <IonItem>
               
               Public/Private will not be in MVP
 
@@ -141,17 +144,17 @@ const CreateClass = () => {
                 <IonRadio value="private">Private</IonRadio>
               </IonRadioGroup>
             </IonItem> */}
-          </IonCard>
-          <div className="flex flex-col md:flex-row justify-center md:justify-end gap-4 mt-8">
-            <IonButton
-              color="success"
-              disabled={loading}
-              onClick={() => setButtonClicked(true)}
-            >
-              {loading ? 'Creating...' : 'Create Class'}
-            </IonButton>
-          </div>
-          {/* 
+            </IonCard>
+            <div className="flex flex-col md:flex-row justify-center md:justify-end gap-4 mt-8">
+              <IonButton
+                color="success"
+                disabled={loading}
+                onClick={() => setButtonClicked(true)}
+              >
+                {loading ? 'Creating...' : 'Create Class'}
+              </IonButton>
+            </div>
+            {/* 
           {showSuccess && (
             <IonText>
               {isPrivate && (
@@ -170,14 +173,16 @@ const CreateClass = () => {
               />
             </IonText>
           )} */}
-        </form>
-        {showSuccess && (
-          <IonText>
-            <p>Class created successfully!</p>
-          </IonText>
-        )}
-      </div>
-    </IonContent>
+          </form>
+          {showSuccess && (
+            <IonText>
+              <p>Class created successfully!</p>
+            </IonText>
+          )}
+        </div>
+      </IonContent>
+      <Footer />
+    </IonPage>
   );
 };
 

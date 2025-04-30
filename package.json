@@ -7,11 +7,14 @@
   "scripts": {
     "dev:live": "VITE_API_BASE=https://cowboy-cards.dsouth.org vite",
     "dev:local": "VITE_API_BASE=http://localhost:8000 vite",
+    "dev:mobile": "VITE_API_BASE=http://10.84.16.32:8080 vite",
     "go": "go run go/main.go",
     "sqlc:gen": "sqlc generate -f sqlc/sqlc.yaml",
     "build:staging": "VITE_API_BASE=https://cowboy-cards.dsouth.org vite build --mode staging",
     "build:prod": "VITE_API_BASE=https://cowboy-cards.org vite build --mode production",
     "build:dev": "vite build --mode development",
+    "build:mobile": "VITE_API_BASE=https://cowboy-cards.dsouth.org vite build --mode mobile",
+    "build:ios": "npm run build:mobile && ionic cap open ios",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -63,7 +66,6 @@
     "next-themes": "^0.3.0",
     "postcss-cli": "^11.0.0",
     "react": "^18.3.1",
-    "react-countup": "^6.5.3",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.0",

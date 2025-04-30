@@ -24,11 +24,15 @@ const FlashcardCarousel = (props) => {
           <IonRow>
             {props.flashcardSets
               .sort((a, b) => a.ID - b.ID)
-              .map((set) => (
+              ?.map((set) => (
                 <IonCol size="12" sizeMd="6" sizeLg="4" key={set.ID}>
                   <IonCard
                     className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-200 rounded-lg border shadow-sm"
-                    onClick={() => history.push(`/set-overview/${set.ID}`)}
+                    onClick={() =>
+                      history.push(`/set-overview/${set.ID}`, {
+                        fromClassID: props.classID,
+                      })
+                    }
                   >
                     <IonCardHeader>
                       <IonCardTitle className="text-lg font-semibold">
@@ -46,7 +50,10 @@ const FlashcardCarousel = (props) => {
           </IonRow>
         </IonGrid>
       ) : (
-        <p>No flashcard sets available.</p>
+        <p>
+          No flashcard sets available. Create one or add an existing set to your
+          class.
+        </p>
       )}
     </div>
   );

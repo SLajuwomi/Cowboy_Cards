@@ -16,7 +16,7 @@ import {
   useDeleteStudent,
   useUpdateClass,
 } from '@/hooks/useClassQueries';
-import { IonContent } from '@ionic/react';
+import { IonContent, IonPage } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -142,10 +142,10 @@ const ClassDetail = () => {
   const queryError = classError || setsError || usersError || leaderboardError;
 
   return (
-    <>
+    <IonPage>
       <Navbar />
       <IonContent className="ion-padding">
-        <div id="main-content" className="max-w-4xl mx-auto">
+        <div id="main-content" className="container max-w-4xl mx-auto">
           {queryError && (
             <div className="text-red-500">{queryError.message}</div>
           )}
@@ -179,6 +179,7 @@ const ClassDetail = () => {
               currentCardIndex={currentCardIndex}
               setApi={setCarouselApi}
               loading={queryLoading}
+              classId={id}
             />
           )}
           {tab === 'students' && (
@@ -189,15 +190,16 @@ const ClassDetail = () => {
             />
           )}
         </div>
-        <Footer />
+        <AddSetToClassDialog
+          isOpen={showAddSetDialog}
+          onDidDismiss={() => setShowAddSetDialog(false)}
+          classId={id}
+          existingSetIds={flashcardSets?.map((set) => set.ID) || []}
+        />
       </IonContent>
-      <AddSetToClassDialog
-        isOpen={showAddSetDialog}
-        onDidDismiss={() => setShowAddSetDialog(false)}
-        classId={id}
-        existingSetIds={flashcardSets.map((set) => set.ID)}
-      />
-    </>
+
+      <Footer />
+    </IonPage>
   );
 };
 

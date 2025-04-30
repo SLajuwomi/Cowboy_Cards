@@ -7,14 +7,24 @@ import {
   IonToolbar,
 } from '@ionic/react';
 import { home } from 'ionicons/icons';
+import { Link, useLocation } from 'react-router-dom';
 
 const Footer = () => {
+  const location = useLocation();
+
+  // Skip rendering on Index page
+  if (location.pathname === '/') {
+    return null;
+  }
+
   return (
-    <IonFooter className="hidden sm:block ion-no-border fixed bottom-0 w-full">
+    <IonFooter className=" ion-no-border">
       <IonToolbar>
         <IonButtons slot="start">
-          <IonButton routerLink="/home">
-            <IonIcon icon={home} />
+          <IonButton>
+            <Link to="/home">
+              <IonIcon icon={home} />
+            </Link>
           </IonButton>
         </IonButtons>
 

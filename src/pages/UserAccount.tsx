@@ -1,3 +1,4 @@
+import { Footer } from '@/components/Footer';
 import { Navbar } from '@/components/Navbar';
 import { useTheme } from '@/contexts/ThemeContext';
 import type { User } from '@/types/globalTypes';
@@ -6,6 +7,7 @@ import {
   IonButton,
   IonContent,
   IonIcon,
+  IonPage,
   IonSpinner,
   useIonToast,
 } from '@ionic/react';
@@ -43,8 +45,8 @@ const UserAccount = () => {
 
     try {
       const updatePromises = fieldsToUpdate
-        .filter((field) => updatedInfo[field] !== userInfo[field])
-        .map((field) =>
+        ?.filter((field) => updatedInfo[field] !== userInfo[field])
+        ?.map((field) =>
           makeHttpCall<User>(`/api/users/${field}`, {
             method: 'PUT',
             headers: {
@@ -146,67 +148,69 @@ const UserAccount = () => {
   const [presentToast] = useIonToast();
 
   return (
-    <IonContent>
+    <IonPage>
       <Navbar />
+      <IonContent>
+        <div id="main-content" className="container mx-auto px-4 py-8">
+          <div className="mb-8">
+            <p className="text-xl font-rye font-semibold text-primary">
+              Welcome back, {userInfo?.username || 'User'}!
+            </p>
+          </div>
 
-      <div id="main-content" className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <p className="text-xl font-rye font-semibold text-primary">
-            Welcome back, {userInfo?.username || 'User'}!
-          </p>
+          <IonButton onClick={() => window.history.back()} className="mb-6">
+            <IonIcon slot="start" icon={arrowBackOutline} />
+            Back
+          </IonButton>
+
+          {loading && (
+            <div className="flex justify-center items-center p-8">
+              <IonSpinner name="circular" />
+              <span className="ml-2">Loading account details...</span>
+            </div>
+          )}
+
+          {error && !loading && (
+            <div className="text-red-500 text-center p-4 border border-red-500 rounded-md">
+              {error}
+            </div>
+          )}
+
+          {!loading && !error && userInfo && (
+            <>
+              <UserAccountFirstRow
+                isEditing={isEditing}
+                errors={errors}
+                handleChange={handleChange}
+                handleSave={handleSave}
+                updatedInfo={updatedInfo}
+                userInfo={userInfo}
+                handleEdit={handleEdit}
+              />
+              <UserAccountSecondRow
+                streak={userInfo?.login_streak ?? 0}
+                isEditing={isEditing}
+                errors={errors}
+                handleChange={handleChange}
+                handleSave={handleSave}
+                updatedInfo={updatedInfo}
+                userInfo={userInfo}
+                expandedClass={expandedClass}
+                toggleClassDetails={toggleClassDetails}
+                showPasswordAlert={showPasswordAlert}
+                setShowPasswordAlert={setShowPasswordAlert}
+                showDeleteAlert={showDeleteAlert}
+                setShowDeleteAlert={setShowDeleteAlert}
+                theme={theme}
+                setTheme={setTheme}
+                presentToast={presentToast}
+              />
+            </>
+          )}
         </div>
-
-        <IonButton onClick={() => window.history.back()} className="mb-6">
-          <IonIcon slot="start" icon={arrowBackOutline} />
-          Back
-        </IonButton>
-
-        {loading && (
-          <div className="flex justify-center items-center p-8">
-            <IonSpinner name="circular" />
-            <span className="ml-2">Loading account details...</span>
-          </div>
-        )}
-
-        {error && !loading && (
-          <div className="text-red-500 text-center p-4 border border-red-500 rounded-md">
-            {error}
-          </div>
-        )}
-
-        {!loading && !error && userInfo && (
-          <>
-            <UserAccountFirstRow
-              isEditing={isEditing}
-              errors={errors}
-              handleChange={handleChange}
-              handleSave={handleSave}
-              updatedInfo={updatedInfo}
-              userInfo={userInfo}
-              handleEdit={handleEdit}
-            />
-            <UserAccountSecondRow
-              streak={userInfo?.login_streak ?? 0}
-              isEditing={isEditing}
-              errors={errors}
-              handleChange={handleChange}
-              handleSave={handleSave}
-              updatedInfo={updatedInfo}
-              userInfo={userInfo}
-              expandedClass={expandedClass}
-              toggleClassDetails={toggleClassDetails}
-              showPasswordAlert={showPasswordAlert}
-              setShowPasswordAlert={setShowPasswordAlert}
-              showDeleteAlert={showDeleteAlert}
-              setShowDeleteAlert={setShowDeleteAlert}
-              theme={theme}
-              setTheme={setTheme}
-              presentToast={presentToast}
-            />
-          </>
-        )}
-      </div>
-    </IonContent>
+      </IonContent>
+      <Footer />
+    </IonPage>
   );
 };
 

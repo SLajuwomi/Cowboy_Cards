@@ -1,21 +1,20 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { makeHttpCall } from '@/utils/makeHttpCall';
+import { useUpdateCardStudyStatus } from '@/hooks/useFlashcardQueries';
 import { Check, X } from 'lucide-react';
 import { useState } from 'react';
 
 export const FlashCard = (props) => {
   const [isFlipped, setIsFlipped] = useState(false);
+  const updateCardStatus = useUpdateCardStudyStatus();
 
-  const handleScoreUpdate = async (endpoint: string) => {
+  const handleScoreUpdate = async (isCorrect: boolean) => {
     try {
-      const result = await makeHttpCall(`${endpoint}`, {
-        method: 'POST',
-        headers: {
-          card_id: props.cardId.toString(),
-        },
+      await updateCardStatus.mutateAsync({
+        cardId: props.cardId,
+        isCorrect,
       });
-      console.log(`Score update successful for card ${props.cardId}:`, result);
+      console.log(`Score update successful for card ${props.cardId}`);
       props.onAdvance?.();
     } catch (error) {
       console.error(`Failed to update score for card ${props.cardId}:`, error);
@@ -23,11 +22,11 @@ export const FlashCard = (props) => {
   };
 
   const handleLearningClick = () => {
-    handleScoreUpdate('/api/card_history/incorrect');
+    handleScoreUpdate(false);
   };
 
   const handleMasteredClick = () => {
-    handleScoreUpdate('/api/card_history/correct');
+    handleScoreUpdate(true);
   };
 
   return (
