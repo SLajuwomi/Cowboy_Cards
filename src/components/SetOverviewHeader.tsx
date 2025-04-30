@@ -48,7 +48,6 @@ const SetOverviewHeader = (props) => {
         className="rounded-lg flex-grow md:flex-grow-0 mt-4"
         style={{ '--border-radius': '0.5rem' }}
         onClick={props.onBackClick}
-        routerLink={`/set-overview/${props.flashcardSetData?.ID}`}
         disabled={props.isEditing}
       >
         <IonIcon slot="start" icon={arrowBackOutline} />

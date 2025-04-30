@@ -179,6 +179,7 @@ const ClassDetail = () => {
               currentCardIndex={currentCardIndex}
               setApi={setCarouselApi}
               loading={queryLoading}
+              classId={id}
             />
           )}
           {tab === 'students' && (

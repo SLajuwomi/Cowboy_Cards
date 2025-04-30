@@ -21,12 +21,14 @@ import {
   useIonToast,
 } from '@ionic/react';
 import { useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 
 const SetOverview = () => {
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
   const [presentToast] = useIonToast();
+  const location = useLocation<{ fromClassId?: string }>();
+  const fromClassId = location.state?.fromClassId;
 
   // React Query hooks
   const {
@@ -337,7 +339,11 @@ const SetOverview = () => {
 
   const handleBackClick = () => {
     if (!isEditing) {
-      window.history.back();
+      if (fromClassId) {
+        history.push(`/class/${fromClassId}`);
+      } else {
+        history.push('/home');
+      }
     }
   };
 
