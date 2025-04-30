@@ -8,6 +8,8 @@ import {
 } from '@ionic/react';
 import { motion } from 'framer-motion'; // Import Framer Motion for animations
 
+//FIXME: Leaderboard is not updating
+
 const Leaderboard = (props) => {
   return (
     <IonCard className="rounded-lg border shadow-sm">

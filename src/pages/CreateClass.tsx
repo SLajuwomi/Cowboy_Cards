@@ -75,6 +75,9 @@ const CreateClass = () => {
     }
   }, [buttonClicked, formData]);
 
+  // FIXME: UI consistency with @CreateSet
+  // FIXME: Change from text success to toast success
+
   return (
     <IonPage>
       <Navbar />

@@ -67,6 +67,10 @@ const CreateSet = () => {
     }
   };
 
+  // FIXME: Doesn't show success toast after creationg
+  // FIXME: Does not show error toast after creation fails
+  // FIXME: UI consistency with @CreateClass
+
   return (
     <IonPage>
       <Navbar />
