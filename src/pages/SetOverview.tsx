@@ -337,6 +337,8 @@ const SetOverview = () => {
     }
   };
 
+  console.log('fromClassId', fromClassId);
+
   const handleBackClick = () => {
     if (!isEditing) {
       if (fromClassId) {

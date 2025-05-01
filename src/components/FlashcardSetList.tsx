@@ -30,7 +30,7 @@ const FlashcardCarousel = (props) => {
                     className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-200 rounded-lg border shadow-sm"
                     onClick={() =>
                       history.push(`/set-overview/${set.ID}`, {
-                        fromClassID: props.classID,
+                        fromClassId: props.classId,
                       })
                     }
                   >
