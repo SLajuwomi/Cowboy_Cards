@@ -2,6 +2,7 @@ import type {
   Class,
   FlashcardSet,
   GetClassScoresRow,
+  ListClassesOfAUserRow,
   ListMembersOfAClassRow,
   ListSetsOfAUserRow,
 } from '@/types/globalTypes';
@@ -66,6 +67,16 @@ export function useUserSets() {
     queryKey: ['userSets'],
     queryFn: () => makeHttpCall<ListSetsOfAUserRow[]>(`/api/set_user/list`),
     staleTime: 5 * 60 * 1000,
+  });
+}
+
+// User's classes hook
+export function useUserClasses() {
+  return useQuery<ListClassesOfAUserRow[], Error>({
+    queryKey: ['userClasses'],
+    queryFn: () =>
+      makeHttpCall<ListClassesOfAUserRow[]>('/api/class_user/classes'),
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }
 

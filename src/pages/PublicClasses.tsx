@@ -1,5 +1,6 @@
 import { Footer } from '@/components/Footer';
 import { Navbar } from '@/components/Navbar';
+import { useUserClasses } from '@/hooks/useClassQueries';
 import type { Class } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
@@ -20,6 +21,14 @@ const PublicClasses = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchText, setSearchText] = useState('');
+  const { data: userClasses, isLoading: isLoadingUserClasses } =
+    useUserClasses();
+
+  const isUserMember = (classId: number): boolean => {
+    if (!userClasses) return false;
+    return userClasses.some((userClass) => userClass.ClassID === classId);
+  };
+
   const filteredClasses = classes.filter(
     (x) =>
       x.ClassName.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -53,7 +62,7 @@ const PublicClasses = () => {
             <h1 className="text-4xl tracking-wide font-bold font-smokum pb-8">
               Public Classes
             </h1>
-            {loading && <div>Loading...</div>}
+            {(loading || isLoadingUserClasses) && <div>Loading...</div>}
             {error && <div className="text-red-500 mt-2">{error}</div>}
             <IonSearchbar
               value={searchText} // eslint-disable-next-line
@@ -63,44 +72,47 @@ const PublicClasses = () => {
             />
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredClasses?.map((classItem) => (
-              <Link key={classItem.ID} to={`/class/${classItem.ID}`}>
-                <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-transform-shadow duration-200 rounded-lg border shadow-sm">
-                  <IonCardHeader className="flex flex-col space-y-1.5 p-6">
-                    <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
-                      {classItem.ClassName}
-                    </IonCardTitle>
-                    <IonCardSubtitle className="text-sm ">
-                      {classItem.ClassDescription || 'No description'}
-                    </IonCardSubtitle>
-                    <IonButton
-                      expand="block"
-                      color="primary"
-                      className="mt-4"
-                      onClick={async () => {
-                        try {
-                          const response = await makeHttpCall(
-                            `/api/class_user`,
-                            {
-                              method: 'POST',
-                              headers: {
-                                class_id: classItem.ID,
-                                role: 'student',
-                              },
+            {filteredClasses?.map(
+              (classItem) =>
+                !isUserMember(classItem.ID) && (
+                  <Link key={classItem.ID} to={`/class/${classItem.ID}`}>
+                    <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-transform-shadow duration-200 rounded-lg border shadow-sm">
+                      <IonCardHeader className="flex flex-col space-y-1.5 p-6">
+                        <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
+                          {classItem.ClassName}
+                        </IonCardTitle>
+                        <IonCardSubtitle className="text-sm ">
+                          {classItem.ClassDescription || 'No description'}
+                        </IonCardSubtitle>
+                        <IonButton
+                          expand="block"
+                          color="primary"
+                          className="mt-4"
+                          onClick={async () => {
+                            try {
+                              const response = await makeHttpCall(
+                                `/api/class_user`,
+                                {
+                                  method: 'POST',
+                                  headers: {
+                                    class_id: classItem.ID,
+                                    role: 'student',
+                                  },
+                                }
+                              );
+                              console.log('Join class response:', response);
+                            } catch (error) {
+                              console.error('Error joining class:', error);
                             }
-                          );
-                          console.log('Join class response:', response);
-                        } catch (error) {
-                          console.error('Error joining class:', error);
-                        }
-                      }}
-                    >
-                      Join Class
-                    </IonButton>
-                  </IonCardHeader>
-                </IonCard>
-              </Link>
-            ))}
+                          }}
+                        >
+                          Join Class
+                        </IonButton>
+                      </IonCardHeader>
+                    </IonCard>
+                  </Link>
+                )
+            )}
           </div>
         </div>
       </IonContent>
