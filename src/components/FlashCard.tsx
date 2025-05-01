@@ -48,13 +48,18 @@ export const FlashCard = (props) => {
       <div className="flex justify-center gap-4 mt-6">
         <Button
           variant="outline"
+          id="shadcn-button"
           className="w-32"
           onClick={handleLearningClick}
         >
           <X className="mr-2 h-4 w-4" />
           Learning
         </Button>
-        <Button className="w-32" onClick={handleMasteredClick}>
+        <Button
+          id="shadcn-button"
+          className="w-32"
+          onClick={handleMasteredClick}
+        >
           <Check className="mr-2 h-4 w-4" />
           Mastered
         </Button>
