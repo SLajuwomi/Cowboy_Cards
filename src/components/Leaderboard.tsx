@@ -6,7 +6,7 @@ import {
   IonItem,
   IonList,
 } from '@ionic/react';
-import { motion } from 'framer-motion'; // Import Framer Motion for animations
+import { motion } from 'framer-motion';
 
 const Leaderboard = (props) => {
   return (

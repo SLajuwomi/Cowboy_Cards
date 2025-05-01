@@ -8,13 +8,12 @@ import {
   IonCardContent,
   IonContent,
   IonPage,
-  IonText,
   IonTextarea,
+  IonToast,
 } from '@ionic/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const CreateClass = () => {
-  const [buttonClicked, setButtonClicked] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -36,50 +35,45 @@ const CreateClass = () => {
   //   }
   // };
 
-  useEffect(() => {
-    async function submitForm() {
-      if (!buttonClicked) return;
+  const submitForm = async () => {
+    if (loading) return;
 
-      setLoading(true);
-      setError(null);
+    setLoading(true);
+    setError(null);
 
-      try {
-        const data = await makeHttpCall<NewClass>(`/api/classes`, {
-          method: 'POST',
-          headers: {
-            class_name: formData.className,
-            class_description: formData.description,
-          },
-        });
+    try {
+      const data = await makeHttpCall<NewClass>(`/api/classes`, {
+        method: 'POST',
+        headers: {
+          class_name: formData.className,
+          class_description: formData.description,
+        },
+      });
 
-        console.log('Class created successfully:', data);
+      console.log('Class created successfully:', data);
 
-        setButtonClicked(false);
+      setFormData({
+        className: '',
+        description: '',
+      });
 
-        setFormData({
-          className: '',
-          description: '',
-        });
-
-        setShowSuccess(true);
-        setLoading(false);
-      } catch (error) {
-        setError(`Failed to create class: ${error.message}`);
-      } finally {
-        setLoading(false);
-      }
+      setShowSuccess(true);
+    } catch (error) {
+      setError(`Failed to create class: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
-
-    if (buttonClicked) {
-      submitForm();
-    }
-  }, [buttonClicked, formData]);
+  };
 
   return (
     <IonPage>
       <Navbar />
       <IonContent>
-        <div id="main-content" className="container mx-auto px-4 py-8">
+        <div
+          id="main-content"
+          className="container mx-auto px-4 py-8 max-w-4xl"
+        >
+          {loading && <div>Loading...</div>}
           {error && <div className="text-red-500 mt-2">{error}</div>}
           <h1 className="text-4xl tracking-wide font-bold font-smokum mb-6">
             Create New Class
@@ -145,13 +139,14 @@ const CreateClass = () => {
               </IonRadioGroup>
             </IonItem> */}
             </IonCard>
-            <div className="flex flex-col md:flex-row justify-center md:justify-end gap-4 mt-8">
+            <div className="flex justify-center">
               <IonButton
-                color="success"
+                color="primary"
+                className="rounded-lg shadow-sm w-full md:w-auto"
+                onClick={submitForm}
                 disabled={loading}
-                onClick={() => setButtonClicked(true)}
               >
-                {loading ? 'Creating...' : 'Create Class'}
+                {loading ? 'Creating...' : 'Create Set'}
               </IonButton>
             </div>
             {/* 
@@ -175,9 +170,13 @@ const CreateClass = () => {
           )} */}
           </form>
           {showSuccess && (
-            <IonText>
-              <p>Class created successfully!</p>
-            </IonText>
+            <IonToast
+              isOpen={showSuccess}
+              color="success"
+              onDidDismiss={() => setShowSuccess(false)}
+              message="Class created successfully!"
+              duration={2000}
+            />
           )}
         </div>
       </IonContent>

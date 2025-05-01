@@ -22,9 +22,7 @@ const StudentList = (props) => {
         <IonList className="space-y-3" lines="none">
           {props.students?.map((student) => (
             <IonItem key={student.UserID} className="muted-item p-3">
-              <span className="font-medium">
-                {student.FirstName} {student.LastName}
-              </span>
+              <span className="font-medium">{student.Username}</span>
               <span slot="end" className="text-muted-foreground">
                 {student.email}
               </span>

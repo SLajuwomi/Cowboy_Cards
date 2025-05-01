@@ -7,7 +7,7 @@ import { useState } from 'react';
 export const FlashCard = (props) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const updateCardStatus = useUpdateCardStudyStatus();
-
+  const [error, setError] = useState<Error | null>(null);
   const handleScoreUpdate = async (isCorrect: boolean) => {
     try {
       await updateCardStatus.mutateAsync({
@@ -18,6 +18,7 @@ export const FlashCard = (props) => {
       props.onAdvance?.();
     } catch (error) {
       console.error(`Failed to update score for card ${props.cardId}:`, error);
+      setError(error as Error);
     }
   };
 
@@ -31,6 +32,7 @@ export const FlashCard = (props) => {
 
   return (
     <div className="w-full max-w-md mx-auto">
+      {error && <div className="text-red-500">Error: {error.message}</div>}
       <div
         className={`flip-card cursor-pointer ${isFlipped ? 'flipped' : ''}`}
         onClick={() => setIsFlipped(!isFlipped)}
@@ -46,13 +48,18 @@ export const FlashCard = (props) => {
       <div className="flex justify-center gap-4 mt-6">
         <Button
           variant="outline"
+          id="shadcn-button"
           className="w-32"
           onClick={handleLearningClick}
         >
           <X className="mr-2 h-4 w-4" />
           Learning
         </Button>
-        <Button className="w-32" onClick={handleMasteredClick}>
+        <Button
+          id="shadcn-button"
+          className="w-32"
+          onClick={handleMasteredClick}
+        >
           <Check className="mr-2 h-4 w-4" />
           Mastered
         </Button>

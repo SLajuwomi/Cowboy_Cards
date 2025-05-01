@@ -373,3 +373,17 @@ ion-card-title {
 .ios {
   --ion-safe-area-top: 50px;
 }
+
+#shadcn-button {
+  box-shadow: 5px 5px 5px gold;
+}
+
+/* Custom Button Click Animations */
+#shadcn-button:hover {
+  box-shadow: 5px 5px 5px #4300ca;
+  transition: transform 0.4s ease-in-out, box-shadow 0.4s ease-in-out;
+}
+
+#shadcn-button:active {
+  transform: scale(1.5); /* Optional subtle scale */
+}

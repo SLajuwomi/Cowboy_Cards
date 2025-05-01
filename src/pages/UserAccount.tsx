@@ -10,9 +10,10 @@ import {
   IonPage,
   IonSpinner,
   useIonToast,
+  useIonViewWillEnter,
 } from '@ionic/react';
 import { arrowBackOutline } from 'ionicons/icons';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import UserAccountFirstRow from '../components/UserAccountFirstRow';
 import UserAccountSecondRow from '../components/UserAccountSecondRow';
 
@@ -122,28 +123,29 @@ const UserAccount = () => {
     }));
   };
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const data = await makeHttpCall<User>(`/api/users/`, {
-          method: 'GET',
-          headers: {},
-        });
-        setUserInfo(data);
-        setUpdatedInfo(data);
-        console.log('data', data as User);
-      } catch (error) {
-        console.log(`Failed to fetch User Data: ${error.message}`);
-        setError(`Failed to fetch User Data: ${error.message}`);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserData();
+  const fetchUserData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await makeHttpCall<User>(`/api/users/`, {
+        method: 'GET',
+        headers: {},
+      });
+      setUserInfo(data);
+      setUpdatedInfo(data);
+      console.log('data', data as User);
+    } catch (error) {
+      console.log(`Failed to fetch User Data: ${error.message}`);
+      setError(`Failed to fetch User Data: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useIonViewWillEnter(() => {
+    console.log('UserAccount will enter, fetching data...');
+    fetchUserData();
+  });
 
   const [presentToast] = useIonToast();
 
@@ -154,7 +156,9 @@ const UserAccount = () => {
         <div id="main-content" className="container mx-auto px-4 py-8">
           <div className="mb-8">
             <p className="text-xl font-rye font-semibold text-primary">
-              Welcome back, {userInfo?.username || 'User'}!
+              {loading
+                ? 'Loading...'
+                : `Welcome back, ${userInfo?.username || 'User'}!`}
             </p>
           </div>
 

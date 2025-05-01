@@ -80,15 +80,32 @@ const Flashcard = () => {
   }, [carouselApi]);
 
   const handleAdvance = () => {
-    if (carouselApi) {
-      carouselApi.scrollNext();
+    // Check if carousel exists and there are cards
+    if (carouselApi && cards.length > 0) {
+      // Check if currently on the last card
+      if (currentCardIndex === cards.length - 1) {
+        // Show success toast
+        presentToast({
+          message: 'Congratulations! You have completed the set.',
+          duration: 3000,
+          color: 'success',
+        });
+        // Optional: Add actions like navigating back or resetting
+      } else {
+        // Not the last card, advance to the next one
+        carouselApi.scrollNext();
+      }
     }
   };
+
+  // Calculate progress percentage
+  const progressPercentage = cards.length
+    ? Math.round(((currentCardIndex + 1) / cards.length) * 100)
+    : 0;
 
   return (
     <IonPage>
       <Navbar />
-
       <IonContent>
         <div
           id="main-content"
@@ -123,7 +140,7 @@ const Flashcard = () => {
             </div>
           </div>
 
-          <div className="w-full max-w-xl mx-auto relative py-8 min-h-[400px] flex items-center justify-center">
+          <div className="w-full max-w-xl mx-auto relative py-8 min-h-[400px] flex flex-col items-center justify-center">
             {isLoading ? (
               <IonSpinner name="circular" />
             ) : cards.length === 0 ? (
@@ -132,6 +149,19 @@ const Flashcard = () => {
               </div>
             ) : (
               <>
+                {/* Progress Bar */}
+                <div className="w-full mb-4 bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                  <div
+                    className="bg-primary h-2.5 rounded-full transition-all duration-300"
+                    style={{ width: `${progressPercentage}%` }}
+                  ></div>
+                </div>
+
+                {/* Card Counter */}
+                <div className="text-sm text-gray-500 mb-4">
+                  Card {currentCardIndex + 1} of {cards.length}
+                </div>
+
                 <Carousel
                   orientation="vertical"
                   setApi={setCarouselApi}
@@ -150,19 +180,6 @@ const Flashcard = () => {
                     ))}
                   </CarouselContent>
                 </Carousel>
-
-                <div className="absolute right-[-50px] top-1/2 transform -translate-y-1/2 flex flex-col gap-2">
-                  {cards?.map((_, index) => (
-                    <div
-                      key={index}
-                      className={`w-2 h-2 rounded-full transition-colors ${
-                        index === currentCardIndex
-                          ? 'bg-primary'
-                          : 'bg-gray-300'
-                      }`}
-                    />
-                  ))}
-                </div>
               </>
             )}
           </div>

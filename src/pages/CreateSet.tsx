@@ -10,6 +10,7 @@ import {
   IonPage,
   IonText,
   IonTextarea,
+  IonToast,
 } from '@ionic/react';
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -21,8 +22,10 @@ const CreateSet = () => {
   const [errors, setErrors] = useState({ title: '', description: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const saveSet = async () => {
+    if (loading) return;
     setLoading(true);
     setError(null);
 
@@ -58,7 +61,12 @@ const CreateSet = () => {
         }
       );
 
-      history.push(`/set-overview/${setResponse.ID}`);
+      setTitle('');
+      setDescription('');
+
+      setShowSuccess(true);
+
+      // history.push(`/set-overview/${setResponse.ID}`);
     } catch (error) {
       console.error('Error saving flashcard set:', error);
       setError(`Failed to save flashcard set: ${error.message}`);
@@ -84,7 +92,7 @@ const CreateSet = () => {
           <IonCard className="mb-6 rounded-lg border shadow-sm">
             <IonCardContent>
               <IonTextarea
-                placeholder="Enter set title"
+                placeholder="Enter Set Title"
                 value={title}
                 onIonChange={(e) => setTitle(e.detail.value!)}
                 rows={1}
@@ -99,7 +107,7 @@ const CreateSet = () => {
               )}
 
               <IonTextarea
-                placeholder="Enter set description"
+                placeholder="Enter Set Description"
                 value={description}
                 onIonChange={(e) => setDescription(e.detail.value!)}
                 rows={1}
@@ -117,7 +125,7 @@ const CreateSet = () => {
 
           <div className="flex justify-center">
             <IonButton
-              color="success"
+              color="primary"
               className="rounded-lg shadow-sm w-full md:w-auto"
               onClick={saveSet}
               disabled={loading}
@@ -125,6 +133,16 @@ const CreateSet = () => {
               {loading ? 'Creating...' : 'Create Set'}
             </IonButton>
           </div>
+
+          {showSuccess && (
+            <IonToast
+              isOpen={showSuccess}
+              color="success"
+              onDidDismiss={() => setShowSuccess(false)}
+              message="Set created successfully!"
+              duration={2000}
+            />
+          )}
         </div>
       </IonContent>
       <Footer />

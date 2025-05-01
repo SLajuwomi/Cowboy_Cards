@@ -1,8 +1,10 @@
 import { Footer } from '@/components/Footer';
 import { Navbar } from '@/components/Navbar';
+import { useUserSets } from '@/hooks/useClassQueries';
 import type { FlashcardSet } from '@/types/globalTypes';
 import { makeHttpCall } from '@/utils/makeHttpCall';
 import {
+  IonButton,
   IonCard,
   IonCardHeader,
   IonCardSubtitle,
@@ -19,6 +21,8 @@ const PublicFlashcards = () => {
   const [loading, setLoading] = useState(false);
   const [flashcardSets, setFlashcardSets] = useState<FlashcardSet[]>([]);
   const [searchText, setSearchText] = useState('');
+  const { data: userSets, isLoading: isLoadingUserSets } = useUserSets();
+
   const filteredFlashcardSets = flashcardSets.filter(
     (set) =>
       set.SetName.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -46,6 +50,11 @@ const PublicFlashcards = () => {
     fetchSets();
   }, []);
 
+  const isUserMember = (setId: number): boolean => {
+    if (!userSets) return false;
+    return userSets.some((userSet) => userSet.SetID === setId);
+  };
+
   return (
     <IonPage>
       <Navbar />
@@ -55,7 +64,7 @@ const PublicFlashcards = () => {
             <h1 className="text-4xl tracking-wide font-bold font-smokum pb-8">
               Public Flashcard Sets
             </h1>
-            {loading && <div>Loading...</div>}
+            {loading || (isLoadingUserSets && <div>Loading...</div>)}
             {error && <div className="text-red-500 mt-2">{error}</div>}
             <IonSearchbar
               value={searchText} // eslint-disable-next-line
@@ -65,20 +74,49 @@ const PublicFlashcards = () => {
             />
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredFlashcardSets?.map((set) => (
-              <Link key={set.ID} to={`/flashcards/${set.ID}`}>
-                <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-transform-shadow duration-200 rounded-lg border shadow-sm">
-                  <IonCardHeader className="flex flex-col space-y-1.5 p-6">
-                    <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
-                      {set.SetName}
-                    </IonCardTitle>
-                    <IonCardSubtitle className="text-sm ">
-                      {set.SetDescription || 'No description'}
-                    </IonCardSubtitle>
-                  </IonCardHeader>
-                </IonCard>
-              </Link>
-            ))}
+            {filteredFlashcardSets?.map(
+              (set) =>
+                !isUserMember(set.ID) && (
+                  <Link key={set.ID} to={`/flashcards/${set.ID}`}>
+                    <IonCard className="cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-transform-shadow duration-200 rounded-lg border shadow-sm">
+                      <IonCardHeader className="flex flex-col space-y-1.5 p-6">
+                        <IonCardTitle className="text-2xl font-semibold leading-none tracking-tight">
+                          {set.SetName}
+                        </IonCardTitle>
+                        <IonCardSubtitle className="text-sm ">
+                          {set.SetDescription || 'No description'}
+                        </IonCardSubtitle>
+                        <IonButton
+                          expand="block"
+                          color="primary"
+                          className="mt-4"
+                          onClick={async (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            try {
+                              const response = await makeHttpCall(
+                                `/api/set_user`,
+                                {
+                                  method: 'POST',
+                                  headers: {
+                                    set_id: set.ID,
+                                    role: 'user',
+                                  },
+                                }
+                              );
+                              console.log('Join set response:', response);
+                            } catch (error) {
+                              console.error('Error joining set:', error);
+                            }
+                          }}
+                        >
+                          Join Set
+                        </IonButton>
+                      </IonCardHeader>
+                    </IonCard>
+                  </Link>
+                )
+            )}
           </div>
         </div>
       </IonContent>
