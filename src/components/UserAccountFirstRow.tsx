@@ -91,10 +91,6 @@ const UserAccountFirstRow = (props) => {
             />
             <InfoRow label="Classes Taken" value={props.userInfo?.numClasses} />
             <InfoRow
-              label="Cards Mastered/Studied"
-              value={`${props.userInfo?.cardsMastered} / ${props.userInfo?.cardsStudied}`}
-            />
-            <InfoRow
               label="Total Card Views"
               value={props.userInfo?.totalCardViews}
             />
