@@ -69,7 +69,10 @@ const CreateClass = () => {
     <IonPage>
       <Navbar />
       <IonContent>
-        <div id="main-content" className="container mx-auto px-4 py-8">
+        <div
+          id="main-content"
+          className="container mx-auto px-4 py-8 max-w-4xl"
+        >
           {loading && <div>Loading...</div>}
           {error && <div className="text-red-500 mt-2">{error}</div>}
           <h1 className="text-4xl tracking-wide font-bold font-smokum mb-6">
@@ -136,13 +139,14 @@ const CreateClass = () => {
               </IonRadioGroup>
             </IonItem> */}
             </IonCard>
-            <div className="flex flex-col md:flex-row justify-center md:justify-end gap-4 mt-8">
+            <div className="flex justify-center">
               <IonButton
                 color="primary"
-                disabled={loading}
+                className="rounded-lg shadow-sm w-full md:w-auto"
                 onClick={submitForm}
+                disabled={loading}
               >
-                {loading ? 'Creating...' : 'Create Class'}
+                {loading ? 'Creating...' : 'Create Set'}
               </IonButton>
             </div>
             {/* 

@@ -1,6 +1,6 @@
 import { EditableField } from '@/utils/EditableField';
 import { IonButton, IonIcon } from '@ionic/react';
-import { arrowBackOutline, createOutline } from 'ionicons/icons';
+import { createOutline } from 'ionicons/icons';
 
 const ClassDetailHeader = (props) => {
   return (
@@ -59,10 +59,6 @@ const ClassDetailHeader = (props) => {
             <p className="text-gray-700 dark:text-gray-300">
               {props.loading ? 'Loading...' : props.classData.ClassDescription}
             </p>
-            <IonButton routerLink="/home" color="primary">
-              <IonIcon slot="start" icon={arrowBackOutline} />
-              Back
-            </IonButton>
           </div>
         </>
       ) : (
