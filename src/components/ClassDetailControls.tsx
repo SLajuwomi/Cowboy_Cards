@@ -1,44 +1,35 @@
-import { IonButton, IonCol, IonGrid, IonIcon, IonRow } from '@ionic/react';
-import { addOutline, arrowBackOutline, createOutline } from 'ionicons/icons';
+import { IonButton, IonIcon } from '@ionic/react';
+import { addOutline, createOutline } from 'ionicons/icons';
 
 const ClassDetailControls = (props) => {
   return (
-    <IonGrid className="mb-4">
-      <IonRow className="ion-align-items-center ion-justify-content-between">
-        <IonCol size="12" sizeMd="auto">
-          <IonButton routerLink="/home" color="primary">
-            <IonIcon slot="start" icon={arrowBackOutline} />
-            Back
-          </IonButton>
-        </IonCol>
-
-        {props.isTeacher && (
-          <IonCol
-            size="12"
-            sizeMd="auto"
-            className="flex gap-2 flex-wrap justify-end"
+    <div className="flex justify-between items-center mb-4">
+      {props.isTeacher && (
+        <div className="flex flex-col md:flex-row gap-2">
+          <IonButton
+            className="rounded-lg flex-grow md:flex-grow-0"
+            style={{ '--border-radius': '0.5rem' }}
+            onClick={props.onAddSetClick}
+            color="primary"
+            disabled={!props.classId}
           >
-            <IonButton
-              onClick={props.onAddSetClick}
-              color="primary"
-              disabled={!props.classId}
-            >
-              <IonIcon slot="start" icon={addOutline} />
-              Add Existing Set
-            </IonButton>
+            <IonIcon slot="start" icon={addOutline} />
+            Add Existing Set
+          </IonButton>
 
-            <IonButton
-              routerLink={`/create-set?classId=${props.classId}`}
-              color="primary"
-              disabled={!props.classId}
-            >
-              <IonIcon slot="start" icon={createOutline} />
-              Create New Set
-            </IonButton>
-          </IonCol>
-        )}
-      </IonRow>
-    </IonGrid>
+          <IonButton
+            className="rounded-lg flex-grow md:flex-grow-0"
+            style={{ '--border-radius': '0.5rem' }}
+            routerLink={`/create-set?classId=${props.classId}`}
+            color="primary"
+            disabled={!props.classId}
+          >
+            <IonIcon slot="start" icon={createOutline} />
+            Create New Set
+          </IonButton>
+        </div>
+      )}
+    </div>
   );
 };
 
