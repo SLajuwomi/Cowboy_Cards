@@ -60,7 +60,7 @@ export async function makeHttpCall<T>(
     }
 
     // Handle 204 No Content specifically
-    if (response.status === 204) {
+    if (response.status === 204 || response.status === 200) {
       return null as T; // Return null or appropriate value for no content
     }
 
