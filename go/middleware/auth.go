@@ -54,7 +54,7 @@ func init() {
 	if buildenv == "" {
 		store.Options.SameSite = http.SameSiteNoneMode
 	} else if buildenv == "prod" {
-		store.Options.SameSite = http.SameSiteStrictMode
+		store.Options.SameSite = http.SameSiteNoneMode
 	}
 
 	// **********************************************************
