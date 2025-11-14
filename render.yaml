@@ -18,10 +18,7 @@ services:
     staticPublishPath: public
     envVars:
       - key: VITE_API_BASE
-        fromService:
-          type: web
-          name: cowboy-cards-api
-          property: url
+        value: https://cowboy-cards-api.onrender.com
     routes:
       - type: rewrite
         source: /*
