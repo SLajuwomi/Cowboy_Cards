@@ -11,7 +11,7 @@
     "go": "go run go/main.go",
     "sqlc:gen": "sqlc generate -f sqlc/sqlc.yaml",
     "build:staging": "VITE_API_BASE=https://cowboy-cards.dsouth.org vite build --mode staging",
-    "build:prod": "VITE_API_BASE=https://cowboy-cards.org vite build --mode production",
+    "build:prod": "vite build --mode production",
     "build:dev": "vite build --mode development",
     "build:mobile": "VITE_API_BASE=https://cowboy-cards.dsouth.org vite build --mode mobile",
     "build:ios": "npm run build:mobile && ionic cap open ios",
