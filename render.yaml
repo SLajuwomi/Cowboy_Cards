@@ -4,6 +4,7 @@ services:
     runtime: docker
     dockerContext: .
     dockerfilePath: ./Dockerfile
+    plan: free
     envVars:
       - fromGroup: cowboy-cards-secrets
       - key: PORT
