@@ -13,7 +13,7 @@ function manualChunks(id: string) {
 
 export default defineConfig(({ mode }) => {
   const res = {
-    base: './',
+    base: '/',
     preview: {
       port: 8080,
     },
