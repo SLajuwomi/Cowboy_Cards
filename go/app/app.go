@@ -81,7 +81,7 @@ func Init() {
 	unprotectedRoutes := chi.NewRouter()
 	routes.Unprotected(unprotectedRoutes, h)
 	n := negroni.Classic() // serves "./public"
-	//n.Use(middleware.Cors)
+	n.Use(middleware.Cors)
 	n.Use(negroni.HandlerFunc(middleware.SetCacheControlHeader))
 
 	//if buildenv == "" {
