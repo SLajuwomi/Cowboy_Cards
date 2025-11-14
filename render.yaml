@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: cowboy-cards-api
+    runtime: docker
+    dockerContext: .
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - fromGroup: cowboy-cards-secrets
+      - key: PORT
+        value: 8000
+      - key: BUILDENV
+        value: prod
+
+  - type: web
+    runtime: static
+    name: cowboy-cards-web
+    buildCommand: npm install && npm run build:prod
+    staticPublishPath: public
+    envVars:
+      - key: VITE_API_BASE
+        fromService:
+          type: web
+          name: cowboy-cards-api
+          property: url
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
